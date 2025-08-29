@@ -5,7 +5,7 @@ class ClassModel {
   final BigInt id;
   final String name;
   final String major;
-  final String grade;
+  final int grade;
   final String code;
   final DateTime? createdAt;
   final DateTime? editedAt;
@@ -26,11 +26,11 @@ class ClassModel {
       'id': id.toString(),
       'name': name,
       'major': major,
-      'grade': grade,
+      'grade': grade.toString(),
       'code': code,
-      'createdAt': createdAt?.toIso8601String(),
-      'editedAt': editedAt?.toIso8601String(),
-      'deletedAt': deletedAt?.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
+      'edited_at': editedAt?.toIso8601String(),
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 
@@ -39,11 +39,11 @@ class ClassModel {
       id: BigInt.parse(map['id'].toString()),
       name: map['name'] as String,
       major: map['major'] as String,
-      grade: map['grade'] as String,
+      grade: map['grade'] as int,
       code: map['code'] as String,
-      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt'].toString()) : null,
-      editedAt: map['editedAt'] != null ? DateTime.parse(map['editedAt'].toString()) : null,
-      deletedAt: map['deletedAt'] != null ? DateTime.parse(map['deletedAt'].toString()) : null,
+      createdAt: map['created_at'] != null ? DateTime.parse(map['created_at'].toString()) : null,
+      editedAt: map['edited_at'] != null ? DateTime.parse(map['edited_at'].toString()) : null,
+      deletedAt: map['deleted_at'] != null ? DateTime.parse(map['deleted_at'].toString()) : null,
     );
   }
 
