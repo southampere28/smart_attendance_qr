@@ -9,11 +9,8 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     DashboardController controller = Get.find<DashboardController>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Text('Dashboard Page'),
-      ),
+    return Center(
+      child: Text('Dashboard Page'),
     );
   }
 }
