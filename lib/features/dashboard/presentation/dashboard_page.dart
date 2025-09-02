@@ -1,4 +1,4 @@
-import 'package:absensi_qr/features/dashboard/dashboard_controller.dart';
+import 'package:absensi_qr/features/dashboard/presentation/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

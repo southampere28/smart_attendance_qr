@@ -1,5 +1,5 @@
 import 'package:absensi_qr/features/attendance/presentation/attendance_controller.dart';
-import 'package:absensi_qr/features/dashboard/dashboard_controller.dart';
+import 'package:absensi_qr/features/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/features/navigation/presentation/navigation_controller.dart';
 import 'package:absensi_qr/features/permission/presentation/permission_controller.dart';
 import 'package:absensi_qr/features/profile/presentation/profile_controller.dart';

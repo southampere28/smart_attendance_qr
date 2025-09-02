@@ -1,7 +1,7 @@
 import 'package:absensi_qr/features/attendance/presentation/attendance_binding.dart';
 import 'package:absensi_qr/features/attendance/presentation/attendance_page.dart';
-import 'package:absensi_qr/features/dashboard/dashboard_binding.dart';
-import 'package:absensi_qr/features/dashboard/dashboard_page.dart';
+import 'package:absensi_qr/features/dashboard/presentation/dashboard_binding.dart';
+import 'package:absensi_qr/features/dashboard/presentation/dashboard_page.dart';
 import 'package:absensi_qr/features/navigation/presentation/navigation_binding.dart';
 import 'package:absensi_qr/features/navigation/presentation/navigation_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_binding.dart';
