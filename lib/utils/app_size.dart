@@ -74,16 +74,16 @@ class AppSize {
 
   static void init(
     BuildContext context, {
-    double? maxScreenWidth,
-    double? maxScreenHeight,
+    double? containerWidth,
+    double? containerHeight,
   }) {
     final size = MediaQuery.of(context).size;
     screenWidth = size.width;
     screenHeight = size.height;
     isTablet = MediaQuery.of(context).size.width > 600;
 
-    parentWidth = maxScreenWidth ?? screenWidth;
-    parentHeight = maxScreenHeight ?? screenHeight;
+    parentWidth = containerWidth ?? screenWidth;
+    parentHeight = containerHeight ?? screenHeight;
 
     rawScaleFactorWidth = parentWidth / refWidth;
     rawScaleFactorHeight = parentHeight / refHeight;
