@@ -17,6 +17,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   mobile_scanner: ^2.1.0
   fluttertoast: ^8.2.12
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:
