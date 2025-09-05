@@ -1,0 +1,4 @@
+class ApiConstant {
+  static const baseURL = 'http://yourdomain.com:8000/api';
+  static const testConnection = '$baseURL/ping';
+}
