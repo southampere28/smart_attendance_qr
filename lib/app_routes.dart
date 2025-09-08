@@ -4,6 +4,8 @@ import 'package:absensi_qr/features/dashboard/presentation/dashboard_binding.dar
 import 'package:absensi_qr/features/dashboard/presentation/dashboard_page.dart';
 import 'package:absensi_qr/features/navigation/presentation/navigation_binding.dart';
 import 'package:absensi_qr/features/navigation/presentation/navigation_page.dart';
+import 'package:absensi_qr/features/others/auth/presentation/login_binding.dart';
+import 'package:absensi_qr/features/others/auth/presentation/login_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_binding.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_page.dart';
 import 'package:absensi_qr/features/permission/presentation/permission_binding.dart';
@@ -15,7 +17,13 @@ import 'package:absensi_qr/features/qr/presentation/qr_page.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
-  static const initialRoute = navigation;
+  // initialize
+  static const initialRoute = login;
+  
+  // auth
+  static const login = '/login';
+  
+  // general
   static const navigation = '/navigation';
   static const splashScreen = '/splash_screen';
   static const dashboard = '/dashboard';
@@ -57,10 +65,13 @@ class AppRoutes {
       binding: ProfileBinding(),
     ),
     GetPage(
-      name: qrscan,
-      page: () => const QrPage(),
-      binding: QrBinding(),
-      transition: Transition.downToUp
-    ),
+        name: qrscan,
+        page: () => const QrPage(),
+        binding: QrBinding(),
+        transition: Transition.downToUp),
+    GetPage(
+        name: login,
+        page: () => const LoginPage(),
+        binding: LoginBinding(),),
   ];
 }
