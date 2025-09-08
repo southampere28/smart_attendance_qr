@@ -1,7 +1,10 @@
 import 'dart:developer';
 
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -13,23 +16,40 @@ class LoginController extends GetxController {
   var emailController = TextEditingController();
   var passController = TextEditingController();
 
-  Future<void> doLogin(String email, String password) async {
+  Future<void> doLogin(
+      BuildContext context, String email, String password) async {
     isLoading.value = true;
+    AppUtil.showLoadingDialog(context, message: "Sedang login...");
 
-    final success = await endpointService.login(
-      email: email,
-      password: password,
-    );
+    try {
+      final result = await endpointService.login(
+        email: email,
+        password: password,
+      );
 
-    isLoading.value = false;
+      isLoading.value = false;
 
-    if (success) {
-      // Akses token / data user
-      log("Token: ${endpointService.accessToken}");
-      log("User email: ${endpointService.userData}");
-      // TODO: navigate ke halaman utama
-    } else {
-      // TODO: tampilkan error di UI
+      if (context.mounted) {
+        AppUtil.hideLoadingDialog(context);
+      }
+
+      var msg = result.message ?? 'Login Fail!';
+
+      if (result.success) {
+        log("Token: ${endpointService.accessToken}");
+        log("User email: ${endpointService.userData}");
+        // Get.offNamed(AppRoutes.navigation);
+        Get.toNamed(AppRoutes.navigation);
+        Fluttertoast.showToast(msg: msg);
+      } else {
+        Fluttertoast.showToast(msg: msg);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        AppUtil.hideLoadingDialog(context);
+      }
+      isLoading.value = false;
+      Fluttertoast.showToast(msg: 'Error!');
     }
   }
 }
