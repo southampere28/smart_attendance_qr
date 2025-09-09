@@ -1,19 +1,29 @@
+import 'dart:developer';
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_size.dart';
+import 'package:absensi_qr/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-        statusBarColor: Colors.white, statusBarIconBrightness: Brightness.dark),
-  );
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
+  await initServices();
 
   runApp(const MyApp());
+}
+
+Future<void> initServices() async {
+  log("starting services ...");
+  await Get.putAsync<EndpointService>(
+      () async => await EndpointService().init());
+  log("all services started ...");
 }
 
 class MyApp extends StatelessWidget {
@@ -44,16 +54,7 @@ class MyApp extends StatelessWidget {
             title: 'Absensi QR Code',
             initialRoute: AppRoutes.initialRoute,
             getPages: AppRoutes.routes,
-            themeMode: ThemeMode.light,
-            theme: ThemeData(
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                systemOverlayStyle: SystemUiOverlayStyle(
-                    statusBarColor: Colors.white,
-                    statusBarIconBrightness: Brightness.dark),
-              ),
-            ),
+            themeMode: ThemeMode.system,
           );
         },
       );
