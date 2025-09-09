@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // place all helper function in this class
 class AppUtil {
-  String formatDate(DateTime date) {
+  static String formatDate(DateTime date) {
     final formatter = DateFormat('MM dd yyyy');
     return formatter.format(date);
   }
@@ -10,5 +11,36 @@ class AppUtil {
   bool isEmailValid(String email) {
     final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return regex.hasMatch(email);
+  }
+
+  static void showLoadingDialog(BuildContext context, {String? message}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // tidak bisa ditutup dengan tap di luar
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(width: 16),
+                Text(message ?? "Loading..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Hide loading dialog
+  static void hideLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
   }
 }
