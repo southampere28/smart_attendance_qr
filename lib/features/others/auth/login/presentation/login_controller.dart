@@ -50,6 +50,7 @@ class LoginController extends GetxController {
       }
       isLoading.value = false;
       Fluttertoast.showToast(msg: 'Error!');
+      log('error while login : $e');
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:absensi_qr/features/others/auth/presentation/login_controller.dart';
+import 'package:absensi_qr/features/others/auth/login/presentation/login_controller.dart';
 import 'package:get/get.dart';
 
 class LoginBinding extends Bindings {

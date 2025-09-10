@@ -1,6 +1,6 @@
 import 'package:absensi_qr/constant/app_font_style.dart';
-import 'package:absensi_qr/features/others/auth/presentation/login_controller.dart';
-import 'package:absensi_qr/features/others/auth/presentation/widgets/textfield_input_widget.dart';
+import 'package:absensi_qr/features/others/auth/login/presentation/login_controller.dart';
+import 'package:absensi_qr/features/others/auth/login/presentation/widgets/textfield_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
