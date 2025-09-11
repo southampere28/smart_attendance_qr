@@ -54,7 +54,6 @@ class EndpointService extends GetxService {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-
         // Simpan token & user
         accessToken = data["access_token"];
         tokenType = data["token_type"];
@@ -80,10 +79,132 @@ class EndpointService extends GetxService {
     } catch (e) {
       log("Exception: $e");
       return ApiResult(
-          success: false,
-          message: "Exception: $e",
-          statusCode: null,
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  Future<ApiResult<Map<String, dynamic>>> registerStudent({
+    required String name,
+    required String email,
+    required String password,
+    required String nisn,
+    required int idClass,
+    required int entryYear,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstant.registerURL),
+        headers: {
+          "Accept": "application/json",
+        },
+        body: {
+          "name": name,
+          "email": email,
+          "password": password,
+          "role": "student",
+          "nisn": nisn,
+          "id_class": idClass.toString(),
+          "entry_year": entryYear.toString(),
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        // Simpan token & user
+        accessToken = data["access_token"];
+        tokenType = data["token_type"];
+        userData = data["user"];
+
+        log("Token: $accessToken");
+        log("User: ${userData.toString()}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: userData,
+          message: data["message"],
+          statusCode: status,
         );
+      } else {
+        log("Register error: ${response.body}");
+        return ApiResult(
+          success: false,
+          message: data["message"],
+          statusCode: status,
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  Future<ApiResult<Map<String, dynamic>>> registerTeacher({
+    required String name,
+    required String email,
+    required String password,
+    required String nip,
+    required String subject,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstant.registerURL),
+        headers: {
+          "Accept": "application/json",
+        },
+        body: {
+          "name": name,
+          "email": email,
+          "password": password,
+          "role": "teacher",
+          "nip": nip,
+          "subject": subject,
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        // Simpan token & user
+        accessToken = data["access_token"];
+        tokenType = data["token_type"];
+        userData = data["user"];
+
+        log("Token: $accessToken");
+        log("User: ${userData.toString()}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: userData,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Register error: ${response.body}");
+        return ApiResult(
+          success: false,
+          message: data["message"],
+          statusCode: status,
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
     }
   }
 
