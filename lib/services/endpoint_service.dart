@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/constant/app_config.dart';
+import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/response/api_result.dart';
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +15,51 @@ class EndpointService extends GetxService {
   String? accessToken;
   String? tokenType;
   Map<String, dynamic>? userData;
+
+  // variabel kelas siswa
+  List<ClassModel>? classData;
+
+  Future<ApiResult> loadClasses() async {
+    try {
+      final response =
+          await http.get(Uri.parse(ApiConstant.allClass)); // test akses koneksi
+      final decoded = jsonDecode(response.body);
+      final message = decoded['message'];
+      final statusCode = response.statusCode;
+
+      if (statusCode == 200 && decoded['success'] == true) {
+        final classes = (decoded['data'] as List)
+            .map((e) => ClassModel.fromMap(e))
+            .toList();
+
+        // simpan di variabel global biar bisa dipakai ulang
+        classData = classes;
+
+        for (var i = 0; i < classes.length; i++) {
+          log('kelas global => ${classData![i]}');
+        }
+        return ApiResult(
+            success: true,
+            data: classes,
+            message: message,
+            statusCode: statusCode); // koneksi OK
+      } else {
+        Fluttertoast.showToast(msg: 'your API Failed to connect!');
+        log('failed to connect!');
+        return ApiResult(
+            success: false,
+            errors: decoded['errors'] ?? 'Failed to fetch classes',
+            statusCode: statusCode); // server respon tapi status bukan 200
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'connect error!');
+      log("Connection error: $e");
+      return ApiResult(
+          success: false,
+          message: 'error : $e',
+          statusCode: null); // gagal koneksi
+    }
+  }
 
   Future<bool> testConnection() async {
     try {
@@ -210,6 +256,7 @@ class EndpointService extends GetxService {
 
   Future<EndpointService> init() async {
     // inisialisasi token etc...
+    await loadClasses();
     return this;
   }
 }
