@@ -2,6 +2,7 @@ import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_controller.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/features/widgets/textfield_input_widget.dart';
+import 'package:absensi_qr/features/widgets/textfield_with_title.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -34,38 +35,44 @@ class RegisterStudentPage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'Nama',
                     controller: controller.nameController,
                     hintTxt: "Dummy Student",
                     keyboardType: TextInputType.name,
                   ),
                   SizedBox(height: 12),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'Email',
                     controller: controller.emailController,
                     hintTxt: "johndoe@gmail.com",
                     keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 12),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'Password',
                     controller: controller.passController,
                     hintTxt: "••••••••",
                     keyboardType: TextInputType.visiblePassword,
                     hide: true,
                   ),
                   SizedBox(height: 12),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'NISN',
                     controller: controller.nisnController,
                     hintTxt: "1234567111",
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 12),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'Kelas',
                     controller: controller.idClassController,
                     hintTxt: "1 / 2 / 3",
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 12),
-                  TextfieldInputWidget(
+                  TextfieldWithTitle(
+                    title: 'Tahun Masuk',
                     controller: controller.entryYearController,
                     hintTxt: "2022",
                     keyboardType: TextInputType.number,
