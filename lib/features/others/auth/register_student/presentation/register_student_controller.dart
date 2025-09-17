@@ -12,6 +12,7 @@ class RegisterStudentController extends GetxController {
 
   var isLoading = false.obs;
 
+  // variable texteditingcontroller name, email, pass, etc...
   var nameController = TextEditingController();
   var emailController = TextEditingController();
   var passController = TextEditingController();
@@ -19,7 +20,35 @@ class RegisterStudentController extends GetxController {
   var idClassController = TextEditingController();
   var entryYearController = TextEditingController();
 
-  // variable texteditingcontroller name, email, pass, etc...
+  var selectedItem = '(Pilih Kelas)'.obs;
+
+  BigInt selectedId = BigInt.from(-1);
+
+  var classItemList = ['(Pilih Kelas)'].obs;
+
+  var classMap = <String, BigInt>{}.obs;
+
+  // function to get item list
+  void getKelasItem() {
+    var classData = endpointService.classData;
+
+    if (classData != null) {
+      for (var i = 0; i < classData.length; i++) {
+        final name = classData[i].name;
+        final id = classData[i].id;
+
+        classItemList.add(name);
+        classMap[name] = id;
+      }
+      log(classMap.toString());
+    } else {
+      log('there is no data in classdata!');
+    }
+  }
+
+  Future<void> scrapStudentClases() async {
+    await endpointService.loadClasses();
+  }
 
   // function to register
   Future<void> doRegister(BuildContext context, String name, String email,
@@ -47,7 +76,7 @@ class RegisterStudentController extends GetxController {
       if (result.success) {
         log("Token: ${endpointService.accessToken}");
         log("User info: ${endpointService.userData}");
-        Get.toNamed(AppRoutes.login);
+        Get.offNamed(AppRoutes.login);
         Fluttertoast.showToast(msg: msg);
       } else {
         if (result.errors != null) {
@@ -68,6 +97,16 @@ class RegisterStudentController extends GetxController {
       Fluttertoast.showToast(msg: 'Error 500!');
       log('error while register : $e');
     }
+  }
+
+  @override
+  void onInit() async {
+    // TODO: implement onInit
+    super.onInit();
+    if (endpointService.classData == null) {
+      await scrapStudentClases();
+    }
+    getKelasItem();
   }
 
   @override

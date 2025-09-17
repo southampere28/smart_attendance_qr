@@ -1,9 +1,14 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_controller.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
+import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
 import 'package:absensi_qr/features/widgets/textfield_input_widget.dart';
 import 'package:absensi_qr/features/widgets/textfield_with_title.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class RegisterStudentPage extends StatelessWidget {
@@ -64,12 +69,26 @@ class RegisterStudentPage extends StatelessWidget {
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 12),
-                  TextfieldWithTitle(
-                    title: 'Kelas',
-                    controller: controller.idClassController,
-                    hintTxt: "1 / 2 / 3",
-                    keyboardType: TextInputType.number,
-                  ),
+                  Obx(() => DropdownInputWidget(
+                      title: 'Kelas',
+                      selected: controller.selectedItem.value,
+                      items: controller.classItemList,
+                      onChanged: (value) {
+                        // do something
+                        controller.selectedItem.value =
+                            value ?? '(Pilih Kelas)';
+
+                        if (value != null && value != '(Pilih Kelas)') {
+                          final selectedId = controller.classMap[value];
+                          log('Selected: $value, ID: $selectedId');
+                          Fluttertoast.showToast(
+                              msg: "Kelas: $value, ID: $selectedId");
+                          controller.selectedId = selectedId!;
+                        } else {
+                          controller.selectedId = BigInt.from(-1);
+                        }
+                      },
+                      hint: '(Pilih Kelas)')),
                   SizedBox(height: 12),
                   TextfieldWithTitle(
                     title: 'Tahun Masuk',
@@ -87,8 +106,8 @@ class RegisterStudentPage extends StatelessWidget {
                       final password = controller.passController.text;
                       final nisn = controller.nisnController.text;
 
-                      final idClass =
-                          int.tryParse(controller.idClassController.text) ?? 0;
+                      final idClass = controller.selectedId.toInt();
+
                       final entryYear =
                           int.tryParse(controller.entryYearController.text) ??
                               0;
