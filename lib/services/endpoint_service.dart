@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -19,10 +20,16 @@ class EndpointService extends GetxService {
   // variabel kelas siswa
   List<ClassModel>? classData;
 
+  // load all student class (from grade 10 to 12)
   Future<ApiResult> loadClasses() async {
     try {
-      final response =
-          await http.get(Uri.parse(ApiConstant.allClass)); // test akses koneksi
+      final response = await http.get(Uri.parse(ApiConstant.allClass)).timeout(
+        Duration(seconds: 5),
+        onTimeout: () {
+          throw TimeoutException('timeout');
+        },
+      );
+      ; // test akses koneksi
       final decoded = jsonDecode(response.body);
       final message = decoded['message'];
       final statusCode = response.statusCode;
@@ -44,15 +51,15 @@ class EndpointService extends GetxService {
             message: message,
             statusCode: statusCode); // koneksi OK
       } else {
-        Fluttertoast.showToast(msg: 'your API Failed to connect!');
-        log('failed to connect!');
+        Fluttertoast.showToast(msg: 'Failed to connect!');
+        log('koneksi ke server gagal!');
         return ApiResult(
             success: false,
             errors: decoded['errors'] ?? 'Failed to fetch classes',
             statusCode: statusCode); // server respon tapi status bukan 200
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'connect error!');
+      Fluttertoast.showToast(msg: 'data gagal dimuat!');
       log("Connection error: $e");
       return ApiResult(
           success: false,
@@ -93,6 +100,11 @@ class EndpointService extends GetxService {
         body: {
           "email": email,
           "password": password,
+        },
+      ).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException('timeout');
         },
       );
 
@@ -155,6 +167,11 @@ class EndpointService extends GetxService {
           "id_class": idClass.toString(),
           "entry_year": entryYear.toString(),
         },
+      ).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException('timeout');
+        },
       );
 
       final status = response.statusCode;
@@ -215,6 +232,11 @@ class EndpointService extends GetxService {
           "nip": nip,
           "subject": subject,
         },
+      ).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException('timeout');
+        },
       );
 
       final status = response.statusCode;
@@ -256,7 +278,6 @@ class EndpointService extends GetxService {
 
   Future<EndpointService> init() async {
     // inisialisasi token etc...
-    await loadClasses();
     return this;
   }
 }
