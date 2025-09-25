@@ -276,6 +276,72 @@ class EndpointService extends GetxService {
     }
   }
 
+  // attendance with qr request
+  Future<ApiResult<Map<String, dynamic>>> qrAttendance({
+    required String idStudent,
+    required String idClass,
+    required String qrcode,
+  }) async {
+    try {
+      log(tokenType.toString());
+      log(accessToken.toString());
+      final response = await http.post(
+        Uri.parse(ApiConstant.qrcodeAttendance),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+        body: {
+          "id_student": idStudent,
+          "id_class": idClass,
+          "qrcode": qrcode,
+        },
+      ).timeout(
+        Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException('timeout');
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200 || status == 201) {
+        final schedule = data["data"]["schedule"];
+        final attendance = data["data"]["attendance"];
+
+        log("Message: ${data["message"]}");
+        log("Schedule: $schedule");
+        log("Attendance: $attendance");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: {
+            "schedule": schedule,
+            "attendance": attendance,
+          },
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("QR Attendance error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
   Future<EndpointService> init() async {
     // inisialisasi token etc...
     return this;

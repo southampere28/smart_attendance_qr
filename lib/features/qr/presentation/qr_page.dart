@@ -1,21 +1,17 @@
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/features/qr/presentation/qr_controller.dart';
-import 'package:absensi_qr/utils/app_theme.dart';
+import 'package:absensi_qr/models/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class QrPage extends StatefulWidget {
+class QrPage extends StatelessWidget {
   const QrPage({super.key});
 
-  @override
-  State<QrPage> createState() => _QrPageState();
-}
-
-class _QrPageState extends State<QrPage> {
   @override
   Widget build(BuildContext context) {
     QrController controller = Get.find<QrController>();
@@ -68,9 +64,34 @@ class _QrPageState extends State<QrPage> {
                                     debugPrint('Barcode found! $code');
                                     controller.isScanCompleted =
                                         true; // tandai scan selesai
-        
-                                    Fluttertoast.showToast(
-                                        msg: 'qrRaw $code');
+
+                                    Fluttertoast.showToast(msg: 'qrRaw $code');
+
+                                    if (controller.userData != null) {
+                                      if (controller.userData!.student ==
+                                          null) {
+                                        Fluttertoast.showToast(
+                                            msg: 'Anda bukan siswa!');
+                                        Get.back();
+                                      } else {
+                                        var studentId = controller
+                                            .userData!.student!.id
+                                            .toString();
+                                        var classId = controller
+                                            .userData!.student!.idClass
+                                            .toString();
+
+                                        controller.doQrAttendance(
+                                            idStudent: studentId,
+                                            idClass: classId,
+                                            qrcode: code);
+                                      }
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'Silahkan Login Terlebih dahulu!');
+                                      Get.offAllNamed(AppRoutes.login);
+                                    }
                                   }
                                 }
                               },
