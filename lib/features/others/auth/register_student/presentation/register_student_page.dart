@@ -100,6 +100,7 @@ class RegisterStudentPage extends StatelessWidget {
                   ButtonPrimaryWidget(
                     title: 'Register',
                     callback: () {
+                      log('register button pressed');
                       // do something
                       final name = controller.nameController.text;
                       final email = controller.emailController.text;

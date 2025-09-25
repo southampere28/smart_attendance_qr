@@ -29,7 +29,7 @@ class TextfieldWithTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppFontStyle.primaryText.copyWith(fontSize: 16),
+          style: AppFontStyle.primaryText,
         ),
         SizedBox(
           height: 8,

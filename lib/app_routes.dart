@@ -22,7 +22,7 @@ import 'package:get/get.dart';
 
 class AppRoutes {
   // initialize
-  static const initialRoute = registerStudent;
+  static const initialRoute = navigation;
   
   // auth
   static const login = '/login';
