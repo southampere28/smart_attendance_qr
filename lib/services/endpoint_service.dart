@@ -281,6 +281,8 @@ class EndpointService extends GetxService {
     required String idStudent,
     required String idClass,
     required String qrcode,
+    required String lat,
+    required String lon,
   }) async {
     try {
       log(tokenType.toString());
@@ -295,6 +297,8 @@ class EndpointService extends GetxService {
           "id_student": idStudent,
           "id_class": idClass,
           "qrcode": qrcode,
+          "latitude": lat,
+          "longitude": lon,
         },
       ).timeout(
         Duration(seconds: 30),
