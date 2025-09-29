@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'dart:async';
@@ -17,38 +18,87 @@ class GeolocationService extends GetxService {
 
   final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
   final List<PositionItem> _positionItems = <PositionItem>[];
-  bool positionStreamStarted = false;
+  // service subscription for listener
+  StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
+  // flag fetch location
+  bool _hasFetchedLocation = false;
+
+  String serviceStatusValue = 'disabled';
 
   String? lattitude = '';
   String? longitude = '';
 
-  Future<void> getCurrentPosition() async {
+  Future<bool> getCurrentPosition(int limitSecond) async {
     final hasPermission = await _handlePermission();
 
     if (!hasPermission) {
-      return;
+      return false;
     }
 
-    final position = await _geolocatorPlatform.getCurrentPosition();
-    _updatePositionList(
-      PositionItemType.position,
-      position.toString(),
-    );
+    Fluttertoast.showToast(msg: 'mencoba mendapatkan lokasi...');
 
-    lattitude = position.latitude.toString();
-    longitude = position.longitude.toString();
+    try {
+      final position = await _geolocatorPlatform.getCurrentPosition(
+          locationSettings:
+              LocationSettings(timeLimit: Duration(seconds: limitSecond)));
 
-    log('lat: $lattitude, long: $longitude');
+      _updatePositionList(
+        PositionItemType.position,
+        position.toString(),
+      );
 
-    Fluttertoast.showToast(
-      msg: "Lokasi: ${position.latitude}, ${position.longitude}",
-      toastLength: Toast.LENGTH_LONG,
-    );
+      lattitude = position.latitude.toString();
+      longitude = position.longitude.toString();
+
+      log('lat: $lattitude, long: $longitude');
+
+      // Fluttertoast.showToast(
+      //   msg: "Lokasi: ${position.latitude}, ${position.longitude}",
+      //   toastLength: Toast.LENGTH_LONG,
+      // );
+
+      Fluttertoast.showToast(msg: "lokasi telah di update");
+
+      return true;
+    } on TimeoutException {
+      log("Timeout: lokasi tidak bisa didapatkan dalam $limitSecond detik");
+      Fluttertoast.showToast(
+          msg: "Gagal dapat lokasi (timeout $limitSecond detik)");
+      return false;
+    } catch (e) {
+      log("Error getCurrentPosition: $e");
+      Fluttertoast.showToast(msg: "Gagal dapat lokasi: $e");
+      return false;
+    }
+  }
+
+  Future<bool> checkLocationPermission() async {
+    LocationPermission permission = await _geolocatorPlatform.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await _geolocatorPlatform.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _updatePositionList(PositionItemType.log, _kPermissionDeniedMessage);
+        Fluttertoast.showToast(
+            msg: _kPermissionDeniedMessage, toastLength: Toast.LENGTH_LONG);
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _updatePositionList(
+          PositionItemType.log, _kPermissionDeniedForeverMessage);
+      Fluttertoast.showToast(
+          msg: _kPermissionDeniedForeverMessage,
+          toastLength: Toast.LENGTH_LONG);
+      return false;
+    }
+
+    return true;
   }
 
   Future<bool> _handlePermission() async {
     bool serviceEnabled;
-    LocationPermission permission;
 
     // Test if location services are enabled.
     serviceEnabled = await _geolocatorPlatform.isLocationServiceEnabled();
@@ -66,53 +116,15 @@ class GeolocationService extends GetxService {
         _kLocationServicesDisabledMessage,
       );
 
-      return false;
-    }
-
-    permission = await _geolocatorPlatform.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await _geolocatorPlatform.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        _updatePositionList(
-          PositionItemType.log,
-          _kPermissionDeniedMessage,
-        );
-
-        Fluttertoast.showToast(
-          msg: _kPermissionDeniedMessage,
-          toastLength: Toast.LENGTH_LONG,
-        );
-
-        return false;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      _updatePositionList(
-        PositionItemType.log,
-        _kPermissionDeniedForeverMessage,
-      );
-
-      Fluttertoast.showToast(
-        msg: _kPermissionDeniedForeverMessage,
-        toastLength: Toast.LENGTH_LONG,
-      );
+      await AppSettings.openAppSettings(type: AppSettingsType.location);
 
       return false;
     }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    _updatePositionList(
-      PositionItemType.log,
-      _kPermissionGrantedMessage,
-    );
+    bool hasPermission = await checkLocationPermission();
+    if (!hasPermission) return false;
+
+    _updatePositionList(PositionItemType.log, _kPermissionGrantedMessage);
     return true;
   }
 
@@ -120,9 +132,84 @@ class GeolocationService extends GetxService {
     _positionItems.add(PositionItem(type, displayValue));
   }
 
+  Future<void> waitForGpsEnabled(
+      {int maxRetries = 5, Duration delay = const Duration(seconds: 2)}) async {
+    // Pastikan listener aktif
+    listenGpsStatus();
+
+    int retries = 0;
+
+    while (serviceStatusValue != 'enabled' && retries < maxRetries) {
+      log("GPS masih disabled, retry ke-$retries...");
+      await Future.delayed(delay);
+      if (retries == 1) {
+        Fluttertoast.showToast(msg: 'Mohon Nyalakan GPS!');
+      }
+      if (retries == 4) {
+        Fluttertoast.showToast(msg: 'Mengalihkan ke pengaturan lokasi...');
+      }
+      retries++;
+    }
+
+    if (serviceStatusValue != 'enabled') {
+      throw Exception("GPS masih disabled setelah $maxRetries percobaan");
+    }
+
+    if (_hasFetchedLocation != true) {
+      await getCurrentPosition(15);
+    }
+  }
+
+  void stopListening() {
+    _serviceStatusStreamSubscription?.cancel();
+    _serviceStatusStreamSubscription = null;
+    log("GPS listener dihentikan");
+  }
+
+  void listenGpsStatus() async {
+    bool isEnabled = await _geolocatorPlatform.isLocationServiceEnabled();
+    serviceStatusValue = isEnabled ? 'enabled' : 'disabled';
+
+    if (isEnabled) {
+      _hasFetchedLocation = true;
+      await getCurrentPosition(15);
+    }
+
+    if (_serviceStatusStreamSubscription == null) {
+      final serviceStatusStream = _geolocatorPlatform.getServiceStatusStream();
+      _serviceStatusStreamSubscription =
+          serviceStatusStream.handleError((error) {
+        _serviceStatusStreamSubscription?.cancel();
+        _serviceStatusStreamSubscription = null;
+      }).listen(
+        (serviceStatus) {
+          if (serviceStatus == ServiceStatus.enabled && !_hasFetchedLocation) {
+            serviceStatusValue = 'enabled';
+            // stopListening();
+            _hasFetchedLocation = true;
+            getCurrentPosition(15);
+          } else {
+            serviceStatusValue = 'disabled';
+            _hasFetchedLocation = false;
+          }
+          _updatePositionList(
+            PositionItemType.log,
+            'Location service has been $serviceStatusValue',
+          );
+        },
+      );
+    }
+  }
+
   // initialize
   Future<GeolocationService> init() async {
     // inisialisasi token etc...
     return this;
+  }
+
+  @override
+  void onClose() {
+    stopListening();
+    super.onClose();
   }
 }
