@@ -16,7 +16,7 @@ class DashboardController extends GetxController {
 
   // geolocation
   Future<void> getLocation() async {
-    await _geolocationService.getCurrentPosition();
+    await _geolocationService.getCurrentPosition(30);
   }
 
   @override

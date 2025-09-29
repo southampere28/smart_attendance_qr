@@ -65,8 +65,6 @@ class QrPage extends StatelessWidget {
                                     controller.isScanCompleted =
                                         true; // tandai scan selesai
 
-                                    Fluttertoast.showToast(msg: 'qrRaw $code');
-
                                     if (controller.userData != null) {
                                       if (controller.userData!.student ==
                                           null) {
@@ -81,7 +79,8 @@ class QrPage extends StatelessWidget {
                                             .userData!.student!.idClass
                                             .toString();
 
-                                        controller.doQrAttendance(
+                                        controller.startScan(
+                                          context: context,
                                             idStudent: studentId,
                                             idClass: classId,
                                             qrcode: code);

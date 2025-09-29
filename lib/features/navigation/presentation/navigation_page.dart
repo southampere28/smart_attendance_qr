@@ -5,6 +5,7 @@ import 'package:absensi_qr/features/navigation/presentation/navigation_controlle
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class NavigationPage extends StatelessWidget {
@@ -18,12 +19,18 @@ class NavigationPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Selamat pagi Pramudya!'),
       ),
-      body: SafeArea(child: Obx(() => controller.pages[controller.currentIndex.value])),
+      body: SafeArea(
+          child: Obx(() => controller.pages[controller.currentIndex.value])),
       floatingActionButton: FloatingActionButton(
         shape: OvalBorder(),
         backgroundColor: AppColor.infoColor,
         onPressed: () {
-          Get.toNamed(AppRoutes.qrscan);
+          var locationStatus = controller.getLocationStatus();
+          if (locationStatus) {
+            Get.toNamed(AppRoutes.qrscan);
+          } else {
+            Fluttertoast.showToast(msg: 'Mohon Nyalakan GPS Anda!');
+          }
         },
         child: const Icon(
           Icons.qr_code,

@@ -30,7 +30,7 @@ class AppUtil {
               children: [
                 const CircularProgressIndicator(),
                 const SizedBox(width: 16),
-                Text(message ?? "Loading..."),
+                Flexible(child: Text(message ?? "Loading...")),
               ],
             ),
           ),
