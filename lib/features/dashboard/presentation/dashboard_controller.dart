@@ -17,7 +17,19 @@ class DashboardController extends GetxController {
   // geolocation
   Future<void> getLocation() async {
     await _geolocationService.getCurrentPosition(30);
+    // await getPlacemarkLocation();
   }
+
+  String get placemark => _geolocationService.outputPlacemark.value;
+
+  // kota
+  String get placemarkCity => _geolocationService.placemarkResult.value?.subAdministrativeArea ?? '(No Data)';
+
+  // kecamatan
+  String get placemarkLocality => _geolocationService.placemarkResult.value?.locality ?? '(No Data)';
+  
+  // desa
+  String get placemarkVillage => _geolocationService.placemarkResult.value?.subLocality ?? '(No Data)';
 
   @override
   void onInit() {

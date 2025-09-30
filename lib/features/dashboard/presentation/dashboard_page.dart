@@ -1,3 +1,4 @@
+import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/features/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,15 @@ class DashboardPage extends StatelessWidget {
                   controller.checkConnection();
                 },
                 child: Text('testconnection')),
+            SizedBox(
+              height: 30,
+            ),
+            Obx(() => Text(
+                  controller.placemark != ''
+                      ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
+                      : 'Location: not fetched yet',
+                  style: AppFontStyle.primaryText,
+                )),
             SizedBox(
               height: 30,
             ),
