@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
@@ -27,6 +28,12 @@ class GeolocationService extends GetxService {
 
   String? lattitude = '';
   String? longitude = '';
+
+  // placemark value =====================
+  var outputPlacemark = ''.obs;
+  var placemarkResult = Rxn<Placemark?>();
+
+  // =====================================
 
   Future<bool> getCurrentPosition(int limitSecond) async {
     final hasPermission = await _handlePermission();
@@ -58,6 +65,14 @@ class GeolocationService extends GetxService {
       // );
 
       Fluttertoast.showToast(msg: "lokasi telah di update");
+
+      if ((lattitude != '') &&
+          (longitude != '')) {
+        await placemarkLocation(
+            lattitude!, longitude!);
+      } else {
+        Fluttertoast.showToast(msg: 'gagal mendapatkan alamat!');
+      }
 
       return true;
     } on TimeoutException {
@@ -199,6 +214,19 @@ class GeolocationService extends GetxService {
         },
       );
     }
+  }
+
+  Future<void> placemarkLocation(String lat, String lon) async {
+    var convertedLat = double.parse(lat);
+    var convertedLon = double.parse(lon);
+
+    await placemarkFromCoordinates(convertedLat, convertedLon)
+        .then((placemarks) {
+      if (placemarks.isNotEmpty) {
+        outputPlacemark.value = placemarks[0].toString();
+        placemarkResult.value = placemarks[0];
+      }
+    });
   }
 
   // initialize
