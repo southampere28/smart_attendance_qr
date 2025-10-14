@@ -1,10 +1,10 @@
 import 'dart:developer';
 
-import 'package:absensi_qr/features/attendance/presentation/attendance_page.dart';
-import 'package:absensi_qr/features/dashboard/presentation/dashboard_page.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/attendance_page.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_page.dart';
-import 'package:absensi_qr/features/permission/presentation/permission_page.dart';
-import 'package:absensi_qr/features/profile/presentation/profile_page.dart';
+import 'package:absensi_qr/feature_student/permission/presentation/permission_page.dart';
+import 'package:absensi_qr/feature_student/profile/presentation/profile_page.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:fluttertoast/fluttertoast.dart';

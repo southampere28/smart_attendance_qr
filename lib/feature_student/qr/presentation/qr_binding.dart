@@ -1,4 +1,4 @@
-import 'package:absensi_qr/features/qr/presentation/qr_controller.dart';
+import 'package:absensi_qr/feature_student/qr/presentation/qr_controller.dart';
 import 'package:get/get.dart';
 
 class QrBinding extends Bindings {

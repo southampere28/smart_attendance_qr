@@ -1,8 +1,8 @@
-import 'package:absensi_qr/features/attendance/presentation/attendance_controller.dart';
-import 'package:absensi_qr/features/dashboard/presentation/dashboard_controller.dart';
-import 'package:absensi_qr/features/navigation/presentation/navigation_controller.dart';
-import 'package:absensi_qr/features/permission/presentation/permission_controller.dart';
-import 'package:absensi_qr/features/profile/presentation/profile_controller.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/attendance_controller.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
+import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
+import 'package:absensi_qr/feature_student/permission/presentation/permission_controller.dart';
+import 'package:absensi_qr/feature_student/profile/presentation/profile_controller.dart';
 import 'package:get/get.dart';
 
 class NavigationBinding extends Bindings {

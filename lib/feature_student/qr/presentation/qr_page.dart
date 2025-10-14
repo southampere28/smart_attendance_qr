@@ -1,7 +1,7 @@
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
-import 'package:absensi_qr/features/qr/presentation/qr_controller.dart';
+import 'package:absensi_qr/feature_student/qr/presentation/qr_controller.dart';
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

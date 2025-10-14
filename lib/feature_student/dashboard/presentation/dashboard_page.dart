@@ -1,5 +1,5 @@
 import 'package:absensi_qr/constant/app_font_style.dart';
-import 'package:absensi_qr/features/dashboard/presentation/dashboard_controller.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

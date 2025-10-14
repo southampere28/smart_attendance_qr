@@ -1,4 +1,4 @@
-import 'package:absensi_qr/features/permission/presentation/permission_controller.dart';
+import 'package:absensi_qr/feature_student/permission/presentation/permission_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

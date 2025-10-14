@@ -1,4 +1,4 @@
-import 'package:absensi_qr/features/attendance/presentation/attendance_controller.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/attendance_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

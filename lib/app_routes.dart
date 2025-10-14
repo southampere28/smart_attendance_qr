@@ -1,9 +1,11 @@
-import 'package:absensi_qr/features/attendance/presentation/attendance_binding.dart';
-import 'package:absensi_qr/features/attendance/presentation/attendance_page.dart';
-import 'package:absensi_qr/features/dashboard/presentation/dashboard_binding.dart';
-import 'package:absensi_qr/features/dashboard/presentation/dashboard_page.dart';
-import 'package:absensi_qr/features/navigation/presentation/navigation_binding.dart';
-import 'package:absensi_qr/features/navigation/presentation/navigation_page.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/attendance_binding.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/attendance_page.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_binding.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_page.dart';
+import 'package:absensi_qr/feature_student/navigation/presentation/navigation_binding.dart';
+import 'package:absensi_qr/feature_student/navigation/presentation/navigation_page.dart';
+import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
+import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_page.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_binding.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_page.dart';
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_binding.dart';
@@ -12,31 +14,37 @@ import 'package:absensi_qr/features/others/auth/register_teacher/presentation/re
 import 'package:absensi_qr/features/others/auth/register_teacher/presentation/register_teacher_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_binding.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_page.dart';
-import 'package:absensi_qr/features/permission/presentation/permission_binding.dart';
-import 'package:absensi_qr/features/permission/presentation/permission_page.dart';
-import 'package:absensi_qr/features/profile/presentation/profile_binding.dart';
-import 'package:absensi_qr/features/profile/presentation/profile_page.dart';
-import 'package:absensi_qr/features/qr/presentation/qr_binding.dart';
-import 'package:absensi_qr/features/qr/presentation/qr_page.dart';
+import 'package:absensi_qr/feature_student/permission/presentation/permission_binding.dart';
+import 'package:absensi_qr/feature_student/permission/presentation/permission_page.dart';
+import 'package:absensi_qr/feature_student/profile/presentation/profile_binding.dart';
+import 'package:absensi_qr/feature_student/profile/presentation/profile_page.dart';
+import 'package:absensi_qr/feature_student/qr/presentation/qr_binding.dart';
+import 'package:absensi_qr/feature_student/qr/presentation/qr_page.dart';
 import 'package:get/get.dart';
 
 class AppRoutes {
   // initialize
-  static const initialRoute = navigation;
+  static const initialRoute = splashScreen;
   
-  // auth
+  // general
   static const login = '/login';
   static const registerStudent = '/register-student';
   static const registerTeacher = '/register-teacher';
-  
-  // general
-  static const navigation = '/navigation';
   static const splashScreen = '/splash_screen';
-  static const dashboard = '/dashboard';
-  static const attendance = '/attendance';
-  static const permission = '/permission';
-  static const profile = '/profile';
-  static const qrscan = '/qrscan';
+  // ==================
+  
+  // student
+  static const navigation = '/navigation-student';
+  static const dashboard = '/dashboard-student';
+  static const attendance = '/attendance-student';
+  static const permission = '/permission-student';
+  static const profile = '/profile-student';
+  static const qrscan = '/qrscan-student';
+  // ==================
+
+  // teacher
+  static const dashboardTeacher = '/dashboard-teacher';
+  // ==================
 
   static final routes = <GetPage>[
     // Feature Others ----------------
@@ -87,5 +95,11 @@ class AppRoutes {
         name: registerTeacher,
         page: () => const RegisterTeacherPage(),
         binding: RegisterTeacherBinding(),),
+    GetPage(
+      name: dashboardTeacher, 
+      page: () => const TeacherDashboardPage(),
+      binding: TeacherDashboardBinding(),
+      )
+  
   ];
 }
