@@ -39,8 +39,14 @@ class LoginController extends GetxController {
         log("Token: ${endpointService.accessToken}");
         log("User email: ${endpointService.userData}");
         // Get.offNamed(AppRoutes.navigation);
-        Get.toNamed(AppRoutes.navigation);
         Fluttertoast.showToast(msg: msg);
+        if (endpointService.userData!["role"] == "teacher") {
+          Get.toNamed(AppRoutes.dashboardTeacher);
+        } else if (endpointService.userData!["role"] == "student") {
+          Get.toNamed(AppRoutes.navigation);
+        } else {
+          Get.toNamed(AppRoutes.navigation);
+        }
       } else {
         Fluttertoast.showToast(msg: msg);
       }
@@ -51,6 +57,9 @@ class LoginController extends GetxController {
       isLoading.value = false;
       Fluttertoast.showToast(msg: 'Error!');
       log('error while login : $e');
+    } finally {
+      if (context.mounted) AppUtil.hideLoadingDialog(context);
+      isLoading.value = false;
     }
   }
 }
