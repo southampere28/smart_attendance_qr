@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:absensi_qr/utils/app_size.dart';
@@ -23,6 +24,13 @@ void main() async {
   log("all services started ...");
 
   runApp(const MyApp());
+}
+
+class MainBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => MainController());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -49,6 +57,7 @@ class MyApp extends StatelessWidget {
           });
 
           return GetMaterialApp(
+            initialBinding: MainBinding(),
             debugShowCheckedModeBanner: false,
             title: 'Absensi QR Code',
             initialRoute: AppRoutes.initialRoute,
