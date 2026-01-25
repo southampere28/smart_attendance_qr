@@ -22,7 +22,7 @@ dependencies:
   geolocator: ^13.0.2
   app_settings: ^6.1.1
   geocoding: ^4.0.0
-  flutter_secure_storage: ^10.0.0
+  flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.5.3
 
 dev_dependencies:
@@ -37,6 +37,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
