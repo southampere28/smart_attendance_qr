@@ -1,4 +1,8 @@
+import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
+import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,21 +18,34 @@ class SplashScreenPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SizedBox(
         width: double.infinity,
-        child: Column(children: [
-          Expanded(flex: 4, child: SizedBox()),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Image.asset(
+            AssetConstant.iconApp,
+            width: 120,
+            fit: BoxFit.contain,
+          ),
+          SpacingSize.spacingSMHeight,
+          // text 2 row
           Text(
-            'Splash Screen Page',
+            'ATTENDANCE SYSTEM',
             style: AppFontStyle.titleText,
           ),
-          SizedBox(
-            height: 30,
+          // loading circular bar
+          SpacingSize.spacingMDHeight,
+          const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColor.infoColor),
           ),
           Obx(() => Text(
                 controller.messageLoading.value,
                 style: AppFontStyle.smallText,
               )),
-          Expanded(flex: 3, child: SizedBox()),
         ]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.toNamed(AppRoutes.chooserRoleUser);
+        },
+        child: const Icon(Icons.skip_next),
       ),
     );
   }
