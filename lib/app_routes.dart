@@ -12,6 +12,8 @@ import 'package:absensi_qr/features/others/auth/register_student/presentation/re
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_page.dart';
 import 'package:absensi_qr/features/others/auth/register_teacher/presentation/register_teacher_binding.dart';
 import 'package:absensi_qr/features/others/auth/register_teacher/presentation/register_teacher_page.dart';
+import 'package:absensi_qr/features/others/choose_role/choose_role_binding.dart';
+import 'package:absensi_qr/features/others/choose_role/choose_role_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_binding.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_page.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/permission_binding.dart';
@@ -28,6 +30,7 @@ class AppRoutes {
   
   // general
   static const login = '/login';
+  static const chooserRoleUser = '/choose-role-user';
   static const registerStudent = '/register-student';
   static const registerTeacher = '/register-teacher';
   static const splashScreen = '/splash_screen';
@@ -87,6 +90,10 @@ class AppRoutes {
         name: login,
         page: () => const LoginPage(),
         binding: LoginBinding(),),
+    GetPage(
+        name: chooserRoleUser,
+        page: () => const ChooseRolePage(),
+        binding: ChooseRoleBinding(),),
     GetPage(
         name: registerStudent,
         page: () => const RegisterStudentPage(),
