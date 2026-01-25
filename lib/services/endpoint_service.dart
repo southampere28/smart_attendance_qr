@@ -9,6 +9,7 @@ import 'package:absensi_qr/models/response/api_result.dart';
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 
 class EndpointService extends GetxService {
@@ -20,16 +21,22 @@ class EndpointService extends GetxService {
   // variabel kelas siswa
   List<ClassModel>? classData;
 
+  // secure storage for tokens
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
   // load all student class (from grade 10 to 12)
-  Future<ApiResult> loadClasses() async {
+  Future<ApiResult<List<ClassModel>>> loadClasses() async {
     try {
-      final response = await http.get(Uri.parse(ApiConstant.allClass)).timeout(
-        Duration(seconds: 5),
-        onTimeout: () {
-          throw TimeoutException('timeout');
-        },
-      );
-      ; // test akses koneksi
+
+      final response = await http.get(Uri.parse(ApiConstant.allClass));
+
+      // final response = await http.get(Uri.parse(ApiConstant.allClass)).timeout(
+      //   Duration(seconds: 5),
+      //   onTimeout: () {
+      //     throw TimeoutException('timeout');
+      //   },
+      // );
+
       final decoded = jsonDecode(response.body);
       final message = decoded['message'];
       final statusCode = response.statusCode;
@@ -87,7 +94,7 @@ class EndpointService extends GetxService {
     }
   }
 
-  Future<ApiResult<Map<String, dynamic>>> login({
+  Future<ApiResult<User>> login({
     required String email,
     required String password,
   }) async {
@@ -102,7 +109,7 @@ class EndpointService extends GetxService {
           "password": password,
         },
       ).timeout(
-        Duration(seconds: 10),
+        Duration(seconds: 30),
         onTimeout: () {
           throw TimeoutException('timeout');
         },
@@ -117,12 +124,22 @@ class EndpointService extends GetxService {
         tokenType = data["token_type"];
         userData = data["user"];
 
-        log("Token: $accessToken");
-        log("User: ${userData.toString()}");
+        // persist securely
+        await _secureStorage.write(key: 'access_token', value: accessToken);
+        if (tokenType != null) {
+          await _secureStorage.write(key: 'token_type', value: tokenType);
+        }
+        await _secureStorage.write(key: 'user', value: jsonEncode(userData));
 
-        return ApiResult(
+        // convert to User entity
+        final user = User.fromMap(userData!);
+
+        log("Token: $accessToken");
+        log("User: ${user.toString()}");
+
+        return ApiResult<User>(
           success: data["success"] ?? true,
-          data: userData,
+          data: user,
           message: data["message"],
           statusCode: status,
         );
@@ -144,7 +161,7 @@ class EndpointService extends GetxService {
     }
   }
 
-  Future<ApiResult<Map<String, dynamic>>> registerStudent({
+  Future<ApiResult<User>> registerStudent({
     required String name,
     required String email,
     required String password,
@@ -168,7 +185,7 @@ class EndpointService extends GetxService {
           "entry_year": entryYear.toString(),
         },
       ).timeout(
-        Duration(seconds: 10),
+        Duration(seconds: 30),
         onTimeout: () {
           throw TimeoutException('timeout');
         },
@@ -183,12 +200,22 @@ class EndpointService extends GetxService {
         tokenType = data["token_type"];
         userData = data["user"];
 
-        log("Token: $accessToken");
-        log("User: ${userData.toString()}");
+        // persist securely
+        await _secureStorage.write(key: 'access_token', value: accessToken);
+        if (tokenType != null) {
+          await _secureStorage.write(key: 'token_type', value: tokenType);
+        }
+        await _secureStorage.write(key: 'user', value: jsonEncode(userData));
 
-        return ApiResult(
+        // convert to User entity
+        final user = User.fromMap(userData!);
+
+        log("Token: $accessToken");
+        log("User: ${user.toString()}");
+
+        return ApiResult<User>(
           success: data["success"] ?? true,
-          data: userData,
+          data: user,
           message: data["message"],
           statusCode: status,
         );
@@ -211,7 +238,7 @@ class EndpointService extends GetxService {
     }
   }
 
-  Future<ApiResult<Map<String, dynamic>>> registerTeacher({
+  Future<ApiResult<User>> registerTeacher({
     required String name,
     required String email,
     required String password,
@@ -233,7 +260,7 @@ class EndpointService extends GetxService {
           "subject": subject,
         },
       ).timeout(
-        Duration(seconds: 10),
+        Duration(seconds: 30),
         onTimeout: () {
           throw TimeoutException('timeout');
         },
@@ -248,12 +275,22 @@ class EndpointService extends GetxService {
         tokenType = data["token_type"];
         userData = data["user"];
 
-        log("Token: $accessToken");
-        log("User: ${userData.toString()}");
+        // persist securely
+        await _secureStorage.write(key: 'access_token', value: accessToken);
+        if (tokenType != null) {
+          await _secureStorage.write(key: 'token_type', value: tokenType);
+        }
+        await _secureStorage.write(key: 'user', value: jsonEncode(userData));
 
-        return ApiResult(
+        // convert to User entity
+        final user = User.fromMap(userData!);
+
+        log("Token: $accessToken");
+        log("User: ${user.toString()}");
+
+        return ApiResult<User>(
           success: data["success"] ?? true,
-          data: userData,
+          data: user,
           message: data["message"],
           statusCode: status,
         );
