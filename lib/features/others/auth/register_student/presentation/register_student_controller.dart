@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/models/class_model.dart';
+import 'package:absensi_qr/services/class_cache_service.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:get/get.dart';
 
 class RegisterStudentController extends GetxController {
   final EndpointService endpointService = Get.find<EndpointService>();
+  final ClassCacheService _cacheService = ClassCacheService();
 
   var isLoading = false.obs;
 
@@ -24,30 +27,78 @@ class RegisterStudentController extends GetxController {
 
   BigInt selectedId = BigInt.from(-1);
 
+  RxList<ClassModel> classDataList = RxList<ClassModel>([]);
+
   var classItemList = ['(Pilih Kelas)'].obs;
 
   var classMap = <String, BigInt>{}.obs;
 
   // function to get item list
   void getKelasItem() {
-    var classData = endpointService.classData;
+    // Use reactive classDataList instead of global service data
+    if (classDataList.isNotEmpty) {
+      // Build new list to trigger reactivity
+      final newItems = ['(Pilih Kelas)'];
+      classMap.clear();
+      
+      for (var i = 0; i < classDataList.length; i++) {
+        final name = classDataList[i].name;
+        final id = classDataList[i].id;
 
-    if (classData != null) {
-      for (var i = 0; i < classData.length; i++) {
-        final name = classData[i].name;
-        final id = classData[i].id;
-
-        classItemList.add(name);
+        newItems.add(name);
         classMap[name] = id;
       }
-      log(classMap.toString());
+      
+      // Assign once to trigger Obx update
+      classItemList.value = newItems;
+      log('Class map updated: ${classMap.toString()}');
+      log('Dropdown items: ${classItemList.length} items');
     } else {
-      log('there is no data in classdata!');
+      log('classDataList is empty!');
     }
   }
 
-  Future<void> scrapStudentClases() async {
-    await endpointService.loadClasses();
+  // Fetch classes from API with cache support
+  Future<bool> scrapStudentClases({bool forceRefresh = false}) async {
+    try {
+      // Check cache first (unless force refresh)
+      if (!forceRefresh) {
+        final cachedClasses = await _cacheService.loadCachedClasses();
+        if (cachedClasses != null) {
+          classDataList.value = cachedClasses;
+          return true;
+        }
+      }
+
+      // Fetch from API
+      final result = await endpointService.loadClasses();
+
+      if (result.success && result.data != null) {
+        // Update reactive list
+        classDataList.value = result.data!;
+
+        // Save to cache
+        await _cacheService.saveCachedClasses(result.data!);
+
+        log('Classes loaded from API: ${classDataList.length}');
+        return true;
+      } else {
+        log('Failed to load classes: ${result.message}');
+        Fluttertoast.showToast(msg: result.message ?? 'Failed to load classes');
+        return false;
+      }
+    } catch (e) {
+      log('Error loading classes: $e');
+      Fluttertoast.showToast(msg: 'Error loading classes');
+      return false;
+    }
+  }
+
+  // Force refresh classes (ignore cache)
+  Future<void> refreshClasses() async {
+    log('Force refreshing classes...');
+    await scrapStudentClases(forceRefresh: true);
+    getKelasItem();
   }
 
   // function to register
@@ -73,9 +124,10 @@ class RegisterStudentController extends GetxController {
 
       var msg = result.message ?? 'Register Fail!';
 
-      if (result.success) {
+      if (result.success && result.data != null) {
         log("Token: ${endpointService.accessToken}");
-        log("User info: ${endpointService.userData}");
+        log("User registered: ${result.data!.email}");
+        log("User role: ${result.data!.role}");
         Get.offNamed(AppRoutes.login);
         Fluttertoast.showToast(msg: msg);
       } else {
@@ -100,13 +152,17 @@ class RegisterStudentController extends GetxController {
   }
 
   @override
-  void onInit() async {
-    // TODO: implement onInit
+  void onInit() {
     super.onInit();
-    if (endpointService.classData == null) {
-      await scrapStudentClases();
+    // Load classes and populate dropdown
+    _initializeClasses();
+  }
+
+  Future<void> _initializeClasses() async {
+    final success = await scrapStudentClases();
+    if (success) {
+      getKelasItem();
     }
-    getKelasItem();
   }
 
   @override

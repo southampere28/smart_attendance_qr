@@ -72,7 +72,7 @@ class RegisterStudentPage extends StatelessWidget {
                   Obx(() => DropdownInputWidget(
                       title: 'Kelas',
                       selected: controller.selectedItem.value,
-                      items: controller.classItemList,
+                      items: controller.classItemList.toList(),
                       onChanged: (value) {
                         // do something
                         controller.selectedItem.value =

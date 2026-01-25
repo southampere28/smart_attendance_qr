@@ -11,6 +11,7 @@ class LoginController extends GetxController {
   final EndpointService endpointService = Get.find();
 
   var isLoading = false.obs;
+  var argument = ''.obs;
 
   // variable controller textfield
   var emailController = TextEditingController();
@@ -29,25 +30,31 @@ class LoginController extends GetxController {
 
       isLoading.value = false;
 
-      if (context.mounted) {
-        AppUtil.hideLoadingDialog(context);
-      }
-
       var msg = result.message ?? 'Login Fail!';
 
-      if (result.success) {
+      if (result.success && result.data != null) {
+        if (context.mounted) {
+          AppUtil.hideLoadingDialog(context);
+        }
+
+        final user = result.data!;
         log("Token: ${endpointService.accessToken}");
-        log("User email: ${endpointService.userData}");
-        // Get.offNamed(AppRoutes.navigation);
+        log("User logged in: ${user.email} (${user.role})");
+
         Fluttertoast.showToast(msg: msg);
-        if (endpointService.userData!["role"] == "teacher") {
-          Get.toNamed(AppRoutes.dashboardTeacher);
-        } else if (endpointService.userData!["role"] == "student") {
-          Get.toNamed(AppRoutes.navigation);
+
+        // Navigate based on role
+        if (user.role == "teacher") {
+          Get.offAllNamed(AppRoutes.dashboardTeacher);
+        } else if (user.role == "student") {
+          Get.offAllNamed(AppRoutes.navigation);
         } else {
-          Get.toNamed(AppRoutes.navigation);
+          Get.offAllNamed(AppRoutes.navigation);
         }
       } else {
+        if (context.mounted) {
+          AppUtil.hideLoadingDialog(context);
+        }
         Fluttertoast.showToast(msg: msg);
       }
     } catch (e) {
@@ -57,9 +64,28 @@ class LoginController extends GetxController {
       isLoading.value = false;
       Fluttertoast.showToast(msg: 'Error!');
       log('error while login : $e');
-    } finally {
-      if (context.mounted) AppUtil.hideLoadingDialog(context);
-      isLoading.value = false;
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Get role argument from navigation
+    if (Get.arguments != null) {
+      argument.value = Get.arguments;
+      log('LoginController argument: ${argument.value}');
+
+      // Pre-fill demo credentials (optional)
+      if (argument.value == 'teacher') {
+        log('Login as teacher');
+        // emailController.text = 'teacher@demo.com';
+      } else if (argument.value == 'student') {
+        log('Login as student');
+        // emailController.text = 'student@demo.com';
+      }
+    } else {
+      log('No role argument provided');
     }
   }
 }
