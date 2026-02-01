@@ -6,6 +6,7 @@ import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/core/widgets/button_text_primary.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_controller.dart';
 import 'package:absensi_qr/features/widgets/textfield_input_widget.dart';
+import 'package:absensi_qr/features/widgets/textfield_with_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -58,39 +59,25 @@ class LoginPage extends StatelessWidget {
                   ),
 
                   SpacingSize.spacingHugeHeight,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Email',
-                        style: AppFontStyle.primaryText,
-                      ),
-                    ],
-                  ),
-                  TextfieldInputWidget(
+
+                  TextfieldWithTitle(
+                      title: 'Email',
                       controller: controller.emailController,
-                      hintTxt: "johndoe@gmail.com",
+                      hintTxt: "Masukkan Email",
                       keyboardType: TextInputType.emailAddress),
                   SpacingSize.spacingMDHeight,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Password',
-                        style: AppFontStyle.primaryText,
-                      ),
-                    ],
-                  ),
-                  TextfieldInputWidget(
+
+                  TextfieldWithTitle(
+                    title: 'Kata Sandi',
                     controller: controller.passController,
-                    hintTxt: "yourpassoword",
+                    hintTxt: "Masukkan Kata Sandi",
                     keyboardType: TextInputType.text,
                     hide: true,
                   ),
                   SpacingSize.spacingBaseHeight,
                   ButtonTextPrimary(
                       margin: EdgeInsets.zero,
-                      text: 'masuk',
+                      text: 'Masuk',
                       onPressed: () {
                         // do something
                         var email = controller.emailController.text;
@@ -127,23 +114,6 @@ class LoginPage extends StatelessWidget {
                       )
                     ],
                   ),
-
-                  // Text('belum punya akun?'),
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       // todo
-                  //       Get.toNamed(AppRoutes.registerStudent);
-                  //     },
-                  //     child: Text('daftar siswa')),
-                  // SizedBox(
-                  //   height: 8,
-                  // ),
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       // todo
-                  //       Get.toNamed(AppRoutes.registerTeacher);
-                  //     },
-                  //     child: Text('daftar guru'))
                 ],
               ),
             ),

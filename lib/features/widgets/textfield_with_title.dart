@@ -11,6 +11,7 @@ class TextfieldWithTitle extends StatelessWidget {
     required this.controller,
     required this.hintTxt,
     required this.keyboardType,
+    this.customPadding,
     this.hide,
   });
 
@@ -18,6 +19,7 @@ class TextfieldWithTitle extends StatelessWidget {
   final TextEditingController controller;
   final String hintTxt;
   final TextInputType keyboardType;
+  final EdgeInsetsGeometry? customPadding;
   final bool? hide;
 
   @override
@@ -29,7 +31,7 @@ class TextfieldWithTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppFontStyle.primaryText,
+          style: AppFontStyle.subTitleText,
         ),
         SizedBox(
           height: 8,
@@ -39,6 +41,7 @@ class TextfieldWithTitle extends StatelessWidget {
           hintTxt: hintTxt,
           keyboardType: keyboardType,
           hide: hide,
+          customPadding: customPadding,
         )
       ],
     );

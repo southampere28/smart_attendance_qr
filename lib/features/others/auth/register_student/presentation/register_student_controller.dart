@@ -19,6 +19,7 @@ class RegisterStudentController extends GetxController {
   var nameController = TextEditingController();
   var emailController = TextEditingController();
   var passController = TextEditingController();
+  var confirmPassController = TextEditingController();
   var nisnController = TextEditingController();
   var idClassController = TextEditingController();
   var entryYearController = TextEditingController();

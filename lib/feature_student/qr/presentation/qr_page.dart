@@ -72,6 +72,15 @@ class QrPage extends StatelessWidget {
                                             msg: 'Anda bukan siswa!');
                                         Get.back();
                                       } else {
+
+                                        if (controller.userData == null) {
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  'Silahkan Login Terlebih dahulu!');
+                                          Get.offNamed(AppRoutes.login);
+                                          return;
+                                        }
+
                                         var studentId = controller
                                             .userData!.student!.id
                                             .toString();

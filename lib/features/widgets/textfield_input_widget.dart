@@ -8,6 +8,7 @@ class TextfieldInputWidget extends StatelessWidget {
     required this.controller,
     required this.hintTxt,
     required this.keyboardType,
+    this.customPadding,
     this.hide,
   });
 
@@ -15,11 +16,12 @@ class TextfieldInputWidget extends StatelessWidget {
   final String hintTxt;
   final TextInputType keyboardType;
   final bool? hide;
+  final EdgeInsetsGeometry? customPadding;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      padding: customPadding ?? EdgeInsets.zero,
       decoration: BoxDecoration(
         color: AppColor.backgroundColor,
         borderRadius: BorderRadius.circular(12),
@@ -30,8 +32,16 @@ class TextfieldInputWidget extends StatelessWidget {
         style: AppFontStyle.primaryText,
         obscureText: hide ?? false,
         decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColor.colorOutlineBoxinput),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          ),
           hintText: hintTxt,
-          border: InputBorder.none,
+          hintStyle: AppFontStyle.subTitleText,
         ),
       ),
     );

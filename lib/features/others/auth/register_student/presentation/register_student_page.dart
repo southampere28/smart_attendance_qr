@@ -34,7 +34,7 @@ class RegisterStudentPage extends StatelessWidget {
                     height: 30,
                   ),
                   Text(
-                    'Register Page Student',
+                    'Buat Akun Siswa',
                     style: AppFontStyle.titleText,
                   ),
                   SizedBox(
@@ -43,30 +43,22 @@ class RegisterStudentPage extends StatelessWidget {
                   TextfieldWithTitle(
                     title: 'Nama',
                     controller: controller.nameController,
-                    hintTxt: "Dummy Student",
+                    hintTxt: "Masukkan Nama",
                     keyboardType: TextInputType.name,
-                  ),
-                  SizedBox(height: 12),
-                  TextfieldWithTitle(
-                    title: 'Email',
-                    controller: controller.emailController,
-                    hintTxt: "johndoe@gmail.com",
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  SizedBox(height: 12),
-                  TextfieldWithTitle(
-                    title: 'Password',
-                    controller: controller.passController,
-                    hintTxt: "••••••••",
-                    keyboardType: TextInputType.visiblePassword,
-                    hide: true,
                   ),
                   SizedBox(height: 12),
                   TextfieldWithTitle(
                     title: 'NISN',
                     controller: controller.nisnController,
-                    hintTxt: "1234567111",
+                    hintTxt: "Masukkan NISN",
                     keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: 12),
+                  TextfieldWithTitle(
+                    title: 'Email',
+                    controller: controller.emailController,
+                    hintTxt: "Masukkan Email",
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 12),
                   Obx(() => DropdownInputWidget(
@@ -91,23 +83,42 @@ class RegisterStudentPage extends StatelessWidget {
                       hint: '(Pilih Kelas)')),
                   SizedBox(height: 12),
                   TextfieldWithTitle(
+                    title: 'Kata Sandi',
+                    controller: controller.passController,
+                    hintTxt: "Masukkan Kata Sandi",
+                    keyboardType: TextInputType.visiblePassword,
+                    hide: true,
+                  ),
+                  SizedBox(height: 12),
+                  TextfieldWithTitle(
+                    title: 'Konfirmasi Kata Sandi',
+                    controller: controller.confirmPassController,
+                    hintTxt: "Ulangi Kata Sandi",
+                    keyboardType: TextInputType.visiblePassword,
+                    hide: true,
+                  ),
+                  SizedBox(height: 12),
+                  TextfieldWithTitle(
                     title: 'Tahun Masuk',
                     controller: controller.entryYearController,
-                    hintTxt: "2022",
+                    hintTxt: "Masukkan Tahun Masuk",
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 12),
                   ButtonPrimaryWidget(
-                    title: 'Register',
+                    title: 'Buat Akun',
                     callback: () {
                       log('register button pressed');
                       // do something
                       final name = controller.nameController.text;
                       final email = controller.emailController.text;
                       final password = controller.passController.text;
+                      final confirmPassword = controller.confirmPassController.text;
                       final nisn = controller.nisnController.text;
 
                       final idClass = controller.selectedId.toInt();
+
+                      // validation all field here...
 
                       final entryYear =
                           int.tryParse(controller.entryYearController.text) ??

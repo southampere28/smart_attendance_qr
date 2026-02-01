@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 // place all helper function in this class
 class AppUtil {
   static String formatDate(DateTime date) {
     final formatter = DateFormat('MM dd yyyy');
+    return formatter.format(date);
+  }
+
+  static String formatDateIndonesia(DateTime date) {
+    // ex: senin, 16 agustus 2023
+    final formatter = DateFormat.yMMMMEEEEd('id_ID');
     return formatter.format(date);
   }
 
