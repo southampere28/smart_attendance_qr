@@ -9,7 +9,21 @@ class AppFontStyle {
     color: Colors.black,
   );
 
+  static TextStyle subTitleText = GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColor.colorTextSubtitle,
+  );
+
+  // content / general text style
   static TextStyle primaryText = GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: Colors.black,
+  );
+
+  // button text style
+  static TextStyle textButtonStyle = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     color: Colors.black,
