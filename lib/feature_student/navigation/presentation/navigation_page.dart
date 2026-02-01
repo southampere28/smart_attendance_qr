@@ -16,9 +16,9 @@ class NavigationPage extends StatelessWidget {
     NavigationController controller = Get.find<NavigationController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Selamat pagi Pramudya!'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Selamat pagi Pramudya!'),
+      // ),
       body: SafeArea(
           child: Obx(() => controller.pages[controller.currentIndex.value])),
       floatingActionButton: FloatingActionButton(
