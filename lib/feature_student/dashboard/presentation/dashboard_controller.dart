@@ -1,6 +1,6 @@
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
@@ -9,6 +9,10 @@ class DashboardController extends GetxController {
   final GeolocationService _geolocationService = Get.find<GeolocationService>();
 
   var isConnected = false.obs;
+
+  final DateTime dateNow = DateTime.now();
+
+  String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   Future<void> checkConnection() async {
     isConnected.value = await _httpService.testConnection();
