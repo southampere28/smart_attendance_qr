@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -33,6 +34,11 @@ class LoginController extends GetxController {
       var msg = result.message ?? 'Login Fail!';
 
       if (result.success && result.data != null) {
+
+        // get fcm token
+        String? token = await FirebaseMessaging.instance.getToken();
+        log("FCM Token: $token");
+
         if (context.mounted) {
           AppUtil.hideLoadingDialog(context);
         }

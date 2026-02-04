@@ -7,10 +7,20 @@
     <!-- permission camera -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- permission internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- permission receive notifications from Firebase -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- permission POST_NOTIFICATIONS for Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:label="absensi_qr"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
