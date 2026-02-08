@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 class ButtonPrimaryWidget extends StatelessWidget {
   const ButtonPrimaryWidget(
-      {super.key, required this.title, required this.callback});
+      {super.key, required this.title, required this.callback, this.borderRadius});
 
   final String title;
   final VoidCallback callback;
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,9 @@ class ButtonPrimaryWidget extends StatelessWidget {
           style: TextButton.styleFrom(
             backgroundColor: AppColor.primaryColor,
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 12)
+                ),
             padding: const EdgeInsets.all(8),
           ),
           child: Text(

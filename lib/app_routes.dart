@@ -4,6 +4,8 @@ import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_bind
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_page.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_binding.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_page.dart';
+import 'package:absensi_qr/feature_student/schedule/presentation/schedule_binding.dart';
+import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_page.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_binding.dart';
@@ -39,6 +41,7 @@ class AppRoutes {
   // student
   static const navigation = '/navigation-student';
   static const dashboard = '/dashboard-student';
+  static const schedule = '/schedule-student';
   static const attendance = '/attendance-student';
   static const permission = '/permission-student';
   static const profile = '/profile-student';
@@ -65,6 +68,11 @@ class AppRoutes {
       name: dashboard,
       page: () => const DashboardPage(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: schedule,
+      page: () => const SchedulePage(),
+      binding: ScheduleBinding(),
     ),
     GetPage(
       name: attendance,
