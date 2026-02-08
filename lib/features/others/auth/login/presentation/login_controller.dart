@@ -55,7 +55,7 @@ class LoginController extends GetxController {
         } else if (user.role == "student") {
           Get.offAllNamed(AppRoutes.navigation);
         } else {
-          Get.offAllNamed(AppRoutes.navigation);
+          // Get.offAllNamed(AppRoutes.navigation);
         }
       } else {
         if (context.mounted) {

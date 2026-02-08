@@ -7,6 +7,7 @@ import 'package:absensi_qr/constant/app_config.dart';
 import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/response/api_result.dart';
 import 'package:absensi_qr/models/user/user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,7 +28,6 @@ class EndpointService extends GetxService {
   // load all student class (from grade 10 to 12)
   Future<ApiResult<List<ClassModel>>> loadClasses() async {
     try {
-
       final response = await http.get(Uri.parse(ApiConstant.allClass));
 
       // final response = await http.get(Uri.parse(ApiConstant.allClass)).timeout(
@@ -94,6 +94,29 @@ class EndpointService extends GetxService {
     }
   }
 
+  Future<void> storeFcmToken() async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token == null) return;
+
+      log("FCM Token: $token");
+
+      await http.post(
+        Uri.parse(ApiConstant.storeFcmTokenURL),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken",
+        },
+        body: {
+          "fcm_token": token,
+        },
+      );
+    } catch (e) {
+      // jangan ganggu login
+      log("Store FCM token error: $e");
+    }
+  }
+
   Future<ApiResult<User>> login({
     required String email,
     required String password,
@@ -108,12 +131,13 @@ class EndpointService extends GetxService {
           "email": email,
           "password": password,
         },
-      ).timeout(
-        Duration(seconds: 30),
-        onTimeout: () {
-          throw TimeoutException('timeout');
-        },
       );
+      // .timeout(
+      //   Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw TimeoutException('timeout');
+      //   },
+      // );
 
       final status = response.statusCode;
       final data = jsonDecode(response.body);
@@ -136,6 +160,9 @@ class EndpointService extends GetxService {
 
         log("Token: $accessToken");
         log("User: ${user.toString()}");
+
+        // store fcm token to server
+        storeFcmToken();
 
         return ApiResult<User>(
           success: data["success"] ?? true,
@@ -184,12 +211,13 @@ class EndpointService extends GetxService {
           "id_class": idClass.toString(),
           "entry_year": entryYear.toString(),
         },
-      ).timeout(
-        Duration(seconds: 30),
-        onTimeout: () {
-          throw TimeoutException('timeout');
-        },
       );
+      // .timeout(
+      //   Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw TimeoutException('timeout');
+      //   },
+      // );
 
       final status = response.statusCode;
       final data = jsonDecode(response.body);
@@ -259,12 +287,13 @@ class EndpointService extends GetxService {
           "nip": nip,
           "subject": subject,
         },
-      ).timeout(
-        Duration(seconds: 30),
-        onTimeout: () {
-          throw TimeoutException('timeout');
-        },
       );
+      // .timeout(
+      //   Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw TimeoutException('timeout');
+      //   },
+      // );
 
       final status = response.statusCode;
       final data = jsonDecode(response.body);
@@ -337,12 +366,13 @@ class EndpointService extends GetxService {
           "latitude": lat,
           "longitude": lon,
         },
-      ).timeout(
-        Duration(seconds: 30),
-        onTimeout: () {
-          throw TimeoutException('timeout');
-        },
       );
+      // .timeout(
+      //   Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw TimeoutException('timeout');
+      //   },
+      // );
 
       final status = response.statusCode;
       final data = jsonDecode(response.body);

@@ -6,15 +6,14 @@ class AppColor {
   static const Color secondaryColorGreen = Color(0xff00B8D9);
   static const Color thirdColorPurple = Color(0xff9639EC);
   static const Color fourthColorOrange = Color(0xffED5D0E);
-  
+
   // color text only
   static const Color colorTextSubtitle = Color(0xff6B778C);
   static const Color colorTextHint = Color(0xff9AA0B1);
   // decoration
   static const Color colorBackgroundApp = Color(0xffF4F5F7);
-  static const Color colorOutlineBoxinput = Color(0xff6B778C);
-  
-  
+  static const Color colorOutlineBoxinput = Color(0xffC5C6CC);
+
   // general color
   static const Color successColor = Color(0xff28A745); // success/active
   static const Color errorColor = Color(0xffED6363); // error/alert
