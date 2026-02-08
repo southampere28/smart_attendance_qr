@@ -4,7 +4,7 @@ import 'dart:convert';
 class AttendanceDaily {
   final BigInt idStudent;
   final BigInt idClass;
-  final String? pictures;
+  final String? picture;
   final String status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -12,7 +12,7 @@ class AttendanceDaily {
   AttendanceDaily({
     required this.idStudent,
     required this.idClass,
-    this.pictures,
+    this.picture,
     required this.status,
     this.createdAt,
     this.updatedAt,
@@ -23,7 +23,7 @@ class AttendanceDaily {
     return <String, dynamic>{
       'id_student': idStudent.toString(),
       'id_class': idClass.toString(),
-      'pictures': pictures ?? '',
+      'picture': picture ?? '',
       'status': status,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
@@ -35,7 +35,7 @@ class AttendanceDaily {
     return AttendanceDaily(
       idStudent: BigInt.parse(map['id_student'].toString()),
       idClass: BigInt.parse(map['id_class'].toString()),
-      pictures: map['pictures']?.toString(),
+      picture: map['picture']?.toString(),
       status: map['status'] as String,
       createdAt: map['created_at'] != null ? DateTime.parse(map['created_at'].toString()) : null,
       updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'].toString()) : null,

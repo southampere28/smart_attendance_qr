@@ -6,6 +6,7 @@ class AttendanceHistory {
   final BigInt idSchedule;
   final int periodNumber;
   final String status;
+  final String? coordinates;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -15,6 +16,7 @@ class AttendanceHistory {
     required this.idSchedule,
     required this.periodNumber,
     required this.status,
+    this.coordinates,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -26,6 +28,7 @@ class AttendanceHistory {
       'id_schedule': idSchedule.toString(),
       'period_number': periodNumber,
       'status': status,
+      'coordinates': coordinates,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
@@ -38,6 +41,7 @@ class AttendanceHistory {
       idSchedule: BigInt.parse(map['id_schedule'].toString()),
       periodNumber: map['period_number'] as int,
       status: map['status'] as String,
+      coordinates: map['coordinates'] as String?,
       createdAt:
           map['created_at'] != null ? DateTime.parse(map['created_at']) : null,
       updatedAt:

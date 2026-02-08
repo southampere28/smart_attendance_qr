@@ -7,24 +7,33 @@ class Schedule {
   final BigInt id;
   final BigInt idClass;
   final BigInt idTeacher;
+  final String? teacherName; // relational data teacher
   final BigInt idSubject;
+  final String? subjectName; // relational data subject
   final String dayOfWeek;
   final int periodStart;
+  final String? periodStartString; // "ex: 08:00" relational data period start
   final int periodEnd;
+  final String? periodEndString; // "ex: 09:00" relational data period end
   final DateTime startTime;
   final DateTime endTime;
   final String code;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
+
   Schedule({
     required this.id,
     required this.idClass,
     required this.idTeacher,
+    this.teacherName,
     required this.idSubject,
+    this.subjectName,
     required this.dayOfWeek,
     required this.periodStart,
+    this.periodStartString, 
     required this.periodEnd,
+    this.periodEndString, 
     required this.startTime,
     required this.endTime,
     required this.code,

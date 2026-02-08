@@ -7,6 +7,10 @@ class User {
   final String role;
   final String? email;
   final String? profilePicture;
+  final bool? isBanned;
+  final String? deviceId;
+  final String? deviceToken;
+  final String? topicSubscribe;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -19,6 +23,10 @@ class User {
     required this.role,
     this.email,
     this.profilePicture,
+    this.isBanned,
+    this.deviceId,
+    this.deviceToken,
+    this.topicSubscribe,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -33,6 +41,10 @@ class User {
       'role': role,
       'email': email,
       'profile_picture': profilePicture,
+      'is_banned': isBanned,
+      'device_id': deviceId,
+      'device_token': deviceToken,
+      'topic_subscribe': topicSubscribe,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
@@ -48,6 +60,10 @@ class User {
       role: map['role'] as String,
       email: map['email'],
       profilePicture: map['profile_picture'],
+      isBanned: map['is_banned'] == true || map['is_banned'] == 1,
+      deviceId: map['device_id'] as String?,
+      deviceToken: map['device_token'] as String?,
+      topicSubscribe: map['topic_subscribe'] as String?,
       createdAt:
           map['created_at'] != null ? DateTime.parse(map['created_at']) : null,
       updatedAt:
@@ -70,4 +86,5 @@ class User {
   String toString() {
     return 'User(id: $id, role: $role, email: $email, profilePicture: $profilePicture, createdAt: $createdAt, updatedAt: $updatedAt, deletedAt: $deletedAt, emailVerifiedAt: $emailVerifiedAt, student: $student, teacher: $teacher)';
   }
+  
 }
