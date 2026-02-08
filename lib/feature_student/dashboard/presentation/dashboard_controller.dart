@@ -1,3 +1,4 @@
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -28,6 +29,9 @@ class DashboardController extends GetxController {
 
   // kota
   String get placemarkCity => _geolocationService.placemarkResult.value?.subAdministrativeArea ?? '(No Data)';
+
+  // jalan
+  String get placemarkStreet => _geolocationService.placemarkResult.value?.street ?? '(No Data)';
 
   // kecamatan
   String get placemarkLocality => _geolocationService.placemarkResult.value?.locality ?? '(No Data)';

@@ -1,6 +1,9 @@
+import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
@@ -15,8 +18,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     DashboardController controller = Get.find<DashboardController>();
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+    return SizedBox(
       width: double.infinity,
       child: SingleChildScrollView(
         child: Column(
@@ -24,34 +26,45 @@ class DashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SpacingSize.spacingBaseHeight,
+              SpacingSize.spacingLGHeight,
 
               /// header section
-              Text('Halo, Pramudya!', style: AppFontStyle.titleText),
-              Text(
-                controller.dateNowFormatted,
-                style: AppFontStyle.subTitleText,
-              ),
+              _headerSection(controller),
+
               SpacingSize.spacingBaseHeight,
 
               /// content section
               SubjectPreviewCard(
-                  subjectName: "Bahasa Inggris",
-                  teacherName: "Nur Hidayati S.Pd",
-                  scheduleInfo: "Senin, 08:00 - 10:00",
-                  badgeInfo: "valid"),
-              SpacingSize.spacingSMHeight,
+                subjectName: "Bahasa Inggris",
+                teacherName: "Nur Hidayati S.Pd",
+                scheduleInfo: "Senin, 08:00 - 10:00",
+                badgeInfo: "valid",
+                isLive: true,
+              ),
+              SpacingSize.spacingMDHeight,
               SubjectPreviewCard(
                   subjectName: "Bahasa Indonesia",
                   teacherName: "Siti Aminah S.Pd",
                   scheduleInfo: "Senin, 10:00 - 12:00",
                   badgeInfo: "none"),
-              SpacingSize.spacingSMHeight,
-              ButtonPrimaryWidget(
-                  title: "Lihat Semua Jadwal",
-                  callback: () {
-                    // todo here
-                  }),
+              SpacingSize.spacingMDHeight,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: ButtonPrimaryWidget(
+                    borderRadius: 20,
+                    title: "Lihat Semua Jadwal",
+                    callback: () {
+                      Get.toNamed(AppRoutes.schedule);
+                    }),
+              ),
+
+              SpacingSize.spacingLGHeight,
+
+              _attendanceDailiesSection(),
+
+              SpacingSize.spacingLGHeight,
+
+              _attendanceHistoriesSection(),
 
               /// testing only
               SizedBox(
@@ -82,6 +95,113 @@ class DashboardPage extends StatelessWidget {
                   },
                   child: Text('Check Status Location'))
             ]),
+      ),
+    );
+  }
+
+  Widget _headerSection(DashboardController controller) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// header section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Halo, Pramudya!', style: AppFontStyle.titleText),
+                  SpacingSize.spacingXSHeight,
+                  Text(
+                    controller.dateNowFormatted,
+                    style: AppFontStyle.subTitleText,
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  Fluttertoast.showToast(
+                      msg: "Notifikasi ditekan",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.grey,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                },
+                child: Icon(
+                  Icons.notifications,
+                  color: Colors.black,
+                  size: 34,
+                ),
+              ),
+            ],
+          ),
+          SpacingSize.spacingXSHeight,
+          Row(
+            children: [
+              Icon(
+                Icons.location_pin,
+                color: AppColor.primaryColor,
+                size: 20,
+              ),
+              SpacingSize.spacingXSWidth,
+              Expanded(child: Obx(() {
+                return Text(
+                    controller.placemarkVillage != 'No Data'
+                        ? '${controller.placemarkStreet}, ${controller.placemarkVillage}'
+                        : '-',
+                    style: AppFontStyle.smallText
+                        .copyWith(color: AppColor.primaryColor));
+              }))
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _attendanceDailiesSection() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Absensi Harian',
+              style: AppFontStyle.primaryText
+                  .copyWith(fontWeight: FontWeight.bold)),
+          SpacingSize.spacingSMHeight,
+          Text('Absensi Harian Here...', style: AppFontStyle.subTitleText),
+        ],
+      ),
+    );
+  }
+
+  Widget _attendanceHistoriesSection() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Riwayat Absensi Hari Ini (30)',
+              style: AppFontStyle.primaryText
+                  .copyWith(fontWeight: FontWeight.bold)),
+          SpacingSize.spacingSMHeight,
+          CardAttendaceHistory(
+            subjectTitle: "Bahasa Inggris",
+            classTitle: "12 TKJ 2",
+            attendanceRecords: [
+              {'name': 'John Doe', 'status': 'Sudah Absen'},
+              {'name': 'Jane Smith', 'status': 'Sudah Absen'}
+            ],
+          ),
+        ],
       ),
     );
   }
