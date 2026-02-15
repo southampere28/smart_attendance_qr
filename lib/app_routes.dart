@@ -4,6 +4,8 @@ import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_bind
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_page.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_binding.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_page.dart';
+import 'package:absensi_qr/feature_student/notification/presentation/notification_student_binding.dart';
+import 'package:absensi_qr/feature_student/notification/presentation/notification_student_page.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_binding.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
@@ -41,6 +43,7 @@ class AppRoutes {
   // student
   static const navigation = '/navigation-student';
   static const dashboard = '/dashboard-student';
+  static const notificationStudent = '/notification-student';
   static const schedule = '/schedule-student';
   static const attendance = '/attendance-student';
   static const permission = '/permission-student';
@@ -69,6 +72,11 @@ class AppRoutes {
       page: () => const DashboardPage(),
       binding: DashboardBinding(),
     ),
+    GetPage(
+      name: notificationStudent, 
+      page: () => const NotificationStudentPage(),
+      binding: NotificationStudentBinding(),
+      ),
     GetPage(
       name: schedule,
       page: () => const SchedulePage(),
@@ -114,7 +122,7 @@ class AppRoutes {
       name: dashboardTeacher, 
       page: () => const TeacherDashboardPage(),
       binding: TeacherDashboardBinding(),
-      )
+      ),
   
   ];
 }
