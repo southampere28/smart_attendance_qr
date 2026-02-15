@@ -124,14 +124,17 @@ class DashboardPage extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Fluttertoast.showToast(
-                      msg: "Notifikasi ditekan",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.grey,
-                      textColor: Colors.white,
-                      fontSize: 16.0);
+
+                  Get.toNamed(AppRoutes.notificationStudent);
+
+                  // Fluttertoast.showToast(
+                  //     msg: "Notifikasi ditekan",
+                  //     toastLength: Toast.LENGTH_SHORT,
+                  //     gravity: ToastGravity.BOTTOM,
+                  //     timeInSecForIosWeb: 1,
+                  //     backgroundColor: Colors.grey,
+                  //     textColor: Colors.white,
+                  //     fontSize: 16.0);
                 },
                 child: Icon(
                   Icons.notifications,

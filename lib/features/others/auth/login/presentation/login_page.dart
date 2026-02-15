@@ -73,6 +73,7 @@ class LoginPage extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     hide: true,
                   ),
+                  
                   SpacingSize.spacingBaseHeight,
                   ButtonTextPrimary(
                       margin: EdgeInsets.zero,
