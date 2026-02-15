@@ -24,6 +24,7 @@ class SchedulePage extends StatelessWidget {
           'Jadwal',
           style: AppFontStyle.titleText.copyWith(color: Colors.black),
         ),
+        titleSpacing: 0,
         leading: IconButton(
           icon: Icon(Icons.chevron_left, color: Colors.black, size: 30),
           onPressed: () {
@@ -43,7 +44,7 @@ class SchedulePage extends StatelessWidget {
               SpacingSize.spacingBaseHeight,
               CardPickdateWeekly(
                 day: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                dateDay: ['12', '13', '14', '15', '16', '17'],
+                dateDay: controller.dateOfWeek,
                 controller: controller,
               ),
               SpacingSize.spacingBaseHeight,

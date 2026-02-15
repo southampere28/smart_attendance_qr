@@ -6,9 +6,15 @@ class ScheduleController extends GetxController {
   // todo here...
   final RxInt indexSelected = 0.obs;
 
-  final scheduleMapper = ScheduleHelper.dayMapper;
+  final List<String> scheduleMapper = ScheduleHelper.dayMapper;
 
   final filteredSchedule = <Schedule>[].obs;
+
+  final List<String> day3letter = ScheduleHelper.dayMapper
+      .map((day) => day.substring(0, 3).capitalizeFirst!)
+      .toList();
+
+  List<String> dateOfWeek = ScheduleHelper.getDatesOfWeek(6);
 
   final dummySchedule = <Schedule>[
     // ================= SENIN =================
@@ -229,5 +235,4 @@ class ScheduleController extends GetxController {
         .toList();
     filteredSchedule.value = filtered;
   }
-  
 }
