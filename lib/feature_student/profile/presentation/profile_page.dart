@@ -50,14 +50,17 @@ class ProfilePage extends StatelessWidget {
                   Text('Informasi Akun',
                       style: AppFontStyle.titleText.copyWith(fontSize: 16)),
                   SpacingSize.spacingBaseHeight,
-                  _profileInfoItem('Nama', 'John Doe', Icon(Icons.person)),
-                  SpacingSize.spacingBaseHeight,
-                  _profileInfoItem('NISN', '1234567890', Icon(Icons.badge)),
-                  SpacingSize.spacingBaseHeight,
-                  _profileInfoItem('Kelas', 'XII RPL 1', Icon(Icons.school)),
+                  _profileInfoItem(
+                      'Nama', controller.name.value, Icon(Icons.person)),
                   SpacingSize.spacingBaseHeight,
                   _profileInfoItem(
-                      'Tahun Masuk', '2024', Icon(Icons.calendar_today)),
+                      'NISN', controller.nisn.value, Icon(Icons.badge)),
+                  SpacingSize.spacingBaseHeight,
+                  _profileInfoItem(
+                      'Kelas', controller.className.value, Icon(Icons.school)),
+                  SpacingSize.spacingBaseHeight,
+                  _profileInfoItem('Tahun Masuk', controller.entryYear.value,
+                      Icon(Icons.calendar_today)),
                   SpacingSize.spacingBaseHeight,
                   ElevatedButton(
                     onPressed: () {
