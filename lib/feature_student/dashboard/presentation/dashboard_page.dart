@@ -2,6 +2,9 @@ import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/core/helper/schedule_helper.dart';
+import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
+import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
@@ -20,81 +23,117 @@ class DashboardPage extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SpacingSize.spacingLGHeight,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          controller.getHistoryAttendance();
+        },
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SpacingSize.spacingLGHeight,
 
-              /// header section
-              _headerSection(controller),
+                /// header section
+                _headerSection(controller),
 
-              SpacingSize.spacingBaseHeight,
+                SpacingSize.spacingBaseHeight,
 
-              /// content section
-              SubjectPreviewCard(
-                subjectName: "Bahasa Inggris",
-                teacherName: "Nur Hidayati S.Pd",
-                scheduleInfo: "Senin, 08:00 - 10:00",
-                badgeInfo: "valid",
-                isLive: true,
-              ),
-              SpacingSize.spacingMDHeight,
-              SubjectPreviewCard(
-                  subjectName: "Bahasa Indonesia",
-                  teacherName: "Siti Aminah S.Pd",
-                  scheduleInfo: "Senin, 10:00 - 12:00",
-                  badgeInfo: "none"),
-              SpacingSize.spacingMDHeight,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: ButtonPrimaryWidget(
-                    borderRadius: 20,
-                    title: "Lihat Semua Jadwal",
-                    callback: () {
-                      Get.toNamed(AppRoutes.schedule);
-                    }),
-              ),
+                /// content section
+                Obx(() {
+                  if (controller.isLoadingAttendanceHistory.value) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ShimmerLoadCard(
+                        shimmerItemCount: 3,
+                      ),
+                    );
+                  }
 
-              SpacingSize.spacingLGHeight,
+                  if (controller.attendanceHistoryResult.isEmpty) {
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Text('Tidak ada riwayat absensi hari ini',
+                          style: AppFontStyle.subTitleText),
+                    );
+                  }
 
-              _attendanceDailiesSection(),
+                  // show list of attendance items
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: controller.attendanceHistoryResult.map((item) {
+                      final formattedTimeStart = ScheduleHelper.convertTime2Pad(
+                          item.schedule.startTime);
+                      final formattedTimeEnd =
+                          ScheduleHelper.convertTime2Pad(item.schedule.endTime);
 
-              SpacingSize.spacingLGHeight,
+                      return SubjectPreviewCard(
+                        subjectName: item.schedule.subject?.name ??
+                            'Nama Mata Pelajaran',
+                        teacherName: item.schedule.teacher?.name ?? 'Nama Guru',
+                        scheduleInfo:
+                            "${item.schedule.dayOfWeek}, $formattedTimeStart - $formattedTimeEnd",
+                        badgeInfo:
+                            item.attendanceStatus == AttendanceStatusEnum.valid
+                                ? 'valid'
+                                : 'none',
+                        isLive: false,
+                      );
+                    }).toList(),
+                  );
+                }),
 
-              _attendanceHistoriesSection(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: ButtonPrimaryWidget(
+                      borderRadius: 20,
+                      title: "Lihat Semua Jadwal",
+                      callback: () {
+                        Get.toNamed(AppRoutes.schedule);
+                      }),
+                ),
 
-              /// testing only
-              SizedBox(
-                height: 300,
-              ),
-              Text('Dashboard Page'),
-              ElevatedButton(
-                  onPressed: () {
-                    controller.checkConnection();
-                  },
-                  child: Text('testconnection')),
-              SizedBox(
-                height: 30,
-              ),
-              Obx(() => Text(
-                    controller.placemark != ''
-                        ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
-                        : 'Location: not fetched yet',
-                    style: AppFontStyle.primaryText,
-                  )),
-              SizedBox(
-                height: 30,
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    // do something here
-                    await controller.getLocation();
-                  },
-                  child: Text('Check Status Location'))
-            ]),
+                SpacingSize.spacingLGHeight,
+
+                _attendanceDailiesSection(),
+
+                SpacingSize.spacingLGHeight,
+
+                _attendanceHistoriesSection(),
+
+                /// testing only
+                SizedBox(
+                  height: 300,
+                ),
+                Text('Dashboard Page'),
+                ElevatedButton(
+                    onPressed: () {
+                      controller.checkConnection();
+                    },
+                    child: Text('testconnection')),
+                SizedBox(
+                  height: 30,
+                ),
+                Obx(() => Text(
+                      controller.placemark != ''
+                          ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
+                          : 'Location: not fetched yet',
+                      style: AppFontStyle.primaryText,
+                    )),
+                SizedBox(
+                  height: 30,
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      // do something here
+                      await controller.getLocation();
+                    },
+                    child: Text('Check Status Location'))
+              ]),
+        ),
       ),
     );
   }
@@ -124,17 +163,7 @@ class DashboardPage extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-
                   Get.toNamed(AppRoutes.notificationStudent);
-
-                  // Fluttertoast.showToast(
-                  //     msg: "Notifikasi ditekan",
-                  //     toastLength: Toast.LENGTH_SHORT,
-                  //     gravity: ToastGravity.BOTTOM,
-                  //     timeInSecForIosWeb: 1,
-                  //     backgroundColor: Colors.grey,
-                  //     textColor: Colors.white,
-                  //     fontSize: 16.0);
                 },
                 child: Icon(
                   Icons.notifications,
