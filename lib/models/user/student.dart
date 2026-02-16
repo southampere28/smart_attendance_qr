@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/models/class_model.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Student {
   final BigInt id;
   final BigInt idUser;
   final BigInt idClass;
+  final ClassModel? classData;
   final String name;
   final String? nisn;
   final int entryYear;
@@ -12,11 +15,12 @@ class Student {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
-  
+
   Student({
     required this.id,
     required this.idUser,
     required this.idClass,
+    this.classData,
     required this.name,
     this.nisn,
     required this.entryYear,
@@ -38,6 +42,7 @@ class Student {
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
+      'class': classData?.toMap(),
     };
   }
 
@@ -50,13 +55,21 @@ class Student {
       nisn: map['nisn'] != null ? map['nisn'] as String : null,
       entryYear: int.parse(map['entry_year'].toString()),
       pictures: map['pictures'] != null ? map['pictures'] as String : null,
-      createdAt: map['created_at'] != null ? DateTime.parse(map['created_at'].toString()) : null,
-      updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'].toString()) : null,
-      deletedAt: map['deleted_at'] != null ? DateTime.parse(map['deleted_at'].toString()) : null,
+      classData: map['class'] != null ? ClassModel.fromMap(map['class'] as Map<String, dynamic>) : null,
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'].toString())
+          : null,
+      updatedAt: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'].toString())
+          : null,
+      deletedAt: map['deleted_at'] != null
+          ? DateTime.parse(map['deleted_at'].toString())
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Student.fromJson(String source) => Student.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Student.fromJson(String source) =>
+      Student.fromMap(json.decode(source) as Map<String, dynamic>);
 }

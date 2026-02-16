@@ -44,6 +44,11 @@ extension AttendanceStatusBadgeExt on AttendanceStatusEnum {
           color: Colors.purple,
           label: 'Dispensasi',
         );
+      case AttendanceStatusEnum.alpha:
+        return const AttendanceStatusBadge(
+          color: Colors.redAccent,
+          label: 'Alpha',
+        );
     }
   }
 }

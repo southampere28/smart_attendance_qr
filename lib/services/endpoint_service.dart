@@ -6,6 +6,8 @@ import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/constant/app_config.dart';
 import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/response/api_result.dart';
+import 'package:absensi_qr/models/user/student.dart';
+import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,6 +20,8 @@ class EndpointService extends GetxService {
   String? accessToken;
   String? tokenType;
   Map<String, dynamic>? userData;
+  Student? studentData; // variabel global untuk data siswa yang login
+  Teacher? teacherData; // variabel global untuk data guru yang login
 
   // variabel kelas siswa
   List<ClassModel>? classData;
@@ -132,12 +136,6 @@ class EndpointService extends GetxService {
           "password": password,
         },
       );
-      // .timeout(
-      //   Duration(seconds: 30),
-      //   onTimeout: () {
-      //     throw TimeoutException('timeout');
-      //   },
-      // );
 
       final status = response.statusCode;
       final data = jsonDecode(response.body);
@@ -148,6 +146,16 @@ class EndpointService extends GetxService {
         tokenType = data["token_type"];
         userData = data["user"];
 
+        // guard empty token or user data
+        if (accessToken == null || userData == null) {
+          log("Login error: Missing access token or user data");
+          return ApiResult(
+            success: false,
+            message: "Login failed: Missing access token or user data",
+            statusCode: status,
+          );
+        }
+
         // persist securely
         await _secureStorage.write(key: 'access_token', value: accessToken);
         if (tokenType != null) {
@@ -156,10 +164,18 @@ class EndpointService extends GetxService {
         await _secureStorage.write(key: 'user', value: jsonEncode(userData));
 
         // convert to User entity
+        if (userData!['role'] == 'student') {
+          studentData = Student.fromMap(userData!['student']);
+        } else if (userData!['role'] == 'teacher') {
+          teacherData = Teacher.fromMap(userData!['teacher']);
+        }
+
         final user = User.fromMap(userData!);
 
         log("Token: $accessToken");
         log("User: ${user.toString()}");
+        log('student data global => ${studentData.toString()}');
+        log('teacher data global => ${teacherData.toString()}');
 
         // store fcm token to server
         storeFcmToken();
@@ -401,6 +417,103 @@ class EndpointService extends GetxService {
           message: data["message"] ?? "Something went wrong",
           statusCode: status,
           errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  // attendance by schedule class and date (for student)
+  Future<ApiResult<List<Map<String, dynamic>>>> attendanceBySchedule({
+    required String idClass,
+    required String date, // format: YYYY-MM-DD
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '${ApiConstant.attendanceReport}?id_class=$idClass&date=$date'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        final attendances = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Attendances: $attendances");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: attendances,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Attendance by schedule error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch attendance",
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  Future<ApiResult<List<Map<String, dynamic>>>> getAllSchedule({
+    required String idClass,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConstant.baseURL}/classes/$idClass/schedule'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+      if (status == 200) {
+        final schedules = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Schedules: $schedules");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: schedules,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("All schedules error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch schedules",
         );
       }
     } catch (e) {

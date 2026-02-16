@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/models/subject.dart';
+import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:intl/intl.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
@@ -9,15 +11,16 @@ class Schedule {
   final BigInt idTeacher;
   final String? teacherName; // relational data teacher
   final BigInt idSubject;
-  final String? subjectName; // relational data subject
   final String dayOfWeek;
   final int periodStart;
-  final String? periodStartString; // "ex: 08:00" relational data period start
+  final String? periodStartString; // "ex: 08:00"
   final int periodEnd;
-  final String? periodEndString; // "ex: 09:00" relational data period end
+  final String? periodEndString; // "ex: 09:00"
   final DateTime startTime;
   final DateTime endTime;
   final String code;
+  final Subject? subject; // relational data subject
+  final Teacher? teacher; // relational data teacher
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -28,15 +31,16 @@ class Schedule {
     required this.idTeacher,
     this.teacherName,
     required this.idSubject,
-    this.subjectName,
     required this.dayOfWeek,
     required this.periodStart,
-    this.periodStartString, 
+    this.periodStartString,
     required this.periodEnd,
-    this.periodEndString, 
+    this.periodEndString,
     required this.startTime,
     required this.endTime,
     required this.code,
+    this.subject,
+    this.teacher,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -69,6 +73,14 @@ class Schedule {
       dayOfWeek: map['day_of_week'] as String,
       periodStart: map['period_start'] as int,
       periodEnd: map['period_end'] as int,
+      periodStartString: map['period_start_string'] as String?,
+      periodEndString: map['period_end_string'] as String?,
+      subject: map['subject'] != null
+          ? Subject.fromMap(map['subject'] as Map<String, dynamic>)
+          : null,
+      teacher: map['teacher'] != null
+          ? Teacher.fromMap(map['teacher'] as Map<String, dynamic>)
+          : null,
       startTime: DateFormat("HH:mm:ss").parse(map['start_time']),
       endTime: DateFormat("HH:mm:ss").parse(map['end_time']),
       code: map['code'] as String,
