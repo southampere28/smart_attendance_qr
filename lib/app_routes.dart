@@ -2,10 +2,14 @@ import 'package:absensi_qr/feature_student/attendance/presentation/attendance_bi
 import 'package:absensi_qr/feature_student/attendance/presentation/attendance_page.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_binding.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_page.dart';
+import 'package:absensi_qr/feature_student/form_permission/presentation/permission_form_binding.dart';
+import 'package:absensi_qr/feature_student/form_permission/presentation/permission_form_page.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_binding.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_page.dart';
 import 'package:absensi_qr/feature_student/notification/presentation/notification_student_binding.dart';
 import 'package:absensi_qr/feature_student/notification/presentation/notification_student_page.dart';
+import 'package:absensi_qr/feature_student/permission_detail/presentation/permission_detail_binding.dart';
+import 'package:absensi_qr/feature_student/permission_detail/presentation/permission_detail_page.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_binding.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
@@ -47,6 +51,8 @@ class AppRoutes {
   static const schedule = '/schedule-student';
   static const attendance = '/attendance-student';
   static const permission = '/permission-student';
+  static const permissionForm = '/permission-form-student';
+  static const permissionDetail = '/permission-detail-student';
   static const profile = '/profile-student';
   static const qrscan = '/qrscan-student';
   // ==================
@@ -91,6 +97,16 @@ class AppRoutes {
       name: permission,
       page: () => const PermissionPage(),
       binding: PermissionBinding(),
+    ),
+    GetPage(
+      name: permissionForm,
+      page: () => const PermissionFormPage(),
+      binding: PermissionFormBinding(),
+    ),
+    GetPage(
+      name: permissionDetail,
+      page: () => const PermissionDetailPage(),
+      binding: PermissionDetailBinding(),
     ),
     GetPage(
       name: profile,
