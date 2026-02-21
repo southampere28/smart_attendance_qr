@@ -429,7 +429,7 @@ class EndpointService extends GetxService {
     }
   }
 
-  // attendance by schedule class and date (for student)
+  // attendance by schedule class and date (for student personal attendance history)
   Future<ApiResult<List<Map<String, dynamic>>>> attendanceBySchedule({
     required String idClass,
     required String date, // format: YYYY-MM-DD
@@ -479,6 +479,58 @@ class EndpointService extends GetxService {
       );
     }
   }
+
+  // attendancec by schedule class and date (for all student in a class attendance report).
+  Future<ApiResult<List<Map<String, dynamic>>>> attendanceReportByScheduleClass({
+    required String idClass,
+    required String date, // format: YYYY-MM-DD
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '${ApiConstant.attendanceReportClass}?id_class=$idClass&date=$date'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        final attendances = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Attendances: $attendances");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: attendances,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Attendance report by schedule error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch attendance report",
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
 
   Future<ApiResult<List<Map<String, dynamic>>>> getAllSchedule({
     required String idClass,
