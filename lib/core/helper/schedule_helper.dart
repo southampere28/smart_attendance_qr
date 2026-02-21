@@ -22,4 +22,9 @@ class ScheduleHelper {
     });
   }
 
+  static String convertTime2Pad(DateTime datetime) {
+    // example: 08:00
+    return '${datetime.hour.toString().padLeft(2, '0')}:${datetime.minute.toString().padLeft(2, '0')}';
+  }
+
 }

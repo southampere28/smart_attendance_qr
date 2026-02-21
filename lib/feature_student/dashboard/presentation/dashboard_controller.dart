@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
+import 'package:absensi_qr/models/model_merging/schedule_attendance_report.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -23,12 +24,17 @@ class DashboardController extends GetxController {
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   /// data zone
-  
+
   // attendance history
   RxBool isLoadingAttendanceHistory = true.obs;
-  RxList<AttendanceReportItem> attendanceHistoryResult = <AttendanceReportItem>[].obs;
-  /// data zone END
+  RxList<AttendanceReportItem> attendanceHistoryResult =
+      <AttendanceReportItem>[].obs;
 
+  RxBool isLoadingAttendanceByClassHistory = true.obs;
+  RxList<ScheduleAttendanceReport> attendanceByClassHistoryResult =
+      <ScheduleAttendanceReport>[].obs;
+
+  /// data zone END
 
   Future<void> checkConnection() async {
     isConnected.value = await _httpService.testConnection();
@@ -38,7 +44,7 @@ class DashboardController extends GetxController {
   Future<void> getLocation() async {
     await _geolocationService.getCurrentPosition(30);
     // await getPlacemarkLocation();
-  } 
+  }
 
   // guard check student data
   bool get hasStudentData => _httpService.studentData != null;
@@ -74,7 +80,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  // service
+  // service zone
   Future<void> getHistoryAttendance() async {
     isLoadingAttendanceHistory.value = true;
     // guard: ensure student data and class id available
@@ -108,9 +114,49 @@ class DashboardController extends GetxController {
         attendanceHistoryResult.clear();
       }
     } else {
-      Fluttertoast.showToast(msg: result.message ?? 'msg_failed_fetch_attendance');
+      Fluttertoast.showToast(
+          msg: result.message ?? 'msg_failed_fetch_attendance');
     }
     isLoadingAttendanceHistory.value = false;
   }
 
+  Future<void> getHistoryAttendanceByClass() async {
+
+    isLoadingAttendanceByClassHistory.value = true;
+
+    // guard: ensure student data and class id available
+    final BigInt? idClass = _httpService.studentData?.idClass;
+
+    if (idClass == null) {
+      Fluttertoast.showToast(msg: 'missing_class_id');
+      isLoadingAttendanceByClassHistory.value = false;
+      return;
+    }
+
+    // attendanceBySchedule expects strings: idClass and date (YYYY-MM-DD)
+    final String idClassStr = idClass.toString();
+    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
+        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
+        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
+
+    final result =
+        await _httpService.attendanceReportByScheduleClass(idClass: idClassStr, date: dateStr);
+
+    if (result.success) {
+      final List<dynamic>? raw = result.data;
+      if (raw != null) {
+        final items = raw
+            .map((e) => ScheduleAttendanceReport.fromMap(e as Map<String, dynamic>))
+            .toList();
+        attendanceByClassHistoryResult.assignAll(items);
+        log('Loaded ${items.length} schedule attendance items');
+      } else {
+        attendanceByClassHistoryResult.clear();
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: result.message ?? 'msg_failed_fetch_attendance_by_class');
+    }
+    isLoadingAttendanceByClassHistory.value = false;
+  }
 }

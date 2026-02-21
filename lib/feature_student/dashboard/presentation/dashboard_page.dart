@@ -102,7 +102,7 @@ class DashboardPage extends StatelessWidget {
 
                 SpacingSize.spacingLGHeight,
 
-                _attendanceHistoriesSection(),
+                _attendanceHistoriesSection(controller),
 
                 /// testing only
                 SizedBox(
@@ -214,7 +214,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _attendanceHistoriesSection() {
+  Widget _attendanceHistoriesSection(DashboardController controller) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -225,14 +225,57 @@ class DashboardPage extends StatelessWidget {
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingSMHeight,
-          CardAttendaceHistory(
-            subjectTitle: "Bahasa Inggris",
-            classTitle: "12 TKJ 2",
-            attendanceRecords: [
-              {'name': 'John Doe', 'status': 'Sudah Absen'},
-              {'name': 'Jane Smith', 'status': 'Sudah Absen'}
-            ],
-          ),
+          // CardAttendaceHistory(
+          //   subjectTitle: "Bahasa Inggris",
+          //   classTitle: "12 TKJ 2",
+          //   attendanceRecords: [
+          //     {'name': 'John Doe', 'status': 'Sudah Absen'},
+          //     {'name': 'Jane Smith', 'status': 'Sudah Absen'}
+          //   ],
+          // ),
+
+          Obx(() {
+            if (controller.isLoadingAttendanceByClassHistory.value) {
+              return ShimmerLoadCard(
+                shimmerItemCount: 3,
+              );
+            }
+
+            if (controller.attendanceByClassHistoryResult.isEmpty) {
+              return Text('Tidak ada riwayat absensi hari ini',
+                  style: AppFontStyle.subTitleText);
+            }
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: controller.attendanceByClassHistoryResult.map((item) {
+                return CardAttendaceHistory(
+                  subjectTitle:
+                      item.schedule.subject?.name ?? 'Nama Mata Pelajaran',
+                  classTitle: item.schedule.classData?.name ?? 'Nama Kelas',
+                  attendanceRecords: item.attendances
+                      .map((attendanceItem) => {
+                            'name': attendanceItem.attendance?.student?.name ??
+                                'Nama Siswa',
+                            'status': attendanceItem.attendanceStatus != null &&
+                                    attendanceItem.attendanceStatus ==
+                                        AttendanceStatusEnum.valid
+                                ? 'Sudah Absen'
+                                : 'Belum Absen'
+                          })
+                      .toList(),
+                );
+              }).toList(),
+            );
+          }),
+
+          SpacingSize.spacingMDHeight,
+          ElevatedButton(
+              onPressed: () {
+                // todo here...
+                controller.getHistoryAttendanceByClass();
+              },
+              child: Text('testing see all history')),
         ],
       ),
     );

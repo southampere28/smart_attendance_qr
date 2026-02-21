@@ -21,4 +21,24 @@ class AttendanceReportItem {
     );
   }
   
+  /// Parse an attendance entry coming from API shape where `schedule` is
+  /// provided separately and `attendances` is a list of objects like:
+  /// { "attendance": { ... }, "status": "hadir" }
+  factory AttendanceReportItem.fromApiEntry(Map<String, dynamic> m, Schedule schedule) {
+    final attendanceMap = m['attendance'] as Map<String, dynamic>?;
+    final statusStr = m['status'] as String?;
+    AttendanceStatusEnum? status;
+    if (statusStr != null) {
+      status = AttendanceStatusEnum.fromString(statusStr);
+    } else if (attendanceMap != null && attendanceMap['status'] != null) {
+      status = AttendanceStatusEnum.fromString(attendanceMap['status'] as String);
+    }
+
+    return AttendanceReportItem(
+      schedule: schedule,
+      attendanceStatus: status,
+      attendance: attendanceMap != null ? AttendanceHistory.fromMap(attendanceMap) : null,
+    );
+  }
+  
 }

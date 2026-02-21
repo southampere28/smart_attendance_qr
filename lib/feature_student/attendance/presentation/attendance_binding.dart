@@ -4,6 +4,6 @@ import 'package:get/get.dart';
 class AttendanceBinding extends Bindings {
   @override
   void dependencies() {
-    // do something here
+    Get.lazyPut<AttendanceController>(() => AttendanceController());
   }
 }

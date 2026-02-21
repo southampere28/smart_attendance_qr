@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/subject.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 class Schedule {
   final BigInt id;
   final BigInt idClass;
+  final ClassModel? classData;
   final BigInt idTeacher;
   final String? teacherName; // relational data teacher
   final BigInt idSubject;
@@ -28,6 +30,7 @@ class Schedule {
   Schedule({
     required this.id,
     required this.idClass,
+    this.classData,
     required this.idTeacher,
     this.teacherName,
     required this.idSubject,
@@ -68,6 +71,9 @@ class Schedule {
     return Schedule(
       id: BigInt.parse(map['id'].toString()),
       idClass: BigInt.parse(map['id_class'].toString()),
+      classData: (map['class_data'] ?? map['class']) != null
+        ? ClassModel.fromMap((map['class_data'] ?? map['class']) as Map<String, dynamic>)
+        : null,
       idTeacher: BigInt.parse(map['id_teacher'].toString()),
       idSubject: BigInt.parse(map['id_subject'].toString()),
       dayOfWeek: map['day_of_week'] as String,

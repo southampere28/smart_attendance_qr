@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/models/user/student.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class AttendanceHistory {
   final BigInt idStudent;
+  final Student? student;
   final BigInt idSchedule;
   final int periodNumber;
   final String status;
@@ -13,6 +16,7 @@ class AttendanceHistory {
 
   AttendanceHistory({
     required this.idStudent,
+    this.student,
     required this.idSchedule,
     required this.periodNumber,
     required this.status,
@@ -48,6 +52,8 @@ class AttendanceHistory {
           map['updated_at'] != null ? DateTime.parse(map['updated_at']) : null,
       deletedAt:
           map['deleted_at'] != null ? DateTime.parse(map['deleted_at']) : null,
+          
+      student: map['student'] != null ? Student.fromMap(map['student']) : null,
     );
   }
 
