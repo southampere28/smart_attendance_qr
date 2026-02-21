@@ -13,7 +13,7 @@ class SplashScreenController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    // _startSplash();
+    _startSplash();
   }
 
   void _startSplash() async {
@@ -24,7 +24,7 @@ class SplashScreenController extends GetxController {
 
     messageLoading.value = '✅ Selesai, menuju halaman login...';
     await Future.delayed(Duration(seconds: 1));
-    // Get.offNamed(AppRoutes.chooserRoleUser);
-    Get.offAllNamed(AppRoutes.navigation);
+    Get.offNamed(AppRoutes.chooserRoleUser);
+    // Get.offAllNamed(AppRoutes.navigation);
   }
 }

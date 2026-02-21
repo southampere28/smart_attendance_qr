@@ -9,10 +9,10 @@ class NavigationBinding extends Bindings {
   @override
   void dependencies() {
     // TODO: implement dependencies
+    Get.lazyPut<AttendanceController>(() => AttendanceController());
+    Get.lazyPut<PermissionController>(() => PermissionController());
+    Get.lazyPut<DashboardController>(() => DashboardController());
+    Get.lazyPut<ProfileController>(() => ProfileController());
     Get.lazyPut<NavigationController>(() => NavigationController());
-    Get.lazyPut<AttendanceController>(() => AttendanceController(), fenix: true);
-    Get.lazyPut<PermissionController>(() => PermissionController(), fenix: true);
-    Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);
-    Get.lazyPut<ProfileController>(() => ProfileController(), fenix: true);
   }
 }
