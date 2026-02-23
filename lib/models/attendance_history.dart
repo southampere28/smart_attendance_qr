@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/core/helper/date_helper.dart';
 import 'package:absensi_qr/models/user/student.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
@@ -40,19 +41,16 @@ class AttendanceHistory {
   }
 
   factory AttendanceHistory.fromMap(Map<String, dynamic> map) {
+    
     return AttendanceHistory(
       idStudent: BigInt.parse(map['id_student'].toString()),
       idSchedule: BigInt.parse(map['id_schedule'].toString()),
       periodNumber: map['period_number'] as int,
       status: map['status'] as String,
       coordinates: map['coordinates'] as String?,
-      createdAt:
-          map['created_at'] != null ? DateTime.parse(map['created_at']) : null,
-      updatedAt:
-          map['updated_at'] != null ? DateTime.parse(map['updated_at']) : null,
-      deletedAt:
-          map['deleted_at'] != null ? DateTime.parse(map['deleted_at']) : null,
-          
+      createdAt: DateHelper.parseToLocal(map['created_at']),
+      updatedAt: DateHelper.parseToLocal(map['updated_at']),
+      deletedAt: DateHelper.parseToLocal(map['deleted_at']),
       student: map['student'] != null ? Student.fromMap(map['student']) : null,
     );
   }

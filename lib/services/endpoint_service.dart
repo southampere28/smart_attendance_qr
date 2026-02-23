@@ -579,7 +579,41 @@ class EndpointService extends GetxService {
   }
 
   Future<EndpointService> init() async {
-    // inisialisasi token etc...
+    // load persisted tokens and user data from secure storage so service
+    // can make authenticated requests after app restart
+    // try {
+    //   accessToken = await _secureStorage.read(key: 'access_token');
+    //   tokenType = await _secureStorage.read(key: 'token_type');
+
+    //   final userJson = await _secureStorage.read(key: 'user');
+    //   if (userJson != null) {
+    //     try {
+    //       userData = jsonDecode(userJson) as Map<String, dynamic>?;
+    //     } catch (e) {
+    //       log('Failed to decode stored user JSON: $e');
+    //       userData = null;
+    //     }
+    //   }
+
+    //   if (userData != null) {
+    //     if (userData!['role'] == 'student' && userData!['student'] != null) {
+    //       try {
+    //         studentData = Student.fromMap(userData!['student']);
+    //       } catch (e) {
+    //         log('Failed to parse studentData from stored user: $e');
+    //       }
+    //     } else if (userData!['role'] == 'teacher' && userData!['teacher'] != null) {
+    //       try {
+    //         teacherData = Teacher.fromMap(userData!['teacher']);
+    //       } catch (e) {
+    //         log('Failed to parse teacherData from stored user: $e');
+    //       }
+    //     }
+    //   }
+    // } catch (e) {
+    //   log('EndpointService.init error: $e');
+    // }
+
     return this;
   }
 }

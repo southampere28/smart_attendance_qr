@@ -1,7 +1,9 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/feature_student/attendance/presentation/attendance_controller.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/widgets/card_attendance_date_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,8 +13,6 @@ class AttendancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AttendanceController controller = Get.find<AttendanceController>();
-
-    DateTime selectedDate = DateTime.now();
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
@@ -44,11 +44,12 @@ class AttendancePage extends StatelessWidget {
                   ],
                 ),
                 child: CalendarDatePicker(
-                  initialDate: selectedDate,
+                  initialDate: controller.selectedDate.value,
                   firstDate: DateTime(2025),
                   lastDate: DateTime(2030),
                   onDateChanged: (DateTime date) {
-                    selectedDate = date;
+                    controller.selectedDate.value = date;
+                    controller.getHistoryAttendance();
                   },
                 ),
               ),
@@ -86,11 +87,41 @@ class AttendancePage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 200, // wajib kasih height!
+                        height: 400,
                         child: TabBarView(
                           children: [
+                            /// data history attendance daily face recognition.
                             Center(child: Text("Overview Content")),
-                            Center(child: Text("Detail Content")),
+
+                            /// data history attendance by subject with schedule info.
+                            Obx(() => Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ...controller.attendanceHistoryResult
+                                            .map((item) {
+                                          return CardAttendanceDateSchedule(
+                                              subjectName:
+                                                  item.schedule.subject?.name ??
+                                                      '(Mata Pelajaran)',
+                                              badgeInfo: item
+                                                          .attendanceStatus ==
+                                                      AttendanceStatusEnum.valid
+                                                  ? 'valid'
+                                                  : 'none',
+                                              attendanceDateTime:
+                                                  item.attendance?.createdAt);
+                                        }).toList(),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              controller.getHistoryAttendance();
+                                            },
+                                            child: const Text("Refresh"))
+                                      ]),
+                                )),
                           ],
                         ),
                       ),
