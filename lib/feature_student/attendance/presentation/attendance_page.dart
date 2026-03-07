@@ -50,6 +50,7 @@ class AttendancePage extends StatelessWidget {
                   onDateChanged: (DateTime date) {
                     controller.selectedDate.value = date;
                     controller.getHistoryAttendance();
+                    controller.getAttendanceHistoryDaily();
                   },
                 ),
               ),

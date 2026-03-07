@@ -10,6 +10,10 @@
     <!-- permission internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- permission storage and media image -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
     <!-- permission receive notifications from Firebase -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
