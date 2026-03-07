@@ -578,6 +578,114 @@ class EndpointService extends GetxService {
     }
   }
 
+  Future<ApiResult<Map<String, dynamic>>> submitPermission({
+    required String information,
+    required String reason,
+    required String datePermission, // format: YYYY-MM-DD
+    required int dayCount, // time_period in days
+    required String imagePath,
+  }) async {
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConstant.baseURL}/attendance/permission'),
+      );
+
+      request.headers['Accept'] = 'application/json';
+      request.headers['Authorization'] = '$tokenType $accessToken';
+
+      request.fields['information'] = information;
+      request.fields['reason'] = reason;
+      request.fields['date_permission'] = datePermission;
+      request.fields['time_period'] = dayCount.toString();
+
+      request.files.add(await http.MultipartFile.fromPath('evidence', imagePath));
+      
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200 || status == 201) {
+        log("Message: ${data["message"]}");
+        log("Permission: ${data["data"]}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: data["data"],
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Submit permission error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  Future<ApiResult<Map<String, dynamic>>> attendanceReportDaily(
+    DateTime date,
+  ) async {
+    try {
+      // date parameter in format YYYY-MM-DD
+      final String dateStr = '${date.year.toString().padLeft(4, '0')}-'
+          '${date.month.toString().padLeft(2, '0')}-'
+          '${date.day.toString().padLeft(2, '0')}';
+
+      final response = await http.get(
+        Uri.parse('${ApiConstant.baseURL}/attendance-daily/report?date=$dateStr'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        
+        log("Message: ${data["message"]}");
+        log("Daily report: ${data["data"]}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: data["data"],
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Daily report error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch daily report",
+        );
+      }
+
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
   Future<EndpointService> init() async {
     // load persisted tokens and user data from secure storage so service
     // can make authenticated requests after app restart
@@ -616,4 +724,5 @@ class EndpointService extends GetxService {
 
     return this;
   }
+
 }
