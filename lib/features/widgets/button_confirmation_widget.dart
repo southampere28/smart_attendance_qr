@@ -24,7 +24,7 @@ class ButtonConfirmationWidget extends StatelessWidget {
       children: [
         Expanded(
           child: TextButton(
-              onPressed: callback,
+              onPressed: callbackNegative,
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white,
                 side: BorderSide(color: AppColor.colorOutlineBoxinput),
@@ -33,7 +33,7 @@ class ButtonConfirmationWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
               ),
               child: Text(
-                title,
+                titleNegative,
                 style: AppFontStyle.subTitleText
                     .copyWith(fontSize: 16, fontWeight: FontWeight.bold),
               )),
