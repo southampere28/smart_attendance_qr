@@ -1,13 +1,9 @@
-import 'dart:developer';
-
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/permission_controller.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
-import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
-import 'package:absensi_qr/features/widgets/textarea_with_title.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
