@@ -14,6 +14,8 @@ import 'package:absensi_qr/feature_student/schedule/presentation/schedule_bindin
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_page.dart';
+import 'package:absensi_qr/feature_teacher/shedule/schedule_qr/presentation/schedule_qr_teacher_binding.dart';
+import 'package:absensi_qr/feature_teacher/shedule/schedule_qr/presentation/schedule_qr_teacher_page.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_binding.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_page.dart';
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_binding.dart';
@@ -59,6 +61,7 @@ class AppRoutes {
 
   // teacher
   static const dashboardTeacher = '/dashboard-teacher';
+  static const scheduleQRTeacher = '/schedule-qr-teacher';
   // ==================
 
   static final routes = <GetPage>[
@@ -139,6 +142,10 @@ class AppRoutes {
       page: () => const TeacherDashboardPage(),
       binding: TeacherDashboardBinding(),
       ),
-  
+    GetPage(
+      name: scheduleQRTeacher,
+      page: () => const ScheduleQrTeacherPage(),
+      binding: ScheduleQrTeacherBinding(),
+    ),
   ];
 }

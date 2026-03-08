@@ -14,6 +14,7 @@ class AppColor {
   static const Color colorBackgroundApp = Color(0xffF4F5F7);
   static const Color colorOutlineBoxinput = Color(0xffC5C6CC);
   static const Color colorShadowBox = Color(0xffDADADA);
+  static const Color colorHeader = Color(0xffC3DFEC);
 
   // general color
   static const Color successColor = Color(0xff28A745); // success/active
