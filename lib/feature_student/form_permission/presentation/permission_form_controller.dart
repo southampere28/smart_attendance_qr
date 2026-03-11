@@ -96,11 +96,24 @@ class PermissionFormController extends GetxController {
       return;
     }
 
+    final pickedDate = datePickController.text; // expected DD/MM/YYYY
+    // Convert DD/MM/YYYY -> YYYY-MM-DD
+    final dateParts = pickedDate.split('/');
+    if (dateParts.length != 3) {
+      Get.snackbar('Error', 'Format tanggal tidak valid');
+      isloadingSubmit.value = false;
+      return;
+    }
+    final day = dateParts[0].padLeft(2, '0');
+    final month = dateParts[1].padLeft(2, '0');
+    final year = dateParts[2];
+    final formattedPickedDate = '$year-$month-$day';
+
     final result = await _httpService.submitPermission(
       information: infoPermitController.text,
       reason: typeSelected.value.toLowerCase(),
       // datePermission in format YYYY-MM-DD
-      datePermission: datePickController.text,
+      datePermission: formattedPickedDate,
       dayCount: int.tryParse(dayCountController.text) ?? 0,
       imagePath: pickedImagePath!,
     );
