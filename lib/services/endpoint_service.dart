@@ -578,6 +578,59 @@ class EndpointService extends GetxService {
     }
   }
 
+  Future<ApiResult<List<Map<String, dynamic>>>> getPermission({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final String startDateStr = '${startDate.year.toString().padLeft(4, '0')}-'
+          '${startDate.month.toString().padLeft(2, '0')}-'
+          '${startDate.day.toString().padLeft(2, '0')}';
+      final String endDateStr = '${endDate.year.toString().padLeft(4, '0')}-'
+          '${endDate.month.toString().padLeft(2, '0')}-'
+          '${endDate.day.toString().padLeft(2, '0')}';
+
+      final response = await http.get(
+        Uri.parse('${ApiConstant.studentPermissionReport}?start_date=$startDateStr&end_date=$endDateStr'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        log("Message: ${data["message"]}");
+        log("Permissions: ${data["data"]}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: data["data"] is List ? data["data"].cast<Map<String, dynamic>>() : [],
+          message: data["message"],
+          statusCode: status,
+        );
+
+      } else {
+        log("Get permissions error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch permissions",
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
   Future<ApiResult<Map<String, dynamic>>> submitPermission({
     required String information,
     required String reason,

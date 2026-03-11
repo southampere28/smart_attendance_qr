@@ -10,4 +10,14 @@ class DateHelper {
         return parsed?.toLocal();
       }
     }
+
+    // parse to local non nullable,
+    static DateTime parseToLocalNonNullable(dynamic v) {
+      final parsed = parseToLocal(v);
+      if (parsed == null) {
+        // return current local time if parsing fails
+        return DateTime.now();
+      }
+      return parsed;
+    }
 }
