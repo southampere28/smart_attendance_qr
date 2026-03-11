@@ -51,9 +51,9 @@ class LoginController extends GetxController {
 
         // Navigate based on role
         if (user.role == "teacher") {
-          Get.offAllNamed(AppRoutes.dashboardTeacher);
+          Get.toNamed(AppRoutes.dashboardTeacher);
         } else if (user.role == "student") {
-          Get.offAllNamed(AppRoutes.navigation);
+          Get.toNamed(AppRoutes.navigation);
         } else {
           // Get.offAllNamed(AppRoutes.navigation);
         }

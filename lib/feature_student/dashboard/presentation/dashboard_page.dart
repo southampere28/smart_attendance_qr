@@ -9,9 +9,7 @@ import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_cont
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
-import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class DashboardPage extends StatelessWidget {
