@@ -481,7 +481,8 @@ class EndpointService extends GetxService {
   }
 
   // attendancec by schedule class and date (for all student in a class attendance report).
-  Future<ApiResult<List<Map<String, dynamic>>>> attendanceReportByScheduleClass({
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      attendanceReportByScheduleClass({
     required String idClass,
     required String date, // format: YYYY-MM-DD
   }) async {
@@ -530,7 +531,6 @@ class EndpointService extends GetxService {
       );
     }
   }
-
 
   Future<ApiResult<List<Map<String, dynamic>>>> getAllSchedule({
     required String idClass,
@@ -583,7 +583,8 @@ class EndpointService extends GetxService {
     required DateTime endDate,
   }) async {
     try {
-      final String startDateStr = '${startDate.year.toString().padLeft(4, '0')}-'
+      final String startDateStr =
+          '${startDate.year.toString().padLeft(4, '0')}-'
           '${startDate.month.toString().padLeft(2, '0')}-'
           '${startDate.day.toString().padLeft(2, '0')}';
       final String endDateStr = '${endDate.year.toString().padLeft(4, '0')}-'
@@ -591,7 +592,8 @@ class EndpointService extends GetxService {
           '${endDate.day.toString().padLeft(2, '0')}';
 
       final response = await http.get(
-        Uri.parse('${ApiConstant.studentPermissionReport}?start_date=$startDateStr&end_date=$endDateStr'),
+        Uri.parse(
+            '${ApiConstant.studentPermissionReport}?start_date=$startDateStr&end_date=$endDateStr'),
         headers: {
           "Accept": "application/json",
           "Authorization": "$tokenType $accessToken"
@@ -607,11 +609,12 @@ class EndpointService extends GetxService {
 
         return ApiResult(
           success: data["success"] ?? true,
-          data: data["data"] is List ? data["data"].cast<Map<String, dynamic>>() : [],
+          data: data["data"] is List
+              ? data["data"].cast<Map<String, dynamic>>()
+              : [],
           message: data["message"],
           statusCode: status,
         );
-
       } else {
         log("Get permissions error: ${response.body}");
         return ApiResult(
@@ -652,8 +655,9 @@ class EndpointService extends GetxService {
       request.fields['date_permission'] = datePermission;
       request.fields['time_period'] = dayCount.toString();
 
-      request.files.add(await http.MultipartFile.fromPath('evidence', imagePath));
-      
+      request.files
+          .add(await http.MultipartFile.fromPath('evidence', imagePath));
+
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
       final status = response.statusCode;
@@ -698,7 +702,8 @@ class EndpointService extends GetxService {
           '${date.day.toString().padLeft(2, '0')}';
 
       final response = await http.get(
-        Uri.parse('${ApiConstant.baseURL}/attendance-daily/report?date=$dateStr'),
+        Uri.parse(
+            '${ApiConstant.baseURL}/attendance-daily/report?date=$dateStr'),
         headers: {
           "Accept": "application/json",
           "Authorization": "$tokenType $accessToken"
@@ -709,7 +714,6 @@ class EndpointService extends GetxService {
       final data = jsonDecode(response.body);
 
       if (status == 200) {
-        
         log("Message: ${data["message"]}");
         log("Daily report: ${data["data"]}");
 
@@ -728,7 +732,6 @@ class EndpointService extends GetxService {
           errors: data['errors'] ?? "Failed to fetch daily report",
         );
       }
-
     } catch (e) {
       log("Exception: $e");
       return ApiResult(
@@ -736,6 +739,103 @@ class EndpointService extends GetxService {
         message: "Exception: $e",
         statusCode: null,
       );
+    }
+  }
+
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      teacherScheduleWeeklyPersonal() async {
+    try {
+      final response = await http.get(
+          Uri.parse(ApiConstant.teacherScheduleWeeklyPersonal),
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "$tokenType $accessToken"
+          });
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final schedules = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Schedules: $schedules");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: schedules,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Teacher schedule weekly personal error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch teacher schedule",
+        );
+      }
+
+    } catch (e) {
+
+      log('Exception: $e');
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+
+    }
+  }
+
+  Future<ApiResult<List<Map<String, dynamic>>>> teacherSchedulePersonal() async {
+    try {
+      final response = await http.get(
+          Uri.parse(ApiConstant.teacherSchedulePersonal),
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "$tokenType $accessToken"
+          });
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final schedules = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Schedules: $schedules");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: schedules,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Teacher schedule personal error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch teacher schedule",
+        );
+      }
+
+    } catch (e) {
+
+      log('Exception: $e');
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+
     }
   }
 
@@ -777,5 +877,4 @@ class EndpointService extends GetxService {
 
     return this;
   }
-
 }
