@@ -35,43 +35,47 @@ class ScheduleQrTeacherPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Kode QR Matematika',
+          Text('Kode QR ${controller.subjectName ?? 'N/A'}',
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingXSHeight,
           Text(controller.dateNowFormatted, style: AppFontStyle.subTitleText),
           SpacingSize.spacingBaseHeight,
-          // Container(
-          //   width: 250,
-          //   height: 250,
-          //   color: Colors.grey[300],
-          //   child: Center(child: Text('QR Code Placeholder')),
-          // ),
-          SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                QrImageView(
-                  data: '1234567890',
-                  version: QrVersions.auto,
-                  size: 200.0,
-                ),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+          controller.codeQR != null
+              ? SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      QrImageView(
+                        data: controller.codeQR!,
+                        version: QrVersions.auto,
+                        size: 200.0,
+                      ),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Image.asset('assets/icons/icon_app.png',
+                            fit: BoxFit.contain),
+                      ),
+                    ],
                   ),
-                  padding: EdgeInsets.all(4),
-                  child: Image.asset('assets/icons/icon_app.png',
-                      fit: BoxFit.contain),
+                )
+              : Container(
+                  width: 200,
+                  height: 200,
+                  color: AppColor.colorOutlineBoxinput,
+                  child: Center(
+                    child: Text('QR Code tidak tersedia',
+                        style: AppFontStyle.subTitleText),
+                  ),
                 ),
-              ],
-            ),
-          ),
           SpacingSize.spacingBaseHeight,
           Text('Pindai kode qr diatas untuk berbagi',
               style: AppFontStyle.subTitleText),
