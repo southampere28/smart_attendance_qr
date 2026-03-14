@@ -1,8 +1,10 @@
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class TeacherSchedulePreviewCard extends StatelessWidget {
@@ -49,8 +51,11 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
             SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.numbers_rounded,
-                    size: 16, color: AppColor.colorTextSubtitle),
+                SvgPicture.asset(
+                  AssetConstant.svgIconSubject,
+                  height: 16,
+                  semanticsLabel: 'icon subject',
+                ),
                 SpacingSize.spacingXSWidth,
                 Text(
                   subjectName,
@@ -65,10 +70,10 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  Icon(
-                    Icons.qr_code,
-                    size: 16,
-                    color: AppColor.primaryColor,
+                  SvgPicture.asset(
+                    AssetConstant.svgIconQR,
+                    height: 16,
+                    semanticsLabel: 'icon qr',
                   ),
                   SpacingSize.spacingXSWidth,
                   Text(
