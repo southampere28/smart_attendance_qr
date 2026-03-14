@@ -1,3 +1,4 @@
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -42,28 +43,20 @@ class TeacherDashboardPage extends StatelessWidget {
                   linkTitle: 'Jadwal Anda',
                   onLinkTap: () {
                     // todo here...
+                    Get.toNamed(AppRoutes.scheduleTeacher);
                   }),
 
               // next class information.
               SpacingSize.spacingBaseHeight,
               TeacherSchedulePreviewCard(
-                classTitle: 'XII-TKJ 2', 
-                subjectName: 'Matematika', 
-                scheduleInfo: '10.00 - 11.30'
-              ),
+                  classTitle: 'XII-TKJ 2',
+                  subjectName: 'Matematika',
+                  scheduleInfo: '10.00 - 11.30'),
               SpacingSize.spacingBaseHeight,
               TeacherSchedulePreviewCard(
-                classTitle: 'XII-TKJ 2', 
-                subjectName: 'Bahasa Indonesia', 
-                scheduleInfo: '12.00 - 13.30'
-              ),
-
-              // Text('Class 1', style: AppFontStyle.titleText),
-              // SpacingSize.spacingLGHeight,
-              // Text('Class 2', style: AppFontStyle.titleText),
-              // SpacingSize.spacingLGHeight,
-              // Text('Class 3', style: AppFontStyle.titleText),
-              // SpacingSize.spacingXLHeight,
+                  classTitle: 'XII-TKJ 2',
+                  subjectName: 'Bahasa Indonesia',
+                  scheduleInfo: '12.00 - 13.30'),
 
               // button action see all classes
               SpacingSize.spacingXSHeight,
@@ -374,7 +367,9 @@ class TeacherDashboardPage extends StatelessWidget {
           Text(title, style: AppFontStyle.subTitleText),
           TextButton(
             onPressed: onLinkTap,
-            child: Text(linkTitle, style: AppFontStyle.blueInfoText.copyWith(fontWeight: FontWeight.w500)),
+            child: Text(linkTitle,
+                style: AppFontStyle.blueInfoText
+                    .copyWith(fontWeight: FontWeight.w500)),
           ),
         ],
       ),
