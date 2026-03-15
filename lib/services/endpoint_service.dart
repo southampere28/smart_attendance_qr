@@ -839,6 +839,54 @@ class EndpointService extends GetxService {
     }
   }
 
+  Future<ApiResult<List<Map<String, dynamic>>>> scheduleByClass(String classId) async {
+    try {
+      final response = await http.get(
+          Uri.parse('${ApiConstant.teacherScheduleClass}/$classId'),
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "$tokenType $accessToken"
+          });
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final schedules = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Schedules: $schedules");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: schedules,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Schedule by class error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch schedule by class",
+        );
+      }
+
+    } catch (e) {
+
+      log('Exception: $e');
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+
+    }
+  }
+
   Future<EndpointService> init() async {
     // load persisted tokens and user data from secure storage so service
     // can make authenticated requests after app restart
