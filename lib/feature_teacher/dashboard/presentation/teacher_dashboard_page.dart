@@ -47,26 +47,44 @@ class TeacherDashboardPage extends StatelessWidget {
                   }),
 
               // next class information.
-              SpacingSize.spacingBaseHeight,
-              TeacherSchedulePreviewCard(
-                  classTitle: 'XII-TKJ 2',
-                  subjectName: 'Matematika',
-                  scheduleInfo: '10.00 - 11.30'),
-              SpacingSize.spacingBaseHeight,
-              TeacherSchedulePreviewCard(
-                  classTitle: 'XII-TKJ 2',
-                  subjectName: 'Bahasa Indonesia',
-                  scheduleInfo: '12.00 - 13.30'),
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (controller.dataSchedule.isEmpty) {
+                  return Center(child: Text('Tidak ada jadwal hari ini'));
+                } else {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: controller.dataSchedule.length,
+                    itemBuilder: (context, index) {
+                      final item = controller.dataSchedule[index];
+                      final startTime =
+                          '${item.schedule.startTime.hour.toString().padLeft(2, '0')}:${item.schedule.startTime.minute.toString().padLeft(2, '0')}';
+                      final endTime =
+                          '${item.schedule.endTime.hour.toString().padLeft(2, '0')}:${item.schedule.endTime.minute.toString().padLeft(2, '0')}';
+                      final scheduleInfo = '$startTime - $endTime';
+
+                      return TeacherSchedulePreviewCard(
+                        classTitle: item.classModel?.name ?? '-',
+                        subjectName: item.subject?.name ?? '-',
+                        scheduleInfo: scheduleInfo,
+                        codeQR: item.schedule.code,
+                      );
+                    },
+                  );
+                }
+              }),
 
               // button action see all classes
               SpacingSize.spacingXSHeight,
+
               ButtonPrimaryWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   borderRadius: 20,
                   title: "Lihat Semua Kelas",
                   callback: () {
-                    // Get.toNamed(AppRoutes.permissionForm)
-                    // todo here...
+                    Get.toNamed(AppRoutes.scheduleClass);
                   }),
             ],
           ),

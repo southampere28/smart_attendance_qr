@@ -13,11 +13,13 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
     required this.classTitle,
     required this.subjectName,
     required this.scheduleInfo,
+    required this.codeQR,
   });
 
   final String classTitle;
   final String subjectName;
   final String scheduleInfo; // e.g "08:00 - 09:00"
+  final String codeQR;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,10 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
             SizedBox(height: 4),
             GestureDetector(
               onTap: () {
-                Get.toNamed(AppRoutes.scheduleQRTeacher);
+                Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
+                  'codeQR': codeQR,
+                  'subjectName': subjectName,
+                });
               },
               child: Row(
                 children: [

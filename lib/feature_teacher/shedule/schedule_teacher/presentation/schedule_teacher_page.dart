@@ -37,6 +37,7 @@ class ScheduleTeacherPage extends StatelessWidget {
             onRefresh: () async {
               // todo here...
               log('refreshing schedule ...');
+              controller.fetchScheduleWeeklyTeacher();
             },
             child: SingleChildScrollView(
                 child: Container(
