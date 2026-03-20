@@ -86,6 +86,19 @@ class TeacherDashboardPage extends StatelessWidget {
                   callback: () {
                     Get.toNamed(AppRoutes.scheduleClass);
                   }),
+
+              SpacingSize.spacingSMHeight,
+
+              ButtonPrimaryWidget(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  borderRadius: 20,
+                  title: "Lihat Detail Kelas",
+                  callback: () {
+                    Get.toNamed(AppRoutes.detailInformationClass);
+                  }),
+              
+              SpacingSize.spacingSMHeight,
+              
             ],
           ),
         ),

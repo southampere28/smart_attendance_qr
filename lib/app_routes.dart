@@ -20,6 +20,8 @@ import 'package:absensi_qr/feature_teacher/shedule/schedule_qr/presentation/sche
 import 'package:absensi_qr/feature_teacher/shedule/schedule_qr/presentation/schedule_qr_teacher_page.dart';
 import 'package:absensi_qr/feature_teacher/shedule/schedule_teacher/presentation/schedule_teacher_binding.dart';
 import 'package:absensi_qr/feature_teacher/shedule/schedule_teacher/presentation/schedule_teacher_page.dart';
+import 'package:absensi_qr/feature_teacher/student_class/info_class/presentation/detail_information_class_binding.dart';
+import 'package:absensi_qr/feature_teacher/student_class/info_class/presentation/detail_information_class_page.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_binding.dart';
 import 'package:absensi_qr/features/others/auth/login/presentation/login_page.dart';
 import 'package:absensi_qr/features/others/auth/register_student/presentation/register_student_binding.dart';
@@ -41,7 +43,7 @@ import 'package:get/get.dart';
 class AppRoutes {
   // initialize
   static const initialRoute = splashScreen;
-  
+
   // general
   static const login = '/login';
   static const chooserRoleUser = '/choose-role-user';
@@ -49,7 +51,7 @@ class AppRoutes {
   static const registerTeacher = '/register-teacher';
   static const splashScreen = '/splash_screen';
   // ==================
-  
+
   // student
   static const navigation = '/navigation-student';
   static const dashboard = '/dashboard-student';
@@ -68,6 +70,7 @@ class AppRoutes {
   static const scheduleQRTeacher = '/schedule-qr-teacher';
   static const scheduleTeacher = '/schedule-teacher';
   static const scheduleClass = '/schedule-class';
+  static const detailInformationClass = '/detail-information-class';
   // ==================
 
   static final routes = <GetPage>[
@@ -88,10 +91,10 @@ class AppRoutes {
       binding: DashboardBinding(),
     ),
     GetPage(
-      name: notificationStudent, 
+      name: notificationStudent,
       page: () => const NotificationStudentPage(),
       binding: NotificationStudentBinding(),
-      ),
+    ),
     GetPage(
       name: schedule,
       page: () => const SchedulePage(),
@@ -128,26 +131,30 @@ class AppRoutes {
         binding: QrBinding(),
         transition: Transition.downToUp),
     GetPage(
-        name: login,
-        page: () => const LoginPage(),
-        binding: LoginBinding(),),
+      name: login,
+      page: () => const LoginPage(),
+      binding: LoginBinding(),
+    ),
     GetPage(
-        name: chooserRoleUser,
-        page: () => const ChooseRolePage(),
-        binding: ChooseRoleBinding(),),
+      name: chooserRoleUser,
+      page: () => const ChooseRolePage(),
+      binding: ChooseRoleBinding(),
+    ),
     GetPage(
-        name: registerStudent,
-        page: () => const RegisterStudentPage(),
-        binding: RegisterStudentBinding(),),
+      name: registerStudent,
+      page: () => const RegisterStudentPage(),
+      binding: RegisterStudentBinding(),
+    ),
     GetPage(
-        name: registerTeacher,
-        page: () => const RegisterTeacherPage(),
-        binding: RegisterTeacherBinding(),),
+      name: registerTeacher,
+      page: () => const RegisterTeacherPage(),
+      binding: RegisterTeacherBinding(),
+    ),
     GetPage(
-      name: dashboardTeacher, 
+      name: dashboardTeacher,
       page: () => const TeacherDashboardPage(),
       binding: TeacherDashboardBinding(),
-      ),
+    ),
     GetPage(
       name: scheduleQRTeacher,
       page: () => const ScheduleQrTeacherPage(),
@@ -163,6 +170,10 @@ class AppRoutes {
       page: () => const ScheduleClassPage(),
       binding: ScheduleClassBinding(),
     ),
-
+    GetPage(
+      name: detailInformationClass,
+      page: () => const DetailInformationClassPage(),
+      binding: DetailInformationClassBinding(),
+    ),
   ];
 }
