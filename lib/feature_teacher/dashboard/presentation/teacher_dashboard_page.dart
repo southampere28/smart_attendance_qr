@@ -82,7 +82,7 @@ class TeacherDashboardPage extends StatelessWidget {
               ButtonPrimaryWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   borderRadius: 20,
-                  title: "Lihat Semua Kelas",
+                  title: "Lihat Jadwal Kelas",
                   callback: () {
                     Get.toNamed(AppRoutes.scheduleClass);
                   }),
@@ -95,6 +95,16 @@ class TeacherDashboardPage extends StatelessWidget {
                   title: "Lihat Detail Kelas",
                   callback: () {
                     Get.toNamed(AppRoutes.detailInformationClass);
+                  }),
+              
+              SpacingSize.spacingSMHeight,
+              
+              ButtonPrimaryWidget(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  borderRadius: 20,
+                  title: "Lihat Absensi Siswa",
+                  callback: () {
+                    Get.toNamed(AppRoutes.attendanceStudentClass);
                   }),
               
               SpacingSize.spacingSMHeight,
@@ -122,13 +132,18 @@ class TeacherDashboardPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: Colors.black,
-                child: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 14,
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(AppRoutes.profileTeacher);
+                },
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.black,
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
               ),
               SpacingSize.spacingSMWidth,

@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:ffi';
 
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -84,14 +86,17 @@ class DetailInformationClassPage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: ButtonPrimaryWidget(
-                        // margin: const EdgeInsets.symmetric(horizontal: 20),
-                        borderRadius: 20,
-                        title: "Pengumuman",
-                        callback: () {
-                          // Get.toNamed(AppRoutes.detailInformationClass);
-                        }),
-                  ),
+                      child: ButtonPrimaryWidget(
+                          // margin: const EdgeInsets.symmetric(horizontal: 20),
+                          borderRadius: 20,
+                          title: "Pengumuman",
+                          callback: () {
+                            // Get.toNamed(AppRoutes.detailInformationClass);
+                            Get.toNamed(AppRoutes.sendAnnouncement, arguments: {
+                              'classId': int.parse(controller.selectedClassId.toString()),
+                              'className': controller.selectedItem.value,
+                            });
+                          })),
                   SpacingSize.spacingMDWidth,
                   Expanded(
                     child: ButtonPrimaryWidget(

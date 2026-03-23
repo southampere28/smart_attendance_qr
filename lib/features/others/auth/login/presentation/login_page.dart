@@ -8,6 +8,7 @@ import 'package:absensi_qr/features/others/auth/login/presentation/login_control
 import 'package:absensi_qr/features/widgets/textfield_with_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
@@ -73,7 +74,7 @@ class LoginPage extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     hide: true,
                   ),
-                  
+
                   SpacingSize.spacingBaseHeight,
                   ButtonTextPrimary(
                       margin: EdgeInsets.zero,
@@ -114,6 +115,13 @@ class LoginPage extends StatelessWidget {
                       )
                     ],
                   ),
+                  if (kDebugMode) ...[
+                    SpacingSize.spacingBaseHeight,
+                    TextButton(
+                      onPressed: () => Get.toNamed(AppRoutes.debugConfig),
+                      child: const Text('Atur Base URL (Debug)'),
+                    ),
+                  ],
                 ],
               ),
             ),
