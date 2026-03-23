@@ -5,6 +5,8 @@ import 'dart:developer';
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/constant/app_config.dart';
 import 'package:absensi_qr/models/class_model.dart';
+import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
+import 'package:absensi_qr/models/model_merging/schedule_report_item.dart';
 import 'package:absensi_qr/models/response/api_result.dart';
 import 'package:absensi_qr/models/user/student.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
@@ -921,6 +923,60 @@ class EndpointService extends GetxService {
       
     } catch (e) {
       log('Exception: $e');
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+  // teacher only can access this endpoint to get all class they teach
+  Future<ApiResult<List<Map<String, dynamic>>>> teacherClasses({
+    required String classId, 
+    required DateTime date
+    }) async {
+    try {
+      // date parameter in format YYYY-MM-DD
+      final String dateStr = '${date.year.toString().padLeft(4, '0')}-'
+          '${date.month.toString().padLeft(2, '0')}-'
+          '${date.day.toString().padLeft(2, '0')}';
+
+      final response = await http.get(
+        Uri.parse('${ApiConstant.reportStudentAttendanceByClass}/$classId/$dateStr'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        final classes = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Classes with Schedule attendance: $classes");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: classes,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Teacher classes error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch teacher classes",
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
       return ApiResult(
         success: false,
         message: "Exception: $e",
