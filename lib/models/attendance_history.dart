@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:absensi_qr/core/helper/date_helper.dart';
+import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/models/user/student.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
@@ -9,7 +10,7 @@ class AttendanceHistory {
   final Student? student;
   final BigInt idSchedule;
   final int periodNumber;
-  final String status;
+  final AttendanceStatusEnum status;
   final String? coordinates;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -32,7 +33,7 @@ class AttendanceHistory {
       'id_student': idStudent.toString(),
       'id_schedule': idSchedule.toString(),
       'period_number': periodNumber,
-      'status': status,
+      'status': status.toString(),
       'coordinates': coordinates,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
@@ -46,8 +47,9 @@ class AttendanceHistory {
       idStudent: BigInt.parse(map['id_student'].toString()),
       idSchedule: BigInt.parse(map['id_schedule'].toString()),
       periodNumber: map['period_number'] as int,
-      status: map['status'] as String,
-      coordinates: map['coordinates'] as String?,
+      // status: map['status'] as String,
+      status: AttendanceStatusEnum.fromString(map['status'] as String),
+      coordinates: map['coordinate'] as String?,
       createdAt: DateHelper.parseToLocal(map['created_at']),
       updatedAt: DateHelper.parseToLocal(map['updated_at']),
       deletedAt: DateHelper.parseToLocal(map['deleted_at']),

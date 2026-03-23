@@ -13,10 +13,10 @@ class ScheduleReportItem {
   final Subject? subject;
 
   ScheduleReportItem({
-    required this.schedule, 
-    this.classModel, 
-    this.teacher, 
-    this.subject
+    required this.schedule,
+    this.classModel,
+    this.teacher,
+    this.subject,
   });
 
   factory ScheduleReportItem.fromMap(Map<String, dynamic> map) {
@@ -24,9 +24,10 @@ class ScheduleReportItem {
     final classMap = map['classModel'] ?? map['class'];
     final teacherMap = scheduleMap['teacher'] ?? map['teacher'] ?? scheduleMap['teacher_data'];
     final subjectMap = scheduleMap['subject'] ?? map['subject'];
+    final schedule = Schedule.fromMap(scheduleMap);
 
     return ScheduleReportItem(
-      schedule: Schedule.fromMap(scheduleMap),
+      schedule: schedule,
       classModel: classMap != null ? ClassModel.fromMap(classMap as Map<String, dynamic>) : null,
       teacher: teacherMap != null ? Teacher.fromMap(teacherMap as Map<String, dynamic>) : null,
       subject: subjectMap != null ? Subject.fromMap(subjectMap as Map<String, dynamic>) : null,
