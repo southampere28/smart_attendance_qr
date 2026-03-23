@@ -12,8 +12,14 @@ import 'package:absensi_qr/feature_student/permission_detail/presentation/permis
 import 'package:absensi_qr/feature_student/permission_detail/presentation/permission_detail_page.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_binding.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/presentation/attendance_student_class_binding.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/presentation/attendance_student_class_page.dart';
+import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_binding.dart';
+import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_page.dart';
+import 'package:absensi_qr/feature_teacher/profile/presentation/profile_teacher_binding.dart';
+import 'package:absensi_qr/feature_teacher/profile/presentation/profile_teacher_page.dart';
 import 'package:absensi_qr/feature_teacher/shedule/schedule_class/presentation/schedule_class_binding.dart';
 import 'package:absensi_qr/feature_teacher/shedule/schedule_class/presentation/schedule_class_page.dart';
 import 'package:absensi_qr/feature_teacher/shedule/schedule_qr/presentation/schedule_qr_teacher_binding.dart';
@@ -30,6 +36,7 @@ import 'package:absensi_qr/features/others/auth/register_teacher/presentation/re
 import 'package:absensi_qr/features/others/auth/register_teacher/presentation/register_teacher_page.dart';
 import 'package:absensi_qr/features/others/choose_role/choose_role_binding.dart';
 import 'package:absensi_qr/features/others/choose_role/choose_role_page.dart';
+import 'package:absensi_qr/features/others/debug_config/debug_config_page.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_binding.dart';
 import 'package:absensi_qr/features/others/splash_screen/presentation/splash_screen_page.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/permission_binding.dart';
@@ -39,6 +46,7 @@ import 'package:absensi_qr/feature_student/profile/presentation/profile_page.dar
 import 'package:absensi_qr/feature_student/qr/presentation/qr_binding.dart';
 import 'package:absensi_qr/feature_student/qr/presentation/qr_page.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
 class AppRoutes {
   // initialize
@@ -50,6 +58,7 @@ class AppRoutes {
   static const registerStudent = '/register-student';
   static const registerTeacher = '/register-teacher';
   static const splashScreen = '/splash_screen';
+  static const debugConfig = '/debug-config';
   // ==================
 
   // student
@@ -71,6 +80,9 @@ class AppRoutes {
   static const scheduleTeacher = '/schedule-teacher';
   static const scheduleClass = '/schedule-class';
   static const detailInformationClass = '/detail-information-class';
+  static const sendAnnouncement = '/send-announcement';
+  static const profileTeacher = '/profile-teacher';
+  static const attendanceStudentClass = '/attendance-student-class';
   // ==================
 
   static final routes = <GetPage>[
@@ -175,5 +187,28 @@ class AppRoutes {
       page: () => const DetailInformationClassPage(),
       binding: DetailInformationClassBinding(),
     ),
+    GetPage(
+      name: sendAnnouncement,
+      page: () => const SendAnnouncementPage(),
+      binding: SendAnnouncementBinding(),
+    ),
+    GetPage(
+      name: profileTeacher,
+      page: () => const ProfileTeacherPage(),
+      binding: ProfileTeacherBinding(),
+    ),
+    GetPage(
+      name: attendanceStudentClass,
+      page: () => const AttendanceStudentClassPage(),
+      binding: AttendanceStudentClassBinding(),
+    ),
+
+
+    // testing for ip address changing runtime
+    if (kDebugMode)
+      GetPage(
+        name: debugConfig,
+        page: () => const DebugConfigPage(),
+      ),
   ];
 }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
@@ -24,6 +25,9 @@ void main() async {
   log("initializing firebase completed");
 
   await initializeDateFormatting('id_ID', null);
+
+  // load persisted base URL override for debugging
+  await ApiConstant.loadBaseUrl();
 
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
