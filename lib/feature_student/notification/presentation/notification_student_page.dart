@@ -1,6 +1,7 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/feature_student/notification/presentation/notification_student_controller.dart';
+import 'package:absensi_qr/features/widgets/textfield_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -45,6 +46,29 @@ class NotificationStudentPage extends StatelessWidget {
               Text('Card Notification Here...'),
               Text('Lebih dari 1 Minggu Lalu'),
               Text('Card Notification Here...'),
+
+              // field for testing topic name
+              TextfieldInputWidget(
+                  controller: controller.topicController,
+                  hintTxt: 'Enter topic name',
+                  keyboardType: TextInputType.text),
+
+              // subscribe and unsubsribe button for testing
+              ElevatedButton(
+                onPressed: () {
+                  controller.mainController.subscribeToNotifications(
+                      controller.topicController.text);
+                },
+                child: Text('Subscribe to Notifications'),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  controller.mainController.unsubscribeFromNotifications(
+                      controller.topicController.text);
+                },
+                child: Text('Unsubscribe from Notifications'),
+              )
             ],
           ),
         ),
