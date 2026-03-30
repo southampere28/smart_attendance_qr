@@ -12,8 +12,10 @@ import 'package:absensi_qr/feature_student/permission_detail/presentation/permis
 import 'package:absensi_qr/feature_student/permission_detail/presentation/permission_detail_page.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_binding.dart';
 import 'package:absensi_qr/feature_student/schedule/presentation/schedule_page.dart';
-import 'package:absensi_qr/feature_teacher/attendance_student/presentation/attendance_student_class_binding.dart';
-import 'package:absensi_qr/feature_teacher/attendance_student/presentation/attendance_student_class_page.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/detail/presentation/detail_attendance_student_class_binding.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/detail/presentation/detail_attendance_student_class_page.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_binding.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_page.dart';
 import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_binding.dart';
 import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
@@ -83,6 +85,7 @@ class AppRoutes {
   static const sendAnnouncement = '/send-announcement';
   static const profileTeacher = '/profile-teacher';
   static const attendanceStudentClass = '/attendance-student-class';
+  static const detailAttendanceStudentClass = '/detail-attendance-student-class';
   // ==================
 
   static final routes = <GetPage>[
@@ -201,6 +204,11 @@ class AppRoutes {
       name: attendanceStudentClass,
       page: () => const AttendanceStudentClassPage(),
       binding: AttendanceStudentClassBinding(),
+    ),
+    GetPage(
+      name: detailAttendanceStudentClass,
+      page: () => const DetailAttendanceStudentClassPage(),
+      binding: DetailAttendanceStudentClassBinding(),
     ),
 
 
