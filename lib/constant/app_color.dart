@@ -17,6 +17,11 @@ class AppColor {
   static const Color colorShadowBox = Color(0xffDADADA);
   static const Color colorHeader = Color(0xffC3DFEC);
 
+  // attendance color theme
+  static const Color colorPresent = primaryColor;
+  static const Color colorPermission = Color(0xffFFCA28);
+  static const Color colorAlpha = Color(0xffFF383C);
+
   // general color
   static const Color successColor = Color(0xff28A745); // success/active
   static const Color errorColor = Color(0xffED6363); // error/alert

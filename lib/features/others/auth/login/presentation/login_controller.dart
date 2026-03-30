@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   final EndpointService endpointService = Get.find();
+  final MainController mainController = Get.find<MainController>();
 
   var isLoading = false.obs;
   var argument = ''.obs;
@@ -34,14 +36,9 @@ class LoginController extends GetxController {
       var msg = result.message ?? 'Login Fail!';
 
       if (result.success && result.data != null) {
-
         // get fcm token
         String? token = await FirebaseMessaging.instance.getToken();
         log("FCM Token: $token");
-
-        if (context.mounted) {
-          AppUtil.hideLoadingDialog(context);
-        }
 
         final user = result.data!;
         log("Token: ${endpointService.accessToken}");
@@ -51,10 +48,33 @@ class LoginController extends GetxController {
 
         // Navigate based on role
         if (user.role == "teacher") {
+          if (context.mounted) {
+            AppUtil.hideLoadingDialog(context);
+          }
           Get.toNamed(AppRoutes.dashboardTeacher);
         } else if (user.role == "student") {
+          mainController.userData.value = user;
+
+          if (mainController.userData.value?.topicSubscribe != null) {
+            final List<String> topics = [];
+
+            // get topics from separated comma string
+            final topicString = mainController.userData.value!.topicSubscribe!;
+            topics.addAll(topicString.split(',').map((s) => s.trim()));
+
+            // subscribe to multiple topics
+            await mainController.subscribeToMultipleTopics(topics);
+          }
+
+          if (context.mounted) {
+            AppUtil.hideLoadingDialog(context);
+          }
+
           Get.toNamed(AppRoutes.navigation);
         } else {
+          if (context.mounted) {
+            AppUtil.hideLoadingDialog(context);
+          }
           // Get.offAllNamed(AppRoutes.navigation);
         }
       } else {

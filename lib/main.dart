@@ -47,7 +47,7 @@ void main() async {
 class MainBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(() => MainController());
+    Get.put(MainController());
   }
 }
 
