@@ -18,6 +18,12 @@ class DashboardController extends GetxController {
 
   var isConnected = false.obs;
 
+  // is weekend check
+  bool get isWeekend {
+    final int weekday = dateNow.weekday;
+    return weekday == DateTime.sunday;
+  }
+
   final DateTime dateNow = DateTime.now();
 
   final DateTime dateDummyOnly = DateTime(2026, 2, 16);

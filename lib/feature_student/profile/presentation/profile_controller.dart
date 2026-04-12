@@ -1,5 +1,6 @@
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
@@ -20,6 +21,7 @@ class ProfileController extends GetxController {
       _setProfileData();
     } else {
       // fetchProfile();
+      Fluttertoast.showToast(msg: 'data siswa tidak ditemukan');
     }
   }
 

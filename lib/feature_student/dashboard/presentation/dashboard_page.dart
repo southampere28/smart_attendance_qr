@@ -13,7 +13,9 @@ import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subjec
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -21,6 +23,10 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DashboardController controller = Get.find<DashboardController>();
+
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        statusBarColor: AppColor.colorHeader,
+        statusBarIconBrightness: Brightness.dark));
 
     return SizedBox(
       width: double.infinity,
@@ -36,85 +42,107 @@ class DashboardPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SpacingSize.spacingLGHeight,
-
                 /// header section
-                _headerSection(controller),
+                _sectionHeader(controller),
 
                 SpacingSize.spacingBaseHeight,
 
                 /// content section
-                Obx(() {
-                  if (controller.isLoadingAttendanceHistory.value) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: ShimmerLoadCard(
-                        shimmerItemCount: 3,
-                      ),
-                    );
-                  }
+                // weekend animation section
+                // Visibility(
+                //   visible: controller.isWeekend,
+                //   child: Column(
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       _weekendAnimationSection(),
+                //       SpacingSize.spacingLGHeight,
+                //     ],
+                //   ),
+                // ),
 
-                  if (controller.attendanceHistoryResult.isEmpty) {
-                    return Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      child: Text('Tidak ada riwayat absensi hari ini',
-                          style: AppFontStyle.subTitleText),
-                    );
-                  }
+                // normal content if not weekend
+                Visibility(
+                    visible: true,
+                    // visible: !controller.isWeekend,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(() {
+                          if (controller.isLoadingAttendanceHistory.value) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: ShimmerLoadCard(
+                                shimmerItemCount: 3,
+                              ),
+                            );
+                          }
 
-                  // show list of attendance items
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: controller.attendanceHistoryResult.map((item) {
-                      final formattedTimeStart = ScheduleHelper.convertTime2Pad(
-                          item.schedule.startTime);
-                      final formattedTimeEnd =
-                          ScheduleHelper.convertTime2Pad(item.schedule.endTime);
+                          if (controller.attendanceHistoryResult.isEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              child: Text('Tidak ada riwayat absensi hari ini',
+                                  style: AppFontStyle.subTitleText),
+                            );
+                          }
 
-                      return SubjectPreviewCard(
-                        subjectName: item.schedule.subject?.name ??
-                            'Nama Mata Pelajaran',
-                        teacherName: item.schedule.teacher?.name ?? 'Nama Guru',
-                        scheduleInfo:
-                            "${item.schedule.dayOfWeek}, $formattedTimeStart - $formattedTimeEnd",
-                        badgeInfo:
-                            item.attendanceStatus == AttendanceStatusEnum.valid
-                                ? 'valid'
-                                : 'none',
-                        isLive: false,
-                      );
-                    }).toList(),
-                  );
-                }),
+                          // show list of attendance items
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                                controller.attendanceHistoryResult.map((item) {
+                              final formattedTimeStart =
+                                  ScheduleHelper.convertTime2Pad(
+                                      item.schedule.startTime);
+                              final formattedTimeEnd =
+                                  ScheduleHelper.convertTime2Pad(
+                                      item.schedule.endTime);
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: ButtonPrimaryWidget(
-                      borderRadius: 20,
-                      title: "Lihat Semua Jadwal",
-                      callback: () {
-                        Get.toNamed(AppRoutes.schedule);
-                      }),
-                ),
+                              return SubjectPreviewCard(
+                                subjectName: item.schedule.subject?.name ??
+                                    'Nama Mata Pelajaran',
+                                teacherName:
+                                    item.schedule.teacher?.name ?? 'Nama Guru',
+                                scheduleInfo:
+                                    "${item.schedule.dayOfWeek}, $formattedTimeStart - $formattedTimeEnd",
+                                badgeInfo: item.attendanceStatus ==
+                                        AttendanceStatusEnum.valid
+                                    ? 'valid'
+                                    : 'none',
+                                isLive: false,
+                              );
+                            }).toList(),
+                          );
+                        }),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: ButtonPrimaryWidget(
+                              borderRadius: 20,
+                              title: "Lihat Semua Jadwal",
+                              callback: () {
+                                Get.toNamed(AppRoutes.schedule);
+                              }),
+                        ),
+                        SpacingSize.spacingLGHeight,
+                        Obx(() {
+                          if (controller.isLoadingAttendanceDaily.value) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: ShimmerLoadCard(
+                                shimmerItemCount: 1,
+                              ),
+                            );
+                          }
 
-                SpacingSize.spacingLGHeight,
-
-                Obx(() {
-                  if (controller.isLoadingAttendanceDaily.value) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: ShimmerLoadCard(
-                        shimmerItemCount: 1,
-                      ),
-                    );
-                  }
-
-                  return _attendanceDailiesSection(controller);
-                }),
-                SpacingSize.spacingLGHeight,
-
-                _attendanceHistoriesSection(controller),
+                          return _attendanceDailiesSection(controller);
+                        }),
+                        SpacingSize.spacingLGHeight,
+                        _attendanceHistoriesSection(controller),
+                      ],
+                    )),
 
                 /// testing only
                 SizedBox(
@@ -150,60 +178,82 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _headerSection(DashboardController controller) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+  // section header
+  Widget _sectionHeader(DashboardController controller) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 4, bottom: 20),
+      decoration: BoxDecoration(
+        color: AppColor.colorHeader,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          /// header section
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Halo, Pramudya!', style: AppFontStyle.titleText),
-                  SpacingSize.spacingXSHeight,
-                  Text(
-                    controller.dateNowFormatted,
-                    style: AppFontStyle.subTitleText,
-                  ),
-                ],
-              ),
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(AppRoutes.notificationStudent);
+                  Get.toNamed(AppRoutes.profileTeacher);
                 },
-                child: Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                  size: 34,
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.black,
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
               ),
-            ],
-          ),
-          SpacingSize.spacingXSHeight,
-          Row(
-            children: [
-              Icon(
-                Icons.location_pin,
-                color: AppColor.primaryColor,
-                size: 20,
+              SpacingSize.spacingSMWidth,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Halo, Pramudya!', style: AppFontStyle.titleText),
+                    Text(controller.dateNowFormatted,
+                        style: AppFontStyle.subTitleText
+                            .copyWith(fontWeight: FontWeight.normal)),
+                  ],
+                ),
               ),
-              SpacingSize.spacingXSWidth,
-              Expanded(child: Obx(() {
-                return Text(
-                    controller.placemarkVillage != 'No Data'
-                        ? '${controller.placemarkStreet}, ${controller.placemarkVillage}'
-                        : '-',
-                    style: AppFontStyle.smallText
-                        .copyWith(color: AppColor.primaryColor));
-              }))
+              Icon(
+                Icons.notifications,
+                color: AppColor.primaryColor,
+                size: 30,
+              ),
             ],
           ),
+          SpacingSize.spacingBaseHeight,
+          // location
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.location_on,
+                    size: 16, color: AppColor.primaryColor),
+                SpacingSize.spacingSMWidth,
+                Expanded(
+                    child: Obx(() => Text(
+                        controller.placemarkVillage != 'No Data'
+                            ? '${controller.placemarkStreet}, ${controller.placemarkVillage}'
+                            : '-',
+                        style: AppFontStyle.blueInfoText,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis))),
+              ],
+            ),
+          )
         ],
       ),
     );
@@ -241,15 +291,6 @@ class DashboardPage extends StatelessWidget {
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingSMHeight,
-          // CardAttendaceHistory(
-          //   subjectTitle: "Bahasa Inggris",
-          //   classTitle: "12 TKJ 2",
-          //   attendanceRecords: [
-          //     {'name': 'John Doe', 'status': 'Sudah Absen'},
-          //     {'name': 'Jane Smith', 'status': 'Sudah Absen'}
-          //   ],
-          // ),
-
           Obx(() {
             if (controller.isLoadingAttendanceByClassHistory.value) {
               return ShimmerLoadCard(
@@ -284,7 +325,6 @@ class DashboardPage extends StatelessWidget {
               }).toList(),
             );
           }),
-
           SpacingSize.spacingMDHeight,
           ElevatedButton(
               onPressed: () {
@@ -294,6 +334,41 @@ class DashboardPage extends StatelessWidget {
               child: Text('testing see all history')),
         ],
       ),
+    );
+  }
+
+  // section weekend animation
+  Widget _weekendAnimationSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SpacingSize.spacingLGHeight,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: LottieBuilder.asset(
+            'assets/animations/weekend.json',
+            fit: BoxFit.contain,
+          ),
+        ),
+        SpacingSize.spacingBaseHeight,
+        Text('Yay! Hari ini libur akhir pekan 🎉',
+            style:
+                AppFontStyle.primaryText.copyWith(fontWeight: FontWeight.bold)),
+
+        SpacingSize.spacingBaseHeight,
+        // button lihat semua jadwal
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ButtonPrimaryWidget(
+              borderRadius: 20,
+              title: "Lihat Semua Jadwal",
+              callback: () {
+                Get.toNamed(AppRoutes.schedule);
+              }),
+        )
+      ],
     );
   }
 }
