@@ -16,6 +16,10 @@ import 'package:absensi_qr/feature_teacher/attendance_student/detail/presentatio
 import 'package:absensi_qr/feature_teacher/attendance_student/detail/presentation/detail_attendance_student_class_page.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_binding.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_page.dart';
+import 'package:absensi_qr/feature_teacher/navigation/presentation/navigation_teacher_binding.dart';
+import 'package:absensi_qr/feature_teacher/navigation/presentation/navigation_teacher_page.dart';
+import 'package:absensi_qr/feature_teacher/permission/presentation/teacher_permission_binding.dart';
+import 'package:absensi_qr/feature_teacher/permission/presentation/teacher_permission_page.dart';
 import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_binding.dart';
 import 'package:absensi_qr/feature_teacher/student_class/announcement/presentation/send_announcement_page.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_binding.dart';
@@ -77,12 +81,14 @@ class AppRoutes {
   // ==================
 
   // teacher
+  static const navigationTeacher = '/navigation-teacher';
   static const dashboardTeacher = '/dashboard-teacher';
   static const scheduleQRTeacher = '/schedule-qr-teacher';
   static const scheduleTeacher = '/schedule-teacher';
   static const scheduleClass = '/schedule-class';
   static const detailInformationClass = '/detail-information-class';
   static const sendAnnouncement = '/send-announcement';
+  static const permissionTeacher = '/permission-teacher';
   static const profileTeacher = '/profile-teacher';
   static const attendanceStudentClass = '/attendance-student-class';
   static const detailAttendanceStudentClass = '/detail-attendance-student-class';
@@ -99,6 +105,11 @@ class AppRoutes {
       name: navigation,
       page: () => const NavigationPage(),
       binding: NavigationBinding(),
+    ),
+    GetPage(
+      name: navigationTeacher,
+      page: () => const NavigationTeacherPage(),
+      binding: NavigationTeacherBinding(),
     ),
     GetPage(
       name: dashboard,
@@ -199,6 +210,11 @@ class AppRoutes {
       name: profileTeacher,
       page: () => const ProfileTeacherPage(),
       binding: ProfileTeacherBinding(),
+    ),
+    GetPage(
+      name: permissionTeacher,
+      page: () => const TeacherPermissionPage(),
+      binding: TeacherPermissionBinding(),
     ),
     GetPage(
       name: attendanceStudentClass,
