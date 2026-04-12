@@ -40,6 +40,11 @@ class PermissionPage extends StatelessWidget {
             Text('Daftar perizinan yang telah dibuat',
                 style: AppFontStyle.subTitleText),
 
+            // using dummy date
+            Text(
+                'Menampilkan perizinan dari tanggal 8 Maret 2026 sampai 15 April 2026',
+                style: AppFontStyle.subTitleText.copyWith(fontSize: 12)),
+
             // list card of permissions
             SpacingSize.spacingBaseHeight,
             Container(
@@ -84,7 +89,7 @@ class PermissionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(
-                    child: Text('Belum ada perizinan yang dibuat'),
+                    child: Text('Data Kosong'),
                   ),
                 );
               }
@@ -128,16 +133,19 @@ class PermissionPage extends StatelessWidget {
     PermissionModel permission,
     String nameOfStudent,
   ) {
-    final countOfDay = permission.dayCount;
     final datePermission = permission.datePermission;
+    final formattedDate =
+        PermissionHelper.formatDisplayPermissionInfo(datePermission);
 
     final reason = permission.reason.name;
     final status = permission.status.name;
-    final statusColor = permission.status == PermissionStatusEnum.diterima
-        ? Colors.green
-        : permission.status == PermissionStatusEnum.ditolak
-            ? Colors.red
-            : Colors.orange;
+
+    // mapping status to color
+    final permissionStatusMap = {
+      PermissionStatusEnum.diterima: Colors.green,
+      PermissionStatusEnum.ditolak: Colors.red,
+      PermissionStatusEnum.proses: Colors.orange,
+    };
 
     return Container(
         padding: const EdgeInsets.all(16),
@@ -159,24 +167,14 @@ class PermissionPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person,
-                            size: 20, color: AppColor.primaryColor),
-                        SpacingSize.spacingXSWidth,
-                        Expanded(
-                          child: Text(
-                            nameOfStudent,
-                            style: AppFontStyle.primaryText
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      reason,
+                      style: AppFontStyle.primaryText
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
                     SpacingSize.spacingXSHeight,
                     Text(
-                      PermissionHelper.formatDisplayPermissionInfo(
-                          reason, countOfDay, datePermission, countOfDay),
+                      formattedDate,
                       style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
                     ),
                   ],
@@ -184,24 +182,11 @@ class PermissionPage extends StatelessWidget {
                 SpacingSize.spacingBaseWidth,
                 Text(
                   status,
-                  style: AppFontStyle.subTitleText.copyWith(color: statusColor),
+                  style: AppFontStyle.subTitleText.copyWith(
+                      color: permissionStatusMap[permission.status] ??
+                          Colors.grey),
                 ),
               ],
-            ),
-            SpacingSize.spacingMDHeight,
-            Text(
-              '"${permission.information}"',
-              style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
-            ),
-            SpacingSize.spacingBaseHeight,
-            Container(
-              width: double.infinity,
-              height: 130,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColor.secondaryColorGreen,
-                borderRadius: BorderRadius.circular(4),
-              ),
             ),
           ],
         ));

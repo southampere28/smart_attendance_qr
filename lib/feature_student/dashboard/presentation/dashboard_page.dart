@@ -3,12 +3,15 @@ import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/core/helper/schedule_helper.dart';
+import 'package:absensi_qr/core/widgets/card_attendance_daily_status.dart';
 import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
+import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
+import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,6 +27,7 @@ class DashboardPage extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: () async {
           controller.getHistoryAttendance();
+          controller.getAttendanceHistoryDaily();
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -96,8 +100,18 @@ class DashboardPage extends StatelessWidget {
 
                 SpacingSize.spacingLGHeight,
 
-                _attendanceDailiesSection(),
+                Obx(() {
+                  if (controller.isLoadingAttendanceDaily.value) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ShimmerLoadCard(
+                        shimmerItemCount: 1,
+                      ),
+                    );
+                  }
 
+                  return _attendanceDailiesSection(controller);
+                }),
                 SpacingSize.spacingLGHeight,
 
                 _attendanceHistoriesSection(controller),
@@ -195,7 +209,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _attendanceDailiesSection() {
+  Widget _attendanceDailiesSection(DashboardController controller) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -206,7 +220,11 @@ class DashboardPage extends StatelessWidget {
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingSMHeight,
-          Text('Absensi Harian Here...', style: AppFontStyle.subTitleText),
+          controller.attendanceDailyResult.value == null
+              ? Text('Tidak ada data absensi harian',
+                  style: AppFontStyle.subTitleText)
+              : CardAttendanceDailyStatus(
+                  attendance: controller.attendanceDailyResult.value!),
         ],
       ),
     );

@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
 import 'package:absensi_qr/models/permission_model.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class PermissionController extends GetxController
@@ -68,7 +70,7 @@ class PermissionController extends GetxController
     // dummy date
     // 2026-03-08
     final DateTime startDate = DateTime(2026, 3, 8);
-    final DateTime endDate = DateTime(2026, 3, 9);
+    final DateTime endDate = DateTime(2026, 4, 15);
 
     var result = await _httpService.getPermission(
         startDate: startDate, endDate: endDate);

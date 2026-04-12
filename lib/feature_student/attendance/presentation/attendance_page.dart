@@ -109,10 +109,10 @@ class AttendancePage extends StatelessWidget {
                                                   item.schedule.subject?.name ??
                                                       '(Mata Pelajaran)',
                                               badgeInfo: item
-                                                          .attendanceStatus ==
-                                                      AttendanceStatusEnum.valid
-                                                  ? 'valid'
-                                                  : 'none',
+                                                          .attendance?.status !=
+                                                      null
+                                                  ? item.attendance!.status
+                                                  : AttendanceStatusEnum.alpha,
                                               attendanceDateTime:
                                                   item.attendance?.createdAt);
                                         }).toList(),

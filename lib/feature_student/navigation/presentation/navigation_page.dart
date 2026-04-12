@@ -1,31 +1,75 @@
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class NavigationPage extends StatelessWidget {
   const NavigationPage({super.key});
 
+  Widget _buildNavItem({
+    required NavigationController controller,
+    required int index,
+    IconData? icon,
+    required String label,
+  }) {
+    final bool isActive = controller.currentIndex.value == index;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => index != -1 ? controller.changePage(index) : null,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: isActive
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon != null
+                      ? Icon(icon, color: AppColor.primaryColor)
+                      : SizedBox
+                          .shrink(), // Placeholder for spacing when no icon
+                  Text(
+                    label,
+                    style: AppFontStyle.smallText
+                        .copyWith(color: AppColor.primaryColor),
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon != null
+                      ? Icon(icon, color: AppColor.colorOutlineBoxinput)
+                      : SizedBox(
+                          height: 24,
+                        ), // Placeholder for spacing when no icon
+                  Text(
+                    label,
+                    style: AppFontStyle.smallText
+                        .copyWith(color: AppColor.colorOutlineBoxinput),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    NavigationController controller = Get.find<NavigationController>();
+    final NavigationController controller = Get.find<NavigationController>();
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Selamat pagi Pramudya!'),
-      // ),
       body: SafeArea(
-          child: Obx(() => controller.pages[controller.currentIndex.value])),
+        child: Obx(() => controller.pages[controller.currentIndex.value]),
+      ),
       floatingActionButton: FloatingActionButton(
-        shape: OvalBorder(),
-        backgroundColor: AppColor.infoColor,
+        shape: const OvalBorder(),
+        backgroundColor: AppColor.primaryColor,
         onPressed: () {
-          var locationStatus = controller.getLocationStatus();
+          final bool locationStatus = controller.getLocationStatus();
           if (locationStatus) {
             Get.toNamed(AppRoutes.qrscan);
           } else {
@@ -33,122 +77,70 @@ class NavigationPage extends StatelessWidget {
           }
         },
         child: const Icon(
-          Icons.qr_code,
+          Icons.qr_code_scanner_sharp,
+          size: 30,
           color: Colors.white,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Obx(() => SizedBox(
+      bottomNavigationBar: Obx(
+        () => SizedBox(
           height: 100,
-          child: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 8,
-            child: Container(
-              padding: const EdgeInsets.only(right: 2, left: 2, bottom: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius:
-                          BorderRadius.circular(16), // biar rounded splash
-                      onTap: () => controller.changePage(0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: controller.currentIndex.value == 0
-                            ? Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.home,
-                                      color: AppColor.primaryColor),
-                                  Text(
-                                    'Home',
-                                    style: AppFontStyle.smallText,
-                                  ),
-                                ],
-                              )
-                            : Icon(Icons.home,
-                                color: AppColor.secondaryTextColor),
-                      ),
+          child: Container(
+            decoration: const BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: BottomAppBar(
+              color: Colors.white,
+              shape: null,
+              elevation: 6,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildNavItem(
+                      controller: controller,
+                      index: 0,
+                      icon: Icons.home,
+                      label: 'Home',
                     ),
-                  ),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => controller.changePage(1),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: controller.currentIndex.value == 1
-                            ? Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.assignment_turned_in,
-                                      color: AppColor.primaryColor),
-                                  Text(
-                                    'Presensi',
-                                    style: AppFontStyle.smallText,
-                                  ),
-                                ],
-                              )
-                            : Icon(Icons.assignment_turned_in,
-                                color: AppColor.secondaryTextColor),
-                      ),
+                    _buildNavItem(
+                      controller: controller,
+                      index: 1,
+                      icon: Icons.restore,
+                      label: 'Presensi',
                     ),
-                  ),
-                  const SizedBox(width: 60), // spacing FAB
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => controller.changePage(2),
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: controller.currentIndex.value == 2
-                              ? Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.folder_copy,
-                                        color: AppColor.primaryColor),
-                                    Text(
-                                      'Perizinan',
-                                      style: AppFontStyle.smallText,
-                                    ),
-                                  ],
-                                )
-                              : Icon(Icons.folder_copy,
-                                  color: AppColor.secondaryTextColor)),
+                    _buildNavItem(
+                        controller: controller,
+                        index: -1,
+                        icon: null,
+                        label: 'Absen'),
+                    // SpacingSize.spacingHugeWidth,
+                    _buildNavItem(
+                      controller: controller,
+                      index: 2,
+                      icon: Icons.event_note,
+                      label: 'Perizinan',
                     ),
-                  ),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => controller.changePage(3),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: controller.currentIndex.value == 3
-                            ? Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.person,
-                                      color: AppColor.primaryColor),
-                                  Text(
-                                    'Profile',
-                                    style: AppFontStyle.smallText,
-                                  ),
-                                ],
-                              )
-                            : Icon(Icons.person,
-                                color: AppColor.secondaryTextColor),
-                      ),
+                    _buildNavItem(
+                      controller: controller,
+                      index: 3,
+                      icon: Icons.person,
+                      label: 'Profile',
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ))),
+          ),
+        ),
+      ),
     );
   }
 }

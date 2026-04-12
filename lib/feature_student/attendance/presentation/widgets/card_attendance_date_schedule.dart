@@ -6,20 +6,19 @@ import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:flutter/material.dart';
 
 class CardAttendanceDateSchedule extends StatelessWidget {
-  const CardAttendanceDateSchedule({
-    super.key,
-    required this.subjectName,
-    this.attendanceDateTime, 
-    required this.badgeInfo});
+  const CardAttendanceDateSchedule(
+      {super.key,
+      required this.subjectName,
+      this.attendanceDateTime,
+      required this.badgeInfo});
 
   final String subjectName;
   final DateTime? attendanceDateTime;
-  final String badgeInfo;
+  final AttendanceStatusEnum badgeInfo;
 
   @override
   Widget build(BuildContext context) {
-    final statusEnum = AttendanceStatusEnum.fromString(badgeInfo);
-    final badge = statusEnum.badge;
+    final badge = badgeInfo.badge;
 
     return SizedBox(
       width: double.infinity,
@@ -42,9 +41,10 @@ class CardAttendanceDateSchedule extends StatelessWidget {
                           Text(subjectName,
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text(attendanceDateTime != null
-                              ? '${attendanceDateTime!.hour}:${attendanceDateTime!.minute.toString().padLeft(2, '0')} WIB'
-                              : '(waktu tidak tersedia)',
+                          Text(
+                              attendanceDateTime != null
+                                  ? '${attendanceDateTime!.hour}:${attendanceDateTime!.minute.toString().padLeft(2, '0')} WIB'
+                                  : '(waktu tidak tersedia)',
                               style:
                                   TextStyle(fontSize: 14, color: Colors.grey)),
                         ],
