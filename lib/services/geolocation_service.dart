@@ -206,6 +206,13 @@ class GeolocationService extends GetxService {
           } else {
             serviceStatusValue = 'disabled';
             _hasFetchedLocation = false;
+
+            /// jika GPS dimatikan saat aplikasi berjalan, maka data lokasi akan direset
+            _hasFetchedLocation = false;
+            lattitude = '';
+            longitude = '';
+            outputPlacemark.value = '';
+            placemarkResult.value = null;
           }
           _updatePositionList(
             PositionItemType.log,

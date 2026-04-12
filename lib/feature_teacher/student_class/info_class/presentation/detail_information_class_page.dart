@@ -92,11 +92,13 @@ class DetailInformationClassPage extends StatelessWidget {
                           title: "Pengumuman",
                           callback: () {
                             // Get.toNamed(AppRoutes.detailInformationClass);
-                            if (controller.selectedClassId == BigInt.from(-1)) {
-                              return;
-                            }
+                            // if (controller.selectedClassId == BigInt.from(-1)) {
+                            //   return;
+                            // }
                             Get.toNamed(AppRoutes.sendAnnouncement, arguments: {
-                              'classId': int.parse(controller.selectedClassId.toString()),
+                              'classId': controller.selectedClassId != BigInt.from(-1)
+                                  ? controller.selectedClassId.toString()
+                                  : null,
                               'className': controller.selectedItem.value,
                             });
                           })),
@@ -105,9 +107,10 @@ class DetailInformationClassPage extends StatelessWidget {
                     child: ButtonPrimaryWidget(
                       // margin: const EdgeInsets.symmetric(horizontal: 20),
                       borderRadius: 20,
-                      title: "History",
+                      title: "Lihat Jadwal",
                       callback: () {
-                        // Handle view attendance history action
+                        // Handle view schedule action
+                        Get.toNamed(AppRoutes.scheduleClass);
                       },
                     ),
                   ),

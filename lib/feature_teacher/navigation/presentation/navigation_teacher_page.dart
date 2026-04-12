@@ -1,14 +1,8 @@
 import 'package:absensi_qr/feature_teacher/navigation/presentation/navigation_teacher_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
-import 'package:absensi_qr/constant/spacing_size.dart';
-import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 
 class NavigationTeacherPage extends StatelessWidget {
   const NavigationTeacherPage({super.key});

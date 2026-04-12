@@ -35,13 +35,21 @@ class SendAnnouncementController extends GetxController {
   void onInit() {
     super.onInit();
     final arguments = Get.arguments;
+    final classIdArg = arguments != null && arguments is Map<String, dynamic>
+        ? arguments['classId']
+        : null;
+
     log('Received arguments: $arguments');
-    if (arguments != null && arguments is Map<String, dynamic>) {
+
+    if (arguments != null && arguments is Map<String, dynamic> && classIdArg != null) {
       final classId = arguments['classId'];
       log('Received classId: $classId');
       this.classId = classId;
+      _initializeClasses();
+    } else {
+      log('No valid arguments received, proceeding without pre-selected class');
+      _initializeClasses();
     }
-    _initializeClasses();
   }
 
   Future<void> _initializeClasses() async {

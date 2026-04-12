@@ -30,7 +30,6 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColor.colorOutlineBoxinput, width: 1.0),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

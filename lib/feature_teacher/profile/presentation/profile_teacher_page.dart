@@ -16,7 +16,7 @@ class ProfileTeacherPage extends StatelessWidget {
       children: [
         _profileImage(),
         SpacingSize.spacingLGHeight,
-        _profileInformation(),
+        _profileInformation(controller),
       ],
     ));
   }
@@ -56,7 +56,7 @@ class ProfileTeacherPage extends StatelessWidget {
     );
   }
 
-  Widget _profileInformation() {
+  Widget _profileInformation(ProfileTeacherController controller) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,17 +82,16 @@ class ProfileTeacherPage extends StatelessWidget {
                 .copyWith(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SpacingSize.spacingBaseHeight,
-          _profileInfoItem('Nama', 'Nur Hidayati', Icon(Icons.person)),
+          _profileInfoItem('Nama', controller.name.value, Icon(Icons.person)),
           SpacingSize.spacingBaseHeight,
-          _profileInfoItem('NIP', '123456789', Icon(Icons.badge)),
+          _profileInfoItem('NIP', controller.nip.value, Icon(Icons.badge)),
+          SpacingSize.spacingBaseHeight,
+          _profileInfoItem('Email', controller.email.value, Icon(Icons.email)),
           SpacingSize.spacingBaseHeight,
           _profileInfoItem(
-              'Email', 'nur.hidayati@example.com', Icon(Icons.email)),
-          SpacingSize.spacingBaseHeight,
-          _profileInfoItem('Mata Pelajaran', 'Sistem Digital, Matematika',
-              Icon(Icons.school)),
-          SpacingSize.spacingBaseHeight,
-          _profileInfoItem('Tahun Masuk', '2020', Icon(Icons.calendar_today)),
+              'Mata Pelajaran', controller.subject.value, Icon(Icons.school)),
+          // SpacingSize.spacingBaseHeight,
+          // _profileInfoItem('Tahun Masuk', '2020', Icon(Icons.calendar_today)),
         ],
       ),
     );

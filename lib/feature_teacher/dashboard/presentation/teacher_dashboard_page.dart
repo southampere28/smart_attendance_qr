@@ -65,11 +65,19 @@ class TeacherDashboardPage extends StatelessWidget {
                           '${item.schedule.endTime.hour.toString().padLeft(2, '0')}:${item.schedule.endTime.minute.toString().padLeft(2, '0')}';
                       final scheduleInfo = '$startTime - $endTime';
 
-                      return TeacherSchedulePreviewCard(
-                        classTitle: item.classModel?.name ?? '-',
-                        subjectName: item.subject?.name ?? '-',
-                        scheduleInfo: scheduleInfo,
-                        codeQR: item.schedule.code,
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TeacherSchedulePreviewCard(
+                            classTitle: item.classModel?.name ?? '-',
+                            subjectName: item.subject?.name ?? '-',
+                            scheduleInfo: scheduleInfo,
+                            codeQR: item.schedule.code,
+                          ),
+                          (controller.dataSchedule.length - 1) == index
+                              ? SizedBox.shrink()
+                              : SpacingSize.spacingSMHeight,
+                        ],
                       );
                     },
                   );
@@ -77,38 +85,17 @@ class TeacherDashboardPage extends StatelessWidget {
               }),
 
               // button action see all classes
-              SpacingSize.spacingXSHeight,
+              SpacingSize.spacingLGHeight,
 
               ButtonPrimaryWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   borderRadius: 20,
-                  title: "Lihat Jadwal Kelas",
-                  callback: () {
-                    Get.toNamed(AppRoutes.scheduleClass);
-                  }),
-
-              SpacingSize.spacingSMHeight,
-
-              ButtonPrimaryWidget(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  borderRadius: 20,
-                  title: "Lihat Detail Kelas",
+                  title: "Lihat Semua Kelas",
                   callback: () {
                     Get.toNamed(AppRoutes.detailInformationClass);
                   }),
-              
-              SpacingSize.spacingSMHeight,
-              
-              ButtonPrimaryWidget(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  borderRadius: 20,
-                  title: "Lihat Absensi Siswa",
-                  callback: () {
-                    Get.toNamed(AppRoutes.attendanceStudentClass);
-                  }),
-              
-              SpacingSize.spacingSMHeight,
-              
+
+              SpacingSize.spacingHugeHeight,
             ],
           ),
         ),
@@ -182,10 +169,13 @@ class TeacherDashboardPage extends StatelessWidget {
                     size: 16, color: AppColor.primaryColor),
                 SpacingSize.spacingSMWidth,
                 Expanded(
-                    child: Text('Jalan Jendral Sudirman No. 123',
+                    child: Obx(() => Text(
+                        controller.placemarkVillage != 'No Data'
+                            ? '${controller.placemarkStreet}, ${controller.placemarkVillage}'
+                            : '-',
                         style: AppFontStyle.blueInfoText,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis)),
+                        overflow: TextOverflow.ellipsis))),
               ],
             ),
           )
