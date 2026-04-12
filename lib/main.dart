@@ -4,6 +4,7 @@ import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
+import 'package:absensi_qr/services/push_notification_service.dart';
 import 'package:absensi_qr/utils/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,8 @@ void main() async {
     Get.putAsync<EndpointService>(() async => await EndpointService().init()),
     Get.putAsync<GeolocationService>(
         () async => await GeolocationService().init()),
+    Get.putAsync<PushNotificationService>(
+      () async => await PushNotificationService().init()),
   ]);
   log("all services started ...");
 
