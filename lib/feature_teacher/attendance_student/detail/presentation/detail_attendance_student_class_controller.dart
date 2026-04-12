@@ -53,36 +53,37 @@ class DetailAttendanceStudentClassController extends GetxController {
     }
 
     // append dummy data for testing without altering original items
-    attendanceHistoryResult.addAll(_generateDummyAttendance(50));
+    // attendanceHistoryResult.addAll(_generateDummyAttendance(50));
   }
 
   /// trigger from primary page next time.
   /// todo here...
 
-  List<AttendanceHistory> _generateDummyAttendance(int count) {
-    final statuses = [
-      AttendanceStatusEnum.valid,
-      AttendanceStatusEnum.invalid,
-      AttendanceStatusEnum.alpha,
-      AttendanceStatusEnum.dispensation,
-    ];
+  // List<AttendanceHistory> _generateDummyAttendance(int count) {
+  //   final statuses = [
+  //     AttendanceStatusEnum.valid,
+  //     AttendanceStatusEnum.invalid,
+  //     AttendanceStatusEnum.alpha,
+  //     AttendanceStatusEnum.dispensation,
+  //   ];
 
-    return List<AttendanceHistory>.generate(count, (index) {
-      final status = statuses[index % statuses.length];
-      return AttendanceHistory(
-        idStudent: BigInt.from(10 + index),
-        idSchedule: BigInt.from(99 + index),
-        periodNumber: (index % 10) + 1,
-        status: status,
-        student: Student(
-          id: BigInt.from(10 + index),
-          idUser: BigInt.from(20 + index),
-          idClass: BigInt.from(30),
-          name: 'Dummy Student ${index + 1}',
-          entryYear: 2024,
-        ),
-        createdAt: DateTime.now().subtract(Duration(days: index)),
-      );
-    });
-  }
+  //   return List<AttendanceHistory>.generate(count, (index) {
+  //     final status = statuses[index % statuses.length];
+  //     return AttendanceHistory(
+  //       idStudent: BigInt.from(10 + index),
+  //       idSchedule: BigInt.from(99 + index),
+  //       periodNumber: (index % 10) + 1,
+  //       status: status,
+  //       student: Student(
+  //         id: BigInt.from(10 + index),
+  //         idUser: BigInt.from(20 + index),
+  //         idClass: BigInt.from(30),
+  //         name: 'Dummy Student ${index + 1}',
+  //         entryYear: 2024,
+  //       ),
+  //       createdAt: DateTime.now().subtract(Duration(days: index)),
+  //     );
+  //   });
+  // }
+
 }

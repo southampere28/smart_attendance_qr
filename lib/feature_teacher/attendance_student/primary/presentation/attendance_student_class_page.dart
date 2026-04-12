@@ -3,7 +3,6 @@ import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_controller.dart';
-import 'package:absensi_qr/models/model_merging/schedule_report_item.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +16,15 @@ class AttendanceStudentClassPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColor.backgroundColor,
+        elevation: 0,
+        centerTitle: false,
+        title: Text(
+          'Riwayat Absensi',
+          style: AppFontStyle.titleText.copyWith(color: Colors.black),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -24,6 +32,8 @@ class AttendanceStudentClassPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              // dummy class only.
+              Text('dummy class id: ${controller.dummyIdClass}'),
               Text('Riwayat Absensi',
                   style: AppFontStyle.titleText.copyWith(fontSize: 18)),
               Text('Semester Ganjil 2023/2024',
@@ -134,7 +144,8 @@ class AttendanceStudentClassPage extends StatelessWidget {
     return Card(
       child: GestureDetector(
         onTap: () {
-          Get.toNamed(AppRoutes.detailAttendanceStudentClass, arguments: item.attendances);
+          Get.toNamed(AppRoutes.detailAttendanceStudentClass,
+              arguments: item.attendances);
         },
         child: ListTile(
           title: Text(item.schedule.subject?.name ?? '(Mata Pelajaran)'),

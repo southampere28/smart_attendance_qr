@@ -111,7 +111,8 @@ class _DebugConfigPageState extends State<DebugConfigPage> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
-            Row(
+            Wrap(
+              spacing: 12,
               children: [
                 ElevatedButton.icon(
                   onPressed: _saving ? null : _save,

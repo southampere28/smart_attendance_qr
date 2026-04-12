@@ -15,6 +15,7 @@ enum AttendanceStatusEnum {
         return AttendanceStatusEnum.valid;
       
       case 'none':
+      case 'null':
         return AttendanceStatusEnum.none;
 
       case 'invalid':

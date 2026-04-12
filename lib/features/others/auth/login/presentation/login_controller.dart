@@ -51,7 +51,7 @@ class LoginController extends GetxController {
           if (context.mounted) {
             AppUtil.hideLoadingDialog(context);
           }
-          Get.toNamed(AppRoutes.dashboardTeacher);
+          Get.toNamed(AppRoutes.navigationTeacher);
         } else if (user.role == "student") {
           mainController.userData.value = user;
 

@@ -17,7 +17,7 @@ extension AttendanceStatusBadgeExt on AttendanceStatusEnum {
       case AttendanceStatusEnum.valid:
         return const AttendanceStatusBadge(
           color: Colors.green,
-          label: 'Sudah Absen',
+          label: 'Telah Absen',
         );
       case AttendanceStatusEnum.none:
         return const AttendanceStatusBadge(

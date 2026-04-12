@@ -92,6 +92,9 @@ class DetailInformationClassPage extends StatelessWidget {
                           title: "Pengumuman",
                           callback: () {
                             // Get.toNamed(AppRoutes.detailInformationClass);
+                            if (controller.selectedClassId == BigInt.from(-1)) {
+                              return;
+                            }
                             Get.toNamed(AppRoutes.sendAnnouncement, arguments: {
                               'classId': int.parse(controller.selectedClassId.toString()),
                               'className': controller.selectedItem.value,
