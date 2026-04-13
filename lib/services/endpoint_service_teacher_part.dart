@@ -383,7 +383,112 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
+  // reject permission by id permission (teacher only)
+  Future<ApiResult<Map<String, dynamic>>> rejectPermission(String permissionId, String reasonReject) async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstant.permissionReject),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken",
+        },
+        body: {
+          "permission_id": permissionId,
+          "feedback": reasonReject,
+        },
+      );
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        log("Permission rejected successfully: ${data["message"]}");
+        return ApiResult(
+          success: data["success"] ?? true,
+          message: data["message"] ?? "Permission rejected successfully",
+          data: data["data"] is Map<String, dynamic>
+              ? data["data"] as Map<String, dynamic>
+              : null,
+          statusCode: status,
+        );
+      } else {
+        log("Failed to reject permission: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Failed to reject permission",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to reject permission",
+        );
+      }
+    } catch (e) {
+      log("Exception while rejecting permission: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
   /// permission student feature zone END
+  
+
+  /// disrepancy report feature zone (teacher only)
+  
+  Future<ApiResult<Map<String, dynamic>>> submitDiscrepancyReport({
+    required String attendanceHistoryId,
+    required String disrepancyType,
+    required String reason,
+  }) async {
+
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstant.discrepancyReport),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken",
+        },
+        body: {
+          "attendance_history_id": attendanceHistoryId,
+          "disrepancy_type": disrepancyType,
+          "description": reason,
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        log("Discrepancy report submitted successfully: ${data["message"]}");
+        return ApiResult(
+          success: data["success"] ?? true,
+          message: data["message"] ?? "Discrepancy report submitted successfully",
+          data: data["data"] is Map<String, dynamic>
+              ? data["data"] as Map<String, dynamic>
+              : null,
+          statusCode: response.statusCode,
+        );
+      } else {
+        log("Failed to submit discrepancy report: ${response.body}");
+        final data = jsonDecode(response.body);
+        final rawErrors = data["errors"];
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Failed to submit discrepancy report",
+          statusCode: response.statusCode,
+          errors: rawErrors is Map<String, dynamic>
+              ? rawErrors
+              : {"message": rawErrors?.toString() ?? "Failed to submit discrepancy report"},
+        );
+      }
+    } catch (e) {
+      log("Exception while submitting discrepancy report: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+  
+  
+  /// disrepancy report feature zone END
 
 
 }
