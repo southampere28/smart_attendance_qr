@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_controller.dart';
+import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,26 +17,44 @@ class AttendanceStudentClassPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<AttendanceStudentClassController>();
 
-    return Scaffold(
-      backgroundColor: AppColor.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColor.backgroundColor,
-        elevation: 0,
-        centerTitle: false,
-        title: Text(
-          'Riwayat Absensi',
-          style: AppFontStyle.titleText.copyWith(color: Colors.black),
-        ),
-      ),
-      body: SingleChildScrollView(
+    return RefreshIndicator(
+      onRefresh: () async {
+        if (controller.selectedClassId != BigInt.from(-1)) {
+          await controller.fetchAttendanceHistory();
+        }
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // dummy class only.
-              Text('dummy class id: ${controller.dummyIdClass}'),
+              Text(
+                'Riwayat Absensi',
+                style: AppFontStyle.titleText.copyWith(color: Colors.black),
+              ),
+
+              Obx(() => DropdownInputWidget(
+                  title: 'Kelas',
+                  selected: controller.selectedItem.value,
+                  items: controller.classItemList.toList(),
+                  onChanged: (value) {
+                    // do something
+                    controller.selectedItem.value = value ?? '(Pilih Kelas)';
+
+                    if (value != null && value != '(Pilih Kelas)') {
+                      final selectedId = controller.classMap[value];
+                      log('Selected: $value, ID: $selectedId');
+                      controller.selectedClassId = selectedId!;
+                      controller.fetchAttendanceHistory();
+                    } else {
+                      controller.selectedClassId = BigInt.from(-1);
+                    }
+                  },
+                  hint: '(Pilih Kelas)')),
+
               Text('Riwayat Absensi',
                   style: AppFontStyle.titleText.copyWith(fontSize: 18)),
               Text('Semester Ganjil 2023/2024',

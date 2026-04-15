@@ -42,4 +42,25 @@ enum AttendanceStatusEnum {
         return AttendanceStatusEnum.none; // fallback aman
     }
   }
+
+}
+  extension AttendanceStatusEnumX on AttendanceStatusEnum {
+  String get title {
+    switch (this) {
+      case AttendanceStatusEnum.valid:
+        return 'Hadir';
+      case AttendanceStatusEnum.invalid:
+        return 'Tidak Valid';
+      case AttendanceStatusEnum.sick:
+        return 'Sakit';
+      case AttendanceStatusEnum.permission:
+        return 'Izin';
+      case AttendanceStatusEnum.dispensation:
+        return 'Dispensasi';
+      case AttendanceStatusEnum.alpha:
+        return 'Alpha';
+      case AttendanceStatusEnum.none:
+        return 'Unknown';
+    }
+  }
 }

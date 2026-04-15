@@ -26,11 +26,19 @@ class DashboardController extends GetxController {
 
   final DateTime dateNow = DateTime.now();
 
-  final DateTime dateDummyOnly = DateTime(2026, 2, 16);
+  final DateTime dateDummyOnly = DateTime(2026, 3, 16);
 
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   /// data zone
+  // profile student
+  final RxString name = ''.obs;
+  final RxString firstName = ''.obs;
+  final RxString nisn = ''.obs;
+  final RxString email = ''.obs;
+  final RxString className = ''.obs;
+  final RxString major = ''.obs;
+  final RxString entryYear = ''.obs;
 
   // attendance history
   RxBool isLoadingAttendanceHistory = true.obs;
@@ -79,19 +87,37 @@ class DashboardController extends GetxController {
       _geolocationService.placemarkResult.value?.subLocality ?? '';
 
   @override
-  void onInit() {
+  void onInit() async {
     // TODO: implement onInit
     super.onInit();
     if (!hasStudentData) {
       Fluttertoast.showToast(msg: 'msg_missing_student_data');
     } else {
       /// data student is available
-      getHistoryAttendance();
-      getAttendanceHistoryDaily();
+      _setProfileData();
+      await getHistoryAttendance();
+      await getAttendanceHistoryDaily();
+      await getHistoryAttendanceByClass();
     }
   }
 
   // service zone
+  _setProfileData() {
+    final String? emailService = _httpService.userData != null
+        ? (_httpService.userData!['email'] as String?)
+        : null;
+
+    name.value = _httpService.studentData?.name ?? '';
+    firstName.value = _httpService.studentData?.name?.split(' ').first ?? '';
+    nisn.value = _httpService.studentData?.nisn ?? '';
+    email.value = emailService ?? '';
+    className.value = _httpService.studentData?.classData?.name ?? '';
+    major.value = _httpService.studentData?.classData?.major ?? '';
+    entryYear.value = _httpService.studentData != null
+        ? _httpService.studentData!.entryYear.toString()
+        : '';
+  }
+
   // get attendance history by now
   Future<void> getHistoryAttendance() async {
     isLoadingAttendanceHistory.value = true;
@@ -177,9 +203,9 @@ class DashboardController extends GetxController {
 
     // attendanceBySchedule expects strings: idClass and date (YYYY-MM-DD)
     final String idClassStr = idClass.toString();
-    final String dateStr = '${dateNow.year.toString().padLeft(4, '0')}-'
-        '${dateNow.month.toString().padLeft(2, '0')}-'
-        '${dateNow.day.toString().padLeft(2, '0')}';
+    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
+        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
+        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
 
     final result = await _httpService.attendanceReportByScheduleClass(
         idClass: idClassStr, date: dateStr);

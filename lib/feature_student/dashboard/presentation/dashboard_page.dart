@@ -32,8 +32,9 @@ class DashboardPage extends StatelessWidget {
       width: double.infinity,
       child: RefreshIndicator(
         onRefresh: () async {
-          controller.getHistoryAttendance();
-          controller.getAttendanceHistoryDaily();
+          await controller.getHistoryAttendance();
+          await controller.getAttendanceHistoryDaily();
+          await controller.getHistoryAttendanceByClass();
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -49,20 +50,20 @@ class DashboardPage extends StatelessWidget {
 
                 /// content section
                 // weekend animation section
-                // Visibility(
-                //   visible: controller.isWeekend,
-                //   child: Column(
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       _weekendAnimationSection(),
-                //       SpacingSize.spacingLGHeight,
-                //     ],
-                //   ),
-                // ),
+                Visibility(
+                  visible: controller.isWeekend,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _weekendAnimationSection(),
+                      SpacingSize.spacingLGHeight,
+                    ],
+                  ),
+                ),
 
                 // normal content if not weekend
                 Visibility(
-                    visible: true,
+                    visible: !controller.isWeekend,
                     // visible: !controller.isWeekend,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +215,8 @@ class DashboardPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Halo, Pramudya!', style: AppFontStyle.titleText),
+                    Obx(() => Text('Halo, ${controller.firstName.value}!',
+                        style: AppFontStyle.titleText)),
                     Text(controller.dateNowFormatted,
                         style: AppFontStyle.subTitleText
                             .copyWith(fontWeight: FontWeight.normal)),
@@ -270,11 +272,9 @@ class DashboardPage extends StatelessWidget {
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingSMHeight,
-          controller.attendanceDailyResult.value == null
-              ? Text('Tidak ada data absensi harian',
-                  style: AppFontStyle.subTitleText)
-              : CardAttendanceDailyStatus(
-                  attendance: controller.attendanceDailyResult.value!),
+          CardAttendanceDailyStatus(
+            attendance: controller.attendanceDailyResult.value,
+          ),
         ],
       ),
     );
@@ -287,9 +287,21 @@ class DashboardPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Riwayat Absensi Hari Ini (30)',
-              style: AppFontStyle.primaryText
-                  .copyWith(fontWeight: FontWeight.bold)),
+          Row(
+            children: [
+              Expanded(
+                child: Text('Riwayat Absensi Hari Ini',
+                    style: AppFontStyle.primaryText
+                        .copyWith(fontWeight: FontWeight.bold)),
+              ),
+              SpacingSize.spacingXSWidth,
+              GestureDetector(
+                  onTap: () => controller.getHistoryAttendanceByClass(),
+                  child: Icon(Icons.replay,
+                      size: 20, color: AppColor.primaryColor)),
+              SpacingSize.spacingXSWidth,
+            ],
+          ),
           SpacingSize.spacingSMHeight,
           Obx(() {
             if (controller.isLoadingAttendanceByClassHistory.value) {
@@ -306,32 +318,44 @@ class DashboardPage extends StatelessWidget {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: controller.attendanceByClassHistoryResult.map((item) {
+                final allowedAttendanceFilter = item.attendances
+                    .where((attendanceItem) =>
+                        attendanceItem.attendanceStatus ==
+                            AttendanceStatusEnum.valid ||
+                        attendanceItem.attendanceStatus ==
+                            AttendanceStatusEnum.permission ||
+                        attendanceItem.attendanceStatus ==
+                            AttendanceStatusEnum.sick ||
+                        attendanceItem.attendanceStatus ==
+                            AttendanceStatusEnum.dispensation)
+                    .toList();
+
+                final attendanceItem = item.attendances.isNotEmpty
+                    ? allowedAttendanceFilter.first
+                    : null;
+
                 return CardAttendaceHistory(
                   subjectTitle:
                       item.schedule.subject?.name ?? 'Nama Mata Pelajaran',
                   classTitle: item.schedule.classData?.name ?? 'Nama Kelas',
-                  attendanceRecords: item.attendances
-                      .map((attendanceItem) => {
-                            'name': attendanceItem.attendance?.student?.name ??
-                                'Nama Siswa',
-                            'status': attendanceItem.attendanceStatus != null &&
-                                    attendanceItem.attendanceStatus ==
-                                        AttendanceStatusEnum.valid
-                                ? 'Sudah Absen'
-                                : 'Belum Absen'
-                          })
-                      .toList(),
+                  // attendanceRecords: item.attendances
+                  //     .map((attendanceItem) => {
+                  //           'name': attendanceItem.attendance?.student?.name ??
+                  //               'Nama Siswa',
+                  //           'status': attendanceItem.attendanceStatus != null &&
+                  //                   attendanceItem.attendanceStatus ==
+                  //                       AttendanceStatusEnum.valid
+                  //               ? 'Sudah Absen'
+                  //               : 'Belum Absen'
+                  //         })
+                  //     .toList(),
+                  attendanceRecords:
+                      attendanceItem != null ? [attendanceItem] : [],
                 );
               }).toList(),
             );
           }),
           SpacingSize.spacingMDHeight,
-          ElevatedButton(
-              onPressed: () {
-                // todo here...
-                controller.getHistoryAttendanceByClass();
-              },
-              child: Text('testing see all history')),
         ],
       ),
     );

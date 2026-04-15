@@ -1,6 +1,8 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
+import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
 import 'package:flutter/material.dart';
 
 class CardAttendaceHistory extends StatelessWidget {
@@ -13,7 +15,7 @@ class CardAttendaceHistory extends StatelessWidget {
   final String subjectTitle;
   final String classTitle;
   // final DateTime date;
-  final List<Map<String, String>> attendanceRecords; // sementara pakai map
+  final List<AttendanceReportItem> attendanceRecords; // sementara pakai map
   // example: [{'name': 'John Doe', 'status': 'Sudah Absen'}, {'name': 'Jane Smith', 'status': 'Belum Absen'}]
 
   @override
@@ -41,37 +43,50 @@ class CardAttendaceHistory extends StatelessWidget {
               ],
             ),
             SpacingSize.spacingBaseHeight,
-            ...attendanceRecords.map((record) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: AppColor.primaryColor,
-                            size: 20,
-                          ),
-                          SpacingSize.spacingXSWidth,
-                          Text(
-                            record['name'] ?? '(Anonymous)',
-                            style: AppFontStyle.primaryText,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      record['status'] ?? '',
-                      style: AppFontStyle.primaryText
-                          .copyWith(color: AppColor.colorTextSubtitle),
-                    ),
-                  ],
+            if (attendanceRecords.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'belum ada data absensi untuk jadwal ini',
+                  style: AppFontStyle.subTitleText.copyWith(
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              );
-            }).toList(),
+              )
+              
+            else
+              ...attendanceRecords.map((record) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person,
+                              color: AppColor.primaryColor,
+                              size: 20,
+                            ),
+                            SpacingSize.spacingXSWidth,
+                            Text(
+                              record.attendance?.student?.name ?? '(Anonymous)',
+                              style: AppFontStyle.primaryText,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        record.attendanceStatus?.title ?? 'Unknown',
+                        style: AppFontStyle.primaryText
+                            .copyWith(color: AppColor.colorTextSubtitle),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
           ],
         ));
   }
