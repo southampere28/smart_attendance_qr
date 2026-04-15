@@ -1,3 +1,5 @@
+import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/dialog_permission_detail.dart';
+import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -50,4 +52,26 @@ class AppUtil {
   static void hideLoadingDialog(BuildContext context) {
     Navigator.of(context, rootNavigator: true).pop();
   }
+
+  /// Dialog detail perizinan siswa.
+  /// [widthFactor] mengatur lebar dialog relatif terhadap lebar layar (default 0.88 = 88%).
+  /// Tombol Tolak/Setuju hanya muncul saat status perizinan masih "proses".
+  static void showPermissionDetailDialog(
+    BuildContext context, {
+    required PermissionStudentItem permissionData,
+    required VoidCallback onAccept,
+    required VoidCallback onReject,
+    double widthFactor = 0.88,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) => DialogPermissionDetail(
+        permissionData: permissionData,
+        onAccept: onAccept,
+        onReject: onReject,
+        widthFactor: widthFactor,
+      ),
+    );
+  }
+
 }

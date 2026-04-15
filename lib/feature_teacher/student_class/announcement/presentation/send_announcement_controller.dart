@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'package:absensi_qr/domain/enum/announcement_type_enum.dart';
 import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/services/class_cache_service.dart';
@@ -44,7 +45,7 @@ class SendAnnouncementController extends GetxController {
     if (arguments != null && arguments is Map<String, dynamic> && classIdArg != null) {
       final classId = arguments['classId'];
       log('Received classId: $classId');
-      this.classId = classId;
+      this.classId = int.tryParse(classId.toString());
       _initializeClasses();
     } else {
       log('No valid arguments received, proceeding without pre-selected class');

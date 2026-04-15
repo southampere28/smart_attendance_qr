@@ -139,7 +139,8 @@ class TeacherDashboardPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Halo, Nur', style: AppFontStyle.titleText),
+                    Obx(() => Text('Halo, ${controller.firstName.value}!',
+                        style: AppFontStyle.titleText)),
                     Text(controller.dateNowFormatted,
                         style: AppFontStyle.subTitleText
                             .copyWith(fontWeight: FontWeight.normal)),

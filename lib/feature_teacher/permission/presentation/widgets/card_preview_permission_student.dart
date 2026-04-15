@@ -16,12 +16,14 @@ class CardPreviewPermissionStudent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final datePermission = permissionData.permission.datePermission;
+    final datePermissionCreated = permissionData.permission.createdAt;
 
     final studentName = permissionData.student.name;
 
-    final dateFormatted =
-        PermissionHelper.formatDisplayPermissionInfo(datePermission);
+    final dateFormatted = datePermissionCreated != null
+        ? PermissionHelper.formattedDateCreatedPermissionInfo(
+            datePermissionCreated)
+        : '(tanggal tidak tersedia)';
 
     final formattedDisplayInfo =
         PermissionHelper.formattedPreviewPermissionInfo(

@@ -78,8 +78,7 @@ class ProfileTeacherPage extends StatelessWidget {
         children: [
           Text(
             'Informasi Akun',
-            style: AppFontStyle.primaryText
-                .copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+            style: AppFontStyle.titleText.copyWith(fontSize: 16),
           ),
           SpacingSize.spacingBaseHeight,
           _profileInfoItem('Nama', controller.name.value, Icon(Icons.person)),

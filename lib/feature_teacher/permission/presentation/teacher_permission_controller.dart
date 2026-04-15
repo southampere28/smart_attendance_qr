@@ -1,6 +1,9 @@
 import 'dart:developer';
 import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
+import 'package:absensi_qr/models/class_model.dart';
+import 'package:absensi_qr/models/model_merging/class_info_item.dart';
 import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
+import 'package:absensi_qr/services/class_cache_service.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
@@ -11,15 +14,26 @@ class TeacherPermissionController extends GetxController
     with GetSingleTickerProviderStateMixin {
   // service
   final EndpointService _httpService = Get.find<EndpointService>();
+  final ClassCacheService _cacheService = ClassCacheService();
+
+  // data class select zone.
+  // field dropwdown class selection
+  // data class detail information with student
+  final Rx<ClassInfoItem?> classInfo = Rx<ClassInfoItem?>(null);
+  // flag for selected class id
+  BigInt selectedClassId = BigInt.from(-1);
+  // dropdown items for class selection
+  var selectedItem = '(Pilih Kelas)'.obs;
+  RxList<ClassModel> classDataList = RxList<ClassModel>([]);
+  var classItemList = ['(Pilih Kelas)'].obs;
+  var classMap = <String, BigInt>{}.obs;
+  // data class select zone end.
 
   // data state
   final RxList<PermissionStudentItem> listPermission =
       <PermissionStudentItem>[].obs;
   final RxList<PermissionStudentItem> filteredListPermission =
       <PermissionStudentItem>[].obs;
-
-  // dummy class id for testing only
-  final int dummyClassId = 1;
 
   // flag
   RxBool isLoading = false.obs;
@@ -64,7 +78,12 @@ class TeacherPermissionController extends GetxController
       }
     });
 
-    getDataPermissionByClass(dummyClassId.toString());
+    scrapStudentClases(forceRefresh: true).then((success) {
+      if (success) {
+        getKelasItem();
+      }
+    });
+
   }
 
   // helper state
@@ -74,6 +93,69 @@ class TeacherPermissionController extends GetxController
   }
 
   // future function to api
+
+  // function to get item list
+  void getKelasItem() {
+    // Use reactive classDataList instead of global service data
+    if (classDataList.isNotEmpty) {
+      // Build new list to trigger reactivity
+      final newItems = ['(Pilih Kelas)'];
+      classMap.clear();
+
+      for (var i = 0; i < classDataList.length; i++) {
+        final name = classDataList[i].name;
+        final id = classDataList[i].id;
+
+        newItems.add(name);
+        classMap[name] = id;
+      }
+
+      // Assign once to trigger Obx update
+      classItemList.value = newItems;
+      log('Class map updated: ${classMap.toString()}');
+      log('Dropdown items: ${classItemList.length} items');
+    } else {
+      log('classDataList is empty!');
+    }
+  }
+
+  // Fetch classes from API with cache support
+  Future<bool> scrapStudentClases({bool forceRefresh = false}) async {
+    try {
+      // Check cache first (unless force refresh)
+      if (!forceRefresh) {
+        final cachedClasses = await _cacheService.loadCachedClasses();
+        if (cachedClasses != null) {
+          classDataList.value = cachedClasses;
+          return true;
+        }
+      }
+
+      // Fetch from API
+      final result = await _httpService.loadClasses();
+
+      if (result.success && result.data != null) {
+        // Update reactive list
+        classDataList.value = result.data!;
+
+        // Save to cache
+        await _cacheService.saveCachedClasses(result.data!);
+
+        log('Classes loaded from API: ${classDataList.length}');
+        return true;
+      } else {
+        log('Failed to load classes: ${result.message}');
+        Fluttertoast.showToast(msg: result.message ?? 'Failed to load classes');
+        return false;
+      }
+    } catch (e) {
+      log('Error loading classes: $e');
+      Fluttertoast.showToast(msg: 'Error loading classes');
+      return false;
+    }
+  }
+
+
   Future<void> getDataPermissionByClass(String classId) async {
     isLoading.value = true;
 
@@ -122,13 +204,37 @@ class TeacherPermissionController extends GetxController
       if (result != null && result.success) {
         Fluttertoast.showToast(msg: 'Permission accepted successfully!');
         // Refresh the permission list after accepting (optional, depending on API response)
-        getDataPermissionByClass(dummyClassId.toString());
+        getDataPermissionByClass(selectedClassId.toString());
       } else {
         Fluttertoast.showToast(
             msg: result.message ?? 'Failed to accept permission');
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Error accepting permission: $e');
+    }
+  }
+
+
+  Future<void> rejectPermission(BuildContext context, int permissionId, String reasonRejection) async {
+    AppUtil.showLoadingDialog(context, message: 'Rejecting permission...');
+
+    try {
+      final result =
+          await _httpService.rejectPermission(permissionId.toString(), reasonRejection);
+
+      // ignore: use_build_context_synchronously
+      AppUtil.hideLoadingDialog(context);
+
+      if (result != null && result.success) {
+        Fluttertoast.showToast(msg: 'Permission rejected successfully!');
+        // Refresh the permission list after rejecting (optional, depending on API response)
+        getDataPermissionByClass(selectedClassId.toString());
+      } else {
+        Fluttertoast.showToast(
+            msg: result.message ?? 'Failed to reject permission');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Error rejecting permission: $e');
     }
   }
 

@@ -24,7 +24,6 @@ class ProfileTeacherController extends GetxController {
     }
   }
 
-
   _setProfileData() {
     final String? emailService = _httpService.userData != null
       ? (_httpService.userData!['email'] as String?)
@@ -33,9 +32,6 @@ class ProfileTeacherController extends GetxController {
     name.value = _httpService.teacherData?.name ?? '';
     email.value = emailService ?? '';
     subject.value = _httpService.teacherData?.subject ?? '';
-    // entryYear.value = _httpService.teacherData != null
-    //   ? _httpService.teacherData!.entryYear.toString()
-    //   : '';
     nip.value = _httpService.teacherData?.nip ?? '';
   }
 

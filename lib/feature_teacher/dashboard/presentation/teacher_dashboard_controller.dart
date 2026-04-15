@@ -14,8 +14,16 @@ class TeacherDashboardController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxList<ScheduleReportItem> dataSchedule = <ScheduleReportItem>[].obs;
 
+  /// data profile
+  final RxString name = ''.obs;
+  final RxString firstName = ''.obs;
+  final RxString email = ''.obs;
+  final RxString subject = ''.obs;
+  final RxString nip = ''.obs;
+
+
   /// data geolocation
-  
+
   String get placemark => _geolocationService.outputPlacemark.value;
 
   // kota
@@ -44,10 +52,27 @@ class TeacherDashboardController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    _setProfileData();
     fetchTodayScheduleTeacher();
   }
 
   // === SERVICE ZONE ===
+  _setProfileData() {
+    final String? emailService = _httpService.userData != null
+      ? (_httpService.userData!['email'] as String?)
+      : null;
+
+    name.value = _httpService.teacherData?.name ?? '';
+
+    firstName.value = _httpService.teacherData?.name != null
+      ? _httpService.teacherData!.name.split(' ').first
+      : '';
+
+    email.value = emailService ?? '';
+    subject.value = _httpService.teacherData?.subject ?? '';
+    nip.value = _httpService.teacherData?.nip ?? '';
+  }
+
   Future<void> fetchTodayScheduleTeacher() async {
     isLoading.value = true;
 
@@ -75,4 +100,5 @@ class TeacherDashboardController extends GetxController {
     }
     isLoading.value = false;
   }
+
 }

@@ -12,4 +12,12 @@ class PermissionHelper {
     // to: Izin * 3 hari.
     return "$reason \u2022 $dayCount hari";
   }
+
+  // permission created.
+  static String formattedDateCreatedPermissionInfo(DateTime dateCreated) {
+    // to: Dibuat pada 10 Sep 2024 15:00
+    final dateFormat = DateFormat('d MMM yyyy HH:mm', 'id_ID');
+    return dateFormat.format(dateCreated);
+  }
+
 }
