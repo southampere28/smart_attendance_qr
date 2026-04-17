@@ -8,6 +8,7 @@ import 'package:absensi_qr/models/model_merging/schedule_student_attendance_repo
 import 'package:absensi_qr/services/class_cache_service.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
@@ -116,23 +117,28 @@ class AttendanceStudentClassController extends GetxController {
   }
 
   // future service.
-  Future<void> fetchAttendanceHistory() async {
-    AppUtil.showLoadingDialog(Get.context!,
-        message: 'Loading attendance history...');
+  Future<void> fetchAttendanceHistory(BuildContext context) async {
     isLoadingAttendanceHistory.value = true;
 
     // use dummy, change later to get from student data class id.
     if (selectedClassId == BigInt.from(-1)) {
-      AppUtil.hideLoadingDialog(Get.context!);
       Fluttertoast.showToast(msg: 'missing_class_id');
       isLoadingAttendanceHistory.value = false;
       return;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppUtil.showLoadingDialog(
+        context, message: 'Loading attendance history...');
+    });
 
     final result = await _httpService.teacherClasses(
       classId: selectedClassId.toString(),
       date: selectedDate.value,
     );
+
+    isLoadingAttendanceHistory.value = false;
+    // ignore: use_build_context_synchronously
+    AppUtil.hideLoadingDialog(context);
 
     if (result.success) {
       final List<dynamic>? rawList = result.data;
@@ -152,6 +158,5 @@ class AttendanceStudentClassController extends GetxController {
           msg: result.message ?? 'msg_failed_fetch_attendance');
     }
     isLoadingAttendanceHistory.value = false;
-    AppUtil.hideLoadingDialog(Get.context!);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
+import 'package:absensi_qr/domain/enum/disrepancy_type_enum.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:absensi_qr/models/user/student.dart';
 // import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
@@ -59,6 +60,26 @@ class DetailAttendanceStudentClassController extends GetxController {
   /// trigger from primary page next time.
   /// todo here...
 
+  // report specific student attendance by class and date
+  Future<void> submitDiscrepancyReport(
+    String idAttendanceHistory, DisrepancyTypeEnum disrepancyType, String reason) async {
+    // call service to report discrepancy
+    final result = await _httpService.submitDiscrepancyReport(
+      attendanceHistoryId: idAttendanceHistory,
+      disrepancyType: disrepancyType.name,
+      reason: reason,
+    );
+    if (result.success) {
+      log('Successfully reported attendance discrepancy for attendance history $idAttendanceHistory with type $disrepancyType and reason $reason');
+      // Optionally, refresh the attendance history after reporting
+      // fetchAttendanceHistory();
+    } else {
+      log('Failed to report attendance discrepancy: ${result.message}');
+      Get.snackbar(
+          'Error', result.message ?? 'Failed to report attendance discrepancy');
+    }
+  }
+
   // List<AttendanceHistory> _generateDummyAttendance(int count) {
   //   final statuses = [
   //     AttendanceStatusEnum.valid,
@@ -85,5 +106,4 @@ class DetailAttendanceStudentClassController extends GetxController {
   //     );
   //   });
   // }
-
 }

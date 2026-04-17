@@ -42,7 +42,9 @@ class SendAnnouncementController extends GetxController {
 
     log('Received arguments: $arguments');
 
-    if (arguments != null && arguments is Map<String, dynamic> && classIdArg != null) {
+    if (arguments != null &&
+        arguments is Map<String, dynamic> &&
+        classIdArg != null) {
       final classId = arguments['classId'];
       log('Received classId: $classId');
       this.classId = int.tryParse(classId.toString());
@@ -136,19 +138,29 @@ class SendAnnouncementController extends GetxController {
 
   // send announcement to backend
   Future<void> sendAnnouncement() async {
-    AppUtil.showLoadingDialog(Get.context!, message: "Mengirim pengumuman...");
+    if (Get.context != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.context != null) {
+          AppUtil.showLoadingDialog(Get.context!,
+              message: 'Mengirim pengumuman...');
+        }
+      });
+    }
 
     if (selectedId == BigInt.from(-1)) {
       Fluttertoast.showToast(msg: 'Pilih kelas terlebih dahulu');
-      AppUtil.hideLoadingDialog(Get.context!);
+      if (Get.context != null) {
+        AppUtil.hideLoadingDialog(Get.context!);
+      }
       return;
     }
     if (contentAnnouncementController.text.isEmpty) {
       Fluttertoast.showToast(msg: 'Isi pengumuman tidak boleh kosong');
-      AppUtil.hideLoadingDialog(Get.context!);
+      if (Get.context != null) {
+        AppUtil.hideLoadingDialog(Get.context!);
+      }
       return;
     }
-
 
     final result = await endpointService.sendAnnouncement(
       title: titleController.text,
@@ -158,14 +170,16 @@ class SendAnnouncementController extends GetxController {
           (e) => e.title == selectedType.value,
           orElse: () => AnnouncementTypeEnum.classCancelled),
     );
-    
-    AppUtil.hideLoadingDialog(Get.context!);
+    if (Get.context != null) {
+      AppUtil.hideLoadingDialog(Get.context!);
+    }
 
     if (result.success) {
       Fluttertoast.showToast(msg: 'Pengumuman berhasil dikirim');
       Get.back();
     } else {
-      Fluttertoast.showToast(msg: result.message ?? 'Gagal mengirim pengumuman');
+      Fluttertoast.showToast(
+          msg: result.message ?? 'Gagal mengirim pengumuman');
     }
   }
 }

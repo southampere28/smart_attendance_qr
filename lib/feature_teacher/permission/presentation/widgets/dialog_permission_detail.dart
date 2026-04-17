@@ -1,3 +1,4 @@
+import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -7,19 +8,6 @@ import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/form_
 import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
 import 'package:flutter/material.dart';
 
-/// Dialog detail perizinan siswa.
-///
-/// Tampilkan dengan:
-/// ```dart
-/// showDialog(
-///   context: context,
-///   builder: (_) => DialogPermissionDetail(
-///     permissionData: item,
-///     onAccept: () { ... },
-///     onReject: () { ... },
-///   ),
-/// );
-/// ```
 class DialogPermissionDetail extends StatelessWidget {
   const DialogPermissionDetail({
     super.key,
@@ -123,9 +111,11 @@ class DialogPermissionDetail extends StatelessWidget {
               ),
               SpacingSize.spacingSMHeight,
               _EvidenceImage(
-                imageUrl: 'https://dummyimage.com/600x400/000/fff.png&text=anjay',
+                imageUrl:
+                    '${ApiConstant.permissionEvidenceURL}/${permission.evidence}',
                 onTap: permission.evidence.isNotEmpty
-                    ? () => _openFullscreen(context, permission.evidence)
+                    ? () => _openFullscreen(context,
+                        '${ApiConstant.permissionEvidenceURL}/${permission.evidence}')
                     : null,
               ),
 
@@ -141,7 +131,8 @@ class DialogPermissionDetail extends StatelessWidget {
                           // onReject();
                           showDialog(
                             context: context,
-                            builder: (context) => FormPermissionRejection(onSubmit: onReject),
+                            builder: (context) =>
+                                FormPermissionRejection(onSubmit: onReject),
                           );
                         },
                         style: OutlinedButton.styleFrom(

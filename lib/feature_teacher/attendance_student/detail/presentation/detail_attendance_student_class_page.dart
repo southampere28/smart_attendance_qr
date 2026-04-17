@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/domain/enum/disrepancy_type_enum.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/detail/presentation/detail_attendance_student_class_controller.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:flutter/material.dart';
@@ -104,11 +105,8 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
                                       itemBuilder: (context, index) {
                                         final attendance = filtered[index];
                                         return _listTileStudent(
-                                          attendance.student?.name ??
-                                              '(No Name)',
-                                          controller.attendanceStatusMenu[
-                                                  attendance.status] ??
-                                              '(None)',
+                                          attendance,
+                                          controller,
                                         );
                                       },
                                     );
@@ -130,10 +128,11 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
     );
   }
 
-  Widget _listTileStudent(String name, String status) {
+  Widget _listTileStudent(AttendanceHistory attendance,
+      DetailAttendanceStudentClassController controller) {
     // color mapping for status
     Color getStatus() {
-      switch (status) {
+      switch (controller.attendanceStatusMenu[attendance.status]) {
         case 'Hadir':
           return AppColor.colorPresent;
         case 'Alpha':
@@ -155,7 +154,7 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
             SpacingSize.spacingSMWidth,
             Expanded(
               child: Text(
-                name,
+                attendance.student?.name ?? '(No Name)',
                 style: AppFontStyle.primaryText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -171,6 +170,15 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
                 onPressed: () {
                   // todo here...
                   Fluttertoast.showToast(msg: 'testingg.');
+                  if (attendance.id != null) {
+                    controller.submitDiscrepancyReport(
+                      attendance.id!.toString(),
+                      DisrepancyTypeEnum.hp_tidak_tersedia,
+                      'Laporan ketidaksesuaian untuk ${attendance.student?.name ?? '(No Name)'}',
+                    );
+                  } else {
+                    Fluttertoast.showToast(msg: 'ID absensi tidak tersedia');
+                  }
                 },
                 constraints: const BoxConstraints(),
                 icon: Icon(Icons.menu, size: 20, color: Colors.black54)),
