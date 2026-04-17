@@ -18,14 +18,12 @@ class SubjectPreviewCard extends StatelessWidget {
   final String teacherName;
   final String scheduleInfo;
 
-  final String badgeInfo; // next time change to enmm badge type
+  final AttendanceStatusBadge badgeInfo; // next time change to enmm badge type
   final bool isLive;
 
   @override
   Widget build(BuildContext context) {
-    final statusEnum = AttendanceStatusEnum.fromString(badgeInfo);
-
-    final badge = statusEnum.badge;
+    final badge = badgeInfo;
 
     return Container(
         width: double.infinity,

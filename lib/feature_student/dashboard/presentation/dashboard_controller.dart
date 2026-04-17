@@ -26,7 +26,7 @@ class DashboardController extends GetxController {
 
   final DateTime dateNow = DateTime.now();
 
-  final DateTime dateDummyOnly = DateTime(2026, 3, 16);
+  final DateTime dateDummyOnly = DateTime(2026, 2, 16);
 
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
@@ -132,9 +132,9 @@ class DashboardController extends GetxController {
 
     // attendanceBySchedule expects strings: idClass and date (YYYY-MM-DD)
     final String idClassStr = idClass.toString();
-    final String dateStr = '${dateNow.year.toString().padLeft(4, '0')}-'
-        '${dateNow.month.toString().padLeft(2, '0')}-'
-        '${dateNow.day.toString().padLeft(2, '0')}';
+    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
+        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
+        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
 
     final result = await _httpService.attendanceBySchedule(
       idClass: idClassStr,

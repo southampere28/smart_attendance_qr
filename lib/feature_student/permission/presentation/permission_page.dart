@@ -7,6 +7,7 @@ import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/permission_controller.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/models/permission_model.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -103,18 +104,23 @@ class PermissionPage extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: _cardPermissionContent(
-                        permission, controller.nameOfStudent),
+                        context, permission, controller.nameOfStudent),
                   );
                 },
               );
             }),
 
-            ButtonPrimaryWidget(
-                borderRadius: 20,
-                title: "Buat",
-                callback: () {
-                  Get.toNamed(AppRoutes.permissionForm);
-                }),
+            Obx(() {
+              return controller.statusSelected.value ==
+                      PermissionStatusEnum.proses
+                  ? ButtonPrimaryWidget(
+                      borderRadius: 20,
+                      title: "Buat",
+                      callback: () {
+                        Get.toNamed(AppRoutes.permissionForm);
+                      })
+                  : SizedBox.shrink();
+            }),
 
             SpacingSize.spacingHugeHeight,
 
@@ -130,6 +136,7 @@ class PermissionPage extends StatelessWidget {
   }
 
   Widget _cardPermissionContent(
+    BuildContext context,
     PermissionModel permission,
     String nameOfStudent,
   ) {
@@ -147,48 +154,62 @@ class PermissionPage extends StatelessWidget {
       PermissionStatusEnum.proses: Colors.orange,
     };
 
-    return Container(
-        padding: const EdgeInsets.all(16),
-        width: double.infinity,
-        // height: 150,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      reason,
-                      style: AppFontStyle.primaryText
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    SpacingSize.spacingXSHeight,
-                    Text(
-                      formattedDate,
-                      style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
-                    ),
-                  ],
-                )),
-                SpacingSize.spacingBaseWidth,
-                Text(
-                  status,
-                  style: AppFontStyle.subTitleText.copyWith(
-                      color: permissionStatusMap[permission.status] ??
-                          Colors.grey),
-                ),
-              ],
-            ),
-          ],
-        ));
+    return GestureDetector(
+      onTap: () {
+        // Handle tap event, e.g., navigate to detail page or show dialog
+        AppUtil.showPermissionDetailDialogStudent(
+          context,
+          permissionData: permission,
+          studentName: nameOfStudent,
+          onTap: () {
+            // handle to create new form permission.
+            Get.toNamed(AppRoutes.permissionForm);
+          },
+        );
+      },
+      child: Container(
+          padding: const EdgeInsets.all(16),
+          width: double.infinity,
+          // height: 150,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        reason,
+                        style: AppFontStyle.primaryText
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      SpacingSize.spacingXSHeight,
+                      Text(
+                        formattedDate,
+                        style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
+                      ),
+                    ],
+                  )),
+                  SpacingSize.spacingBaseWidth,
+                  Text(
+                    status,
+                    style: AppFontStyle.subTitleText.copyWith(
+                        color: permissionStatusMap[permission.status] ??
+                            Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          )),
+    );
   }
 }

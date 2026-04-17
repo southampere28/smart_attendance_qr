@@ -5,6 +5,7 @@ import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/core/helper/schedule_helper.dart';
 import 'package:absensi_qr/core/widgets/card_attendance_daily_status.dart';
 import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
+import 'package:absensi_qr/domain/common/badges/attendance_status_badge.dart';
 import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
@@ -12,6 +13,7 @@ import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_a
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
+import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -101,6 +103,11 @@ class DashboardPage extends StatelessWidget {
                                   ScheduleHelper.convertTime2Pad(
                                       item.schedule.endTime);
 
+                              final resolvedStatusAttendance =
+                                  item.attendance != null
+                                      ? item.attendance!.status
+                                      : AttendanceStatusEnum.none;
+
                               return SubjectPreviewCard(
                                 subjectName: item.schedule.subject?.name ??
                                     'Nama Mata Pelajaran',
@@ -108,10 +115,7 @@ class DashboardPage extends StatelessWidget {
                                     item.schedule.teacher?.name ?? 'Nama Guru',
                                 scheduleInfo:
                                     "${item.schedule.dayOfWeek}, $formattedTimeStart - $formattedTimeEnd",
-                                badgeInfo: item.attendanceStatus ==
-                                        AttendanceStatusEnum.valid
-                                    ? 'valid'
-                                    : 'none',
+                                badgeInfo: resolvedStatusAttendance.badge,
                                 isLive: false,
                               );
                             }).toList(),
@@ -323,6 +327,8 @@ class DashboardPage extends StatelessWidget {
                         attendanceItem.attendanceStatus ==
                             AttendanceStatusEnum.valid ||
                         attendanceItem.attendanceStatus ==
+                            AttendanceStatusEnum.invalid ||
+                        attendanceItem.attendanceStatus ==
                             AttendanceStatusEnum.permission ||
                         attendanceItem.attendanceStatus ==
                             AttendanceStatusEnum.sick ||
@@ -330,27 +336,11 @@ class DashboardPage extends StatelessWidget {
                             AttendanceStatusEnum.dispensation)
                     .toList();
 
-                final attendanceItem = item.attendances.isNotEmpty
-                    ? allowedAttendanceFilter.first
-                    : null;
-
                 return CardAttendaceHistory(
                   subjectTitle:
                       item.schedule.subject?.name ?? 'Nama Mata Pelajaran',
                   classTitle: item.schedule.classData?.name ?? 'Nama Kelas',
-                  // attendanceRecords: item.attendances
-                  //     .map((attendanceItem) => {
-                  //           'name': attendanceItem.attendance?.student?.name ??
-                  //               'Nama Siswa',
-                  //           'status': attendanceItem.attendanceStatus != null &&
-                  //                   attendanceItem.attendanceStatus ==
-                  //                       AttendanceStatusEnum.valid
-                  //               ? 'Sudah Absen'
-                  //               : 'Belum Absen'
-                  //         })
-                  //     .toList(),
-                  attendanceRecords:
-                      attendanceItem != null ? [attendanceItem] : [],
+                  attendanceRecords: allowedAttendanceFilter,
                 );
               }).toList(),
             );

@@ -3,11 +3,14 @@ import 'dart:developer';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class AttendanceController extends GetxController {
+class AttendanceController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final EndpointService _httpService = Get.find<EndpointService>();
   final RxBool isLoadingAttendanceHistory = true.obs;
   final RxBool isLoadingAttendanceDaily = true.obs;
@@ -53,12 +56,23 @@ class AttendanceController extends GetxController {
 
   Future<void> getHistoryAttendance() async {
     isLoadingAttendanceHistory.value = true;
+    if (Get.context != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.context != null) {
+          AppUtil.showLoadingDialog(Get.context!,
+              message: 'Loading attendance history...');
+        }
+      });
+    }
     // guard: ensure student data and class id available
     final BigInt? idClass = _httpService.studentData?.idClass;
 
     if (idClass == null) {
       Fluttertoast.showToast(msg: 'missing_class_id');
       isLoadingAttendanceHistory.value = false;
+      if (Get.context != null) {
+        AppUtil.hideLoadingDialog(Get.context!);
+      }
       return;
     }
 
@@ -77,6 +91,9 @@ class AttendanceController extends GetxController {
       idClass: idClassStr,
       date: dateStr,
     );
+    if (Get.context != null) {
+      AppUtil.hideLoadingDialog(Get.context!);
+    }
     log('attendanceBySchedule result success: ${result.success} status: ${result.statusCode}');
     if (result.success) {
       final List<dynamic>? raw = result.data;
