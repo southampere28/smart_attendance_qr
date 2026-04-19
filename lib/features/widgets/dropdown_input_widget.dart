@@ -1,5 +1,6 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:flutter/material.dart';
 
 class DropdownInputWidget extends StatelessWidget {
@@ -11,6 +12,7 @@ class DropdownInputWidget extends StatelessWidget {
     required this.onChanged,
     required this.hint,
     this.readOnly = false,
+    this.useTransparentBackground = true,
   });
 
   final String title;
@@ -19,6 +21,7 @@ class DropdownInputWidget extends StatelessWidget {
   final String hint;
   final void Function(String?)? onChanged;
   final bool readOnly;
+  final bool useTransparentBackground;
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +30,17 @@ class DropdownInputWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(title, style: AppFontStyle.primaryText),
-        const SizedBox(height: 10),
+        Text(title, style: AppFontStyle.subTitleText),
+        SpacingSize.spacingSMHeight,
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColor.inactiveColor, width: 2.0),
-            color: readOnly ? Colors.grey[300] : Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.colorOutlineBoxinput, width: 1),
+            color: useTransparentBackground
+                ? Colors.transparent
+                : AppColor.backgroundColor,
           ),
           child: DropdownButtonHideUnderline(
             child: Theme(
@@ -57,7 +62,7 @@ class DropdownInputWidget extends StatelessWidget {
                 style: AppFontStyle.primaryText,
                 onChanged: readOnly ? null : onChanged,
                 items: items.map(
-                      (String value) {
+                  (String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: SizedBox(
@@ -67,7 +72,8 @@ class DropdownInputWidget extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.visible,
                           softWrap: true,
-                          style: AppFontStyle.primaryText, // <-- biar teks-nya gak jadi abu
+                          style: AppFontStyle
+                              .primaryText, // <-- biar teks-nya gak jadi abu
                         ),
                       ),
                     );

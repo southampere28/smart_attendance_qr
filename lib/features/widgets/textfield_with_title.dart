@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:flutter/material.dart';
 
 import 'package:absensi_qr/constant/app_font_style.dart';
@@ -12,7 +13,10 @@ class TextfieldWithTitle extends StatelessWidget {
     required this.hintTxt,
     required this.keyboardType,
     this.customPadding,
+    this.useTransparentBackground = true,
     this.hide,
+    this.suffixIcon,
+    this.onTapSuffixIcon,
   });
 
   final String title;
@@ -20,7 +24,10 @@ class TextfieldWithTitle extends StatelessWidget {
   final String hintTxt;
   final TextInputType keyboardType;
   final EdgeInsetsGeometry? customPadding;
+  final bool useTransparentBackground;
   final bool? hide;
+  final IconData? suffixIcon;
+  final VoidCallback? onTapSuffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +40,16 @@ class TextfieldWithTitle extends StatelessWidget {
           title,
           style: AppFontStyle.subTitleText,
         ),
-        SizedBox(
-          height: 8,
-        ),
+        SpacingSize.spacingSMHeight,
         TextfieldInputWidget(
           controller: controller,
           hintTxt: hintTxt,
           keyboardType: keyboardType,
           hide: hide,
           customPadding: customPadding,
+          useTransparentBackground: useTransparentBackground,
+          suffixIcon: suffixIcon,
+          onTapSuffixIcon: onTapSuffixIcon,
         )
       ],
     );

@@ -24,6 +24,10 @@ class RegisterStudentController extends GetxController {
   var idClassController = TextEditingController();
   var entryYearController = TextEditingController();
 
+  // flag password visibility
+  var isPassObscure = true.obs;
+  var isConfirmPassObscure = true.obs;
+
   var selectedItem = '(Pilih Kelas)'.obs;
 
   BigInt selectedId = BigInt.from(-1);
@@ -102,9 +106,51 @@ class RegisterStudentController extends GetxController {
     getKelasItem();
   }
 
+  // validate all field before register
+  void validateAndSubmit(BuildContext context, String name, String email, String password, String confirmPassword,
+      String nisn, int idClass, int entryYear) {
+    // validate form
+    if (name.isEmpty) {
+      Get.snackbar('Error', 'Silahkan isi nama lengkap');
+      return;
+    } 
+    if (email.isEmpty) {
+      Get.snackbar('Error', 'Silahkan isi email');
+      return;
+    }
+    if (password.isEmpty) {
+      Get.snackbar('Error', 'Silahkan isi kata sandi');
+      return;
+    }
+    if (confirmPassController.text.isEmpty) {
+      Get.snackbar('Error', 'Silahkan isi konfirmasi kata sandi');
+      return;
+    }
+    if (nisn.isEmpty) {
+      Get.snackbar('Error', 'Silahkan isi NISN');
+      return;
+    }
+    if (idClass == -1) {
+      Get.snackbar('Error', 'Silahkan pilih kelas');
+      return;
+    }
+    if (entryYear <= 0) {
+      Get.snackbar('Error', 'Silahkan isi tahun masuk yang valid');
+      return;
+    }
+    if (password != confirmPassController.text) {
+      Get.snackbar('Error', 'Kata sandi dan konfirmasi kata sandi tidak cocok');
+      return;
+    }
+
+    // submit form
+    doRegister(context, name, email, password, confirmPassword, nisn, idClass, entryYear);
+  
+  }
+
   // function to register
   Future<void> doRegister(BuildContext context, String name, String email,
-      String password, String nisn, int idClass, int entryYear) async {
+      String password, String confirmPassword, String nisn, int idClass, int entryYear) async {
     isLoading.value = true;
     AppUtil.showLoadingDialog(context, message: "Register in process...");
 

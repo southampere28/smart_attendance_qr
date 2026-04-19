@@ -9,7 +9,10 @@ class TextfieldInputWidget extends StatelessWidget {
     required this.hintTxt,
     required this.keyboardType,
     this.customPadding,
+    this.useTransparentBackground = true,
     this.hide,
+    this.suffixIcon,
+    this.onTapSuffixIcon,
   });
 
   final TextEditingController controller;
@@ -17,13 +20,18 @@ class TextfieldInputWidget extends StatelessWidget {
   final TextInputType keyboardType;
   final bool? hide;
   final EdgeInsetsGeometry? customPadding;
+  final bool useTransparentBackground;
+  final IconData? suffixIcon;
+  final VoidCallback? onTapSuffixIcon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: customPadding ?? EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: AppColor.backgroundColor,
+        color: useTransparentBackground
+            ? Colors.transparent
+            : AppColor.backgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextFormField(
@@ -36,12 +44,24 @@ class TextfieldInputWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: AppColor.colorOutlineBoxinput),
           ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide:
+                BorderSide(color: AppColor.colorOutlineBoxinput, width: 1),
+          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.black, width: 1.5),
+            borderSide:
+                BorderSide(color: AppColor.colorTextSubtitle, width: 1.5),
           ),
           hintText: hintTxt,
           hintStyle: AppFontStyle.subTitleText,
+          suffixIcon: suffixIcon != null
+              ? GestureDetector(
+                  onTap: onTapSuffixIcon,
+                  child: Icon(suffixIcon),
+                )
+              : null,
         ),
       ),
     );
