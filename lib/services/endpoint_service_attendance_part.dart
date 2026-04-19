@@ -382,4 +382,50 @@ extension EndpointServiceAttendanceX on EndpointService {
       );
     }
   }
+
+  // get notification for student side
+  Future<ApiResult<List<Map<String, dynamic>>>> getStudentNotifications(String startDate, String endDate) async {
+    try {
+      // /api/student/notification?start_date=2026-04-10&end_date=2026-04-17
+      final response = await http.get(
+        Uri.parse('${ApiConstant.baseURL}/student/notifications?start_date=$startDate&end_date=$endDate'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        log("Message: ${data["message"]}");
+        log("Notifications: ${data["data"]}");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: List<Map<String, dynamic>>.from(data["data"]),
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Student notifications error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch student notifications",
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
+
 }

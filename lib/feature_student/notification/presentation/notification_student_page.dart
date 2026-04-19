@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -40,7 +42,21 @@ class NotificationStudentPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // each day, show the description like (hari ini, kemarin, 2 hari yang lalu, dst)
-              ..._buildNotificationSections(controller.dummyNotifications),
+              Obx(() => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: controller.isLoading.value
+                        ? [
+                            SpacingSize.spacingHugeHeight,
+                            Container(
+                              width: double.infinity,
+                              height: 300,
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(),
+                            )
+                          ]
+                        : _buildNotificationSections(
+                            context, controller.dataNotifications),
+                  )),
 
               SpacingSize.spacingHugeHeight,
               Text('Testing Zone',
@@ -48,6 +64,7 @@ class NotificationStudentPage extends StatelessWidget {
                       .copyWith(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               // field for testing topic name
+              // add obx to auto update the text field value when topic name is changed
               TextfieldInputWidget(
                   controller: controller.topicController,
                   hintTxt: 'Enter topic name',
@@ -63,9 +80,14 @@ class NotificationStudentPage extends StatelessWidget {
               ),
 
               ElevatedButton(
-                onPressed: () {
-                  controller.mainController.unsubscribeFromNotifications(
-                      controller.topicController.text);
+                onPressed: () async {
+                  final topic = controller.topicController.text;
+                  log('Topic: $topic'); // debug print
+                  if (topic.isEmpty) {
+                    log('Topic kosong!');
+                    return;
+                  }
+                  controller.mainController.unsubscribeFromNotifications(topic);
                 },
                 child: Text('Unsubscribe from Notifications'),
               )
@@ -77,15 +99,16 @@ class NotificationStudentPage extends StatelessWidget {
   }
 
   List<Widget> _buildNotificationSections(
+    BuildContext context,
     List<NotificationModel> notifications,
   ) {
     final Map<DateTime, List<NotificationModel>> groupedNotifications = {};
 
     for (final notification in notifications) {
       final DateTime dayKey = DateTime(
-        notification.dateTime.year,
-        notification.dateTime.month,
-        notification.dateTime.day,
+        notification.createdAt.year,
+        notification.createdAt.month,
+        notification.createdAt.day,
       );
 
       groupedNotifications.putIfAbsent(dayKey, () => []);
@@ -97,30 +120,28 @@ class NotificationStudentPage extends StatelessWidget {
 
     return sortedDays
         .map(
-          (day) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _formatDayLabel(day),
-                  style: AppFontStyle.primaryText.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primaryColor,
-                  ),
+          (day) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatDayLabel(day),
+                style: AppFontStyle.primaryText.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                SpacingSize.spacingXSHeight,
-                ...groupedNotifications[day]!
-                    .map(
-                      (notification) => _cardNotification(
-                        notification.title,
-                        notification.message,
-                        notification.dateTime,
-                      ),
-                    )
-                    .toList(),
-              ],
-            ),
+              ),
+              SpacingSize.spacingBaseHeight,
+              ...groupedNotifications[day]!
+                  .map(
+                    (notification) => _cardNotification(
+                      context,
+                      notification.title,
+                      notification.body,
+                      notification.createdAt,
+                      notification.type,
+                    ),
+                  )
+                  .toList(),
+            ],
           ),
         )
         .toList();
@@ -141,34 +162,48 @@ class NotificationStudentPage extends StatelessWidget {
       return 'Kemarin';
     }
 
-    if (diffDays > 1 && diffDays < 7) {
-      return '$diffDays hari yang lalu';
-    }
-
     return AppUtil.formatDateIndonesia(dateTime);
   }
 
-  Widget _cardNotification(String title, String message, DateTime dateTime) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: AppFontStyle.primaryText
-                  .copyWith(fontWeight: FontWeight.bold)),
-          SpacingSize.spacingXSHeight,
-          Text(message, style: AppFontStyle.subTitleText),
-          SpacingSize.spacingXSHeight,
-          Text(dateTime.toString(),
-              style: AppFontStyle.smallText.copyWith(color: Colors.black54)),
-        ],
+  Widget _cardNotification(BuildContext context, String title, String message,
+      DateTime dateTime, String? type) {
+    return GestureDetector(
+      onTap: () {
+        if (type == null) return;
+        final route = AppUtil.mapNotificationTypeToRoute(type);
+        if (route != null) {
+          Navigator.pushNamed(context, route);
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(title,
+                      style: AppFontStyle.primaryText
+                          .copyWith(fontWeight: FontWeight.w500)),
+                ),
+                SpacingSize.spacingMDWidth,
+                Text(
+                  AppUtil.formatTime(dateTime),
+                  style: AppFontStyle.primaryText
+                      .copyWith(color: AppColor.colorTextSubtitle),
+                ),
+              ],
+            ),
+            SpacingSize.spacingXSHeight,
+            Text(message, style: AppFontStyle.subTitleText),
+            SpacingSize.spacingXSHeight,
+            Divider(
+              color: AppColor.colorOutlineBoxinput,
+            )
+          ],
+        ),
       ),
     );
   }
