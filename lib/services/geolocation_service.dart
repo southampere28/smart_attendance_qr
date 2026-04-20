@@ -35,6 +35,17 @@ class GeolocationService extends GetxService {
 
   // =====================================
 
+  // cek penggunaan mockup location untuk terhindar dari kecurangan lokasi palsu user.
+  Future<bool> isMockLocation() async {
+    try {
+      final position = await _geolocatorPlatform.getCurrentPosition();
+      return position.isMocked;
+    } catch (e) {
+      log('Error checking mock location: $e');
+      return false; // Jika terjadi error, anggap bukan mock location
+    }
+  }
+
   Future<bool> getCurrentPosition(int limitSecond) async {
     final hasPermission = await _handlePermission();
 
@@ -64,7 +75,7 @@ class GeolocationService extends GetxService {
       //   toastLength: Toast.LENGTH_LONG,
       // );
 
-      Fluttertoast.showToast(msg: "lokasi telah di update");
+      // Fluttertoast.showToast(msg: "lokasi telah di update");
 
       if ((lattitude != '') &&
           (longitude != '')) {

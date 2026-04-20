@@ -42,7 +42,8 @@ class AttendanceStudentClassController extends GetxController {
   RxList<ScheduleStudentAttendanceReport> attendanceHistoryResult =
       <ScheduleStudentAttendanceReport>[].obs;
 
-  final Rx<AttendanceDaily?> attendanceDailyResult = Rx<AttendanceDaily?>(null);
+  final RxList<AttendanceDaily> attendanceDailyResult =
+      RxList<AttendanceDaily>([]);
 
   @override
   void onInit() {
@@ -127,11 +128,11 @@ class AttendanceStudentClassController extends GetxController {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppUtil.showLoadingDialog(
-        context, message: 'Loading attendance history...');
+      AppUtil.showLoadingDialog(context,
+          message: 'Loading attendance history...');
     });
 
-    final result = await _httpService.teacherClasses(
+    final result = await _httpService.teacherClassesAttendance(
       classId: selectedClassId.toString(),
       date: selectedDate.value,
     );
@@ -158,5 +159,51 @@ class AttendanceStudentClassController extends GetxController {
           msg: result.message ?? 'msg_failed_fetch_attendance');
     }
     isLoadingAttendanceHistory.value = false;
+  }
+
+  Future<void> fetchAttendanceDaily(BuildContext context) async {
+    isLoadingAttendanceDaily.value = true;
+
+    // use dummy, change later to get from student data class id.
+    if (selectedClassId == BigInt.from(-1)) {
+      Fluttertoast.showToast(msg: 'missing_class_id');
+      isLoadingAttendanceDaily.value = false;
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppUtil.showLoadingDialog(context,
+          message: 'Loading today attendance...');
+    });
+
+    // date: YYYY-MM-DD
+    final dateString = '${selectedDate.value.year.toString().padLeft(4, '0')}-'
+        '${selectedDate.value.month.toString().padLeft(2, '0')}-'
+        '${selectedDate.value.day.toString().padLeft(2, '0')}';
+
+    final result = await _httpService.fetchClassesAttendanceHistoryDaily(
+      classId: selectedClassId.toString(),
+      date: dateString,
+    );
+
+    isLoadingAttendanceDaily.value = false;
+    // ignore: use_build_context_synchronously
+    AppUtil.hideLoadingDialog(context);
+
+    if (result.success) {
+      final List<Map<String, dynamic>>? raw = result.data;
+      if (raw != null) {
+        final attendanceList =
+            raw.map((item) => AttendanceDaily.fromMap(item)).toList();
+        attendanceDailyResult.value = attendanceList;
+        log('Loaded daily attendance for class $selectedClassId on date ${selectedDate.value.toIso8601String()}');
+        log('Daily attendance count: ${attendanceDailyResult.length}');
+      } else {
+        attendanceDailyResult.clear();
+        Fluttertoast.showToast(msg: 'Data: No Data Found on This Date');
+      }
+    } else {
+      Fluttertoast.showToast(
+          msg: result.message ?? 'msg_failed_fetch_attendance');
+    }
   }
 }

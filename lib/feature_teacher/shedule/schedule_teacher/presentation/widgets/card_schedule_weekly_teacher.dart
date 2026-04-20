@@ -140,8 +140,8 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: _buildSceduleCard(
-                            classTitle, subjectName, scheduleInfo, item.schedule.code),
+                        child: _buildSceduleCard(classTitle, subjectName,
+                            scheduleInfo, item.schedule.code),
                       );
                     },
                   );
@@ -154,8 +154,8 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
     });
   }
 
-  Widget _buildSceduleCard(
-      String classTitle, String subjectName, String scheduleInfo, String codeQR) {
+  Widget _buildSceduleCard(String classTitle, String subjectName,
+      String scheduleInfo, String codeQR) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -216,10 +216,21 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
                 'subjectName': subjectName,
               });
             },
-            child: SvgPicture.asset(
-              AssetConstant.svgIconQR,
-              height: 30,
-              semanticsLabel: 'icon qr',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(
+                  AssetConstant.svgIconQR,
+                  height: 30,
+                  semanticsLabel: 'icon qr',
+                ),
+                SpacingSize.spacingXSHeight,
+                Text(
+                  "Kode QR",
+                  style: AppFontStyle.blueInfoText
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/widgets/dialog_permission_detail_student.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/dialog_permission_detail.dart';
 import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
@@ -11,6 +12,11 @@ class AppUtil {
   static String formatDate(DateTime date) {
     final formatter = DateFormat('MM dd yyyy');
     return formatter.format(date);
+  }
+
+  static String formatTime(DateTime time) {
+    final formatter = DateFormat('HH:mm');
+    return formatter.format(time);
   }
 
   static String formatDateIndonesia(DateTime date) {
@@ -108,5 +114,31 @@ class AppUtil {
         widthFactor: widthFactor,
       ),
     );
+  }
+
+  // notification feature mapping routes
+//   enum NotificationType: string
+// {
+//     case AnnouncementAcademic = 'announcement_academic';
+//     case AnnouncementGeneral = 'announcement_general';
+//     case LostAndFound = 'lost_and_found';
+//     case EmergencyInfo = 'emergency_info';
+//     case ClassCancelled = 'class_cancelled';
+//     case AnnouncementForClass = 'announcement_for_class';
+//     case Assignment = 'assignment';
+//     case Permission = 'permission';
+//     case AttendanceViolation = 'attendance_violation';
+//     case PersonalNote = 'personal_note';
+// }
+  static String? mapNotificationTypeToRoute(String notificationType, {bool isStudent = true}) {
+    switch (notificationType) {
+      case 'permission':
+        if (isStudent) {
+          return AppRoutes.permission;
+        }
+        return null;
+      default:
+        return null; // default route jika tipe tidak dikenali
+    }
   }
 }

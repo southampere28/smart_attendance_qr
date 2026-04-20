@@ -22,7 +22,7 @@ class ScheduleStudentAttendanceReport {
 
   factory ScheduleStudentAttendanceReport.fromMap(Map<String, dynamic> map) {
     final scheduleMap = (map['schedule'] ?? map) as Map<String, dynamic>;
-    final classMap = map['classModel'] ?? map['class'];
+    final classMap = map['classModel'] ?? map['class'] ?? scheduleMap['class'] ?? map['classroom'];
     final teacherMap = scheduleMap['teacher'] ?? map['teacher'] ?? scheduleMap['teacher_data'];
     final subjectMap = scheduleMap['subject'] ?? map['subject'];
     final schedule = Schedule.fromMap(scheduleMap);

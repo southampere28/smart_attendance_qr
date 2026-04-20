@@ -38,7 +38,7 @@ class DisrepancyReportModel {
         idStudent: map['id_student'] != null
           ? int.tryParse(map['id_student'].toString())
           : null,
-        studentName: map['student_name'] != null ? map['student_name'].toString() : null,
+        studentName: map['student_name']?.toString(),
         reportedBy: map['reported_by'] != null
           ? int.tryParse(map['reported_by'].toString())
           : null,

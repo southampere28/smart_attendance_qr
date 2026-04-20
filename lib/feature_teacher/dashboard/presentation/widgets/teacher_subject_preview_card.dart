@@ -31,40 +31,48 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  classTitle,
-                  style: AppFontStyle.primaryText
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  scheduleInfo,
-                  style: AppFontStyle.subTitleText,
-                )
-              ],
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    classTitle,
+                    style: AppFontStyle.primaryText
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SpacingSize.spacingXSHeight,
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                        AssetConstant.svgIconSubject,
+                        height: 16,
+                        semanticsLabel: 'icon subject',
+                      ),
+                      SpacingSize.spacingXSWidth,
+                      Text(
+                        subjectName,
+                        style: AppFontStyle.subTitleText,
+                      ),
+                    ],
+                  ),
+                  SpacingSize.spacingXSHeight,
+                  Row(
+                    children: [
+                      Icon(Icons.schedule,
+                          size: 16, color: AppColor.colorTextSubtitle),
+                      SpacingSize.spacingXSWidth,
+                      Text(
+                        scheduleInfo,
+                        style: AppFontStyle.subTitleText,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 4),
-            Row(
-              children: [
-                SvgPicture.asset(
-                  AssetConstant.svgIconSubject,
-                  height: 16,
-                  semanticsLabel: 'icon subject',
-                ),
-                SpacingSize.spacingXSWidth,
-                Text(
-                  subjectName,
-                  style: AppFontStyle.subTitleText,
-                ),
-              ],
-            ),
-            SizedBox(height: 4),
             GestureDetector(
               onTap: () {
                 Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
@@ -72,16 +80,17 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
                   'subjectName': subjectName,
                 });
               },
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(
                     AssetConstant.svgIconQR,
-                    height: 16,
+                    height: 30,
                     semanticsLabel: 'icon qr',
                   ),
-                  SpacingSize.spacingXSWidth,
+                  SpacingSize.spacingXSHeight,
                   Text(
-                    "Tampilkan QR",
+                    "Kode QR",
                     style: AppFontStyle.blueInfoText
                         .copyWith(fontWeight: FontWeight.w500),
                   ),

@@ -7,6 +7,7 @@ import 'package:absensi_qr/feature_teacher/permission/presentation/teacher_permi
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/card_preview_permission_student.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,6 +42,11 @@ class TeacherPermissionPage extends StatelessWidget {
                     'Perizinan',
                     style: AppFontStyle.titleText.copyWith(color: Colors.black),
                   ),
+                  SpacingSize.spacingBaseHeight,
+                  Text(
+                      'Using Dummy Date ${DateFormat('yyyy-MM-dd').format(controller.dummyStartDate)} - ${DateFormat('yyyy-MM-dd').format(controller.dummyEndDate)}',
+                      style: AppFontStyle.subTitleText),
+
                   // subtitle
                   Text('Daftar perizinan yang telah dibuat',
                       style: AppFontStyle.subTitleText),

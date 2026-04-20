@@ -83,7 +83,6 @@ class TeacherPermissionController extends GetxController
         getKelasItem();
       }
     });
-
   }
 
   // helper state
@@ -155,16 +154,24 @@ class TeacherPermissionController extends GetxController
     }
   }
 
+  // dummy date
+  final DateTime dummyEndDate = DateTime.now();
+  final DateTime dummyStartDate =
+      DateTime.now().subtract(const Duration(days: 30));
 
   Future<void> getDataPermissionByClass(String classId) async {
     isLoading.value = true;
 
-    // dummy date
-    // 2026-03-08
-    // final DateTime startDate = DateTime(2026, 3, 8);
-    // final DateTime endDate = DateTime(2026, 4, 15);
+    final String startDateStr =
+        '${dummyStartDate.year.toString().padLeft(4, '0')}-'
+        '${dummyStartDate.month.toString().padLeft(2, '0')}-'
+        '${dummyStartDate.day.toString().padLeft(2, '0')}';
+    final String endDateStr = '${dummyEndDate.year.toString().padLeft(4, '0')}-'
+        '${dummyEndDate.month.toString().padLeft(2, '0')}-'
+        '${dummyEndDate.day.toString().padLeft(2, '0')}';
 
-    var result = await _httpService.permissionByClass(classId);
+    var result =
+        await _httpService.permissionByClass(classId, startDateStr, endDateStr);
 
     if (result.success) {
       final List<Map<String, dynamic>>? raw = result.data;
@@ -214,13 +221,13 @@ class TeacherPermissionController extends GetxController
     }
   }
 
-
-  Future<void> rejectPermission(BuildContext context, int permissionId, String reasonRejection) async {
+  Future<void> rejectPermission(
+      BuildContext context, int permissionId, String reasonRejection) async {
     AppUtil.showLoadingDialog(context, message: 'Rejecting permission...');
 
     try {
-      final result =
-          await _httpService.rejectPermission(permissionId.toString(), reasonRejection);
+      final result = await _httpService.rejectPermission(
+          permissionId.toString(), reasonRejection);
 
       // ignore: use_build_context_synchronously
       AppUtil.hideLoadingDialog(context);

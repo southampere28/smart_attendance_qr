@@ -1,7 +1,8 @@
 part of 'endpoint_service.dart';
 
 extension EndpointServiceTeacherX on EndpointService {
-  Future<ApiResult<List<Map<String, dynamic>>>> teacherScheduleWeeklyPersonal() async {
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      teacherScheduleWeeklyPersonal() async {
     try {
       final response = await http
           .get(Uri.parse(ApiConstant.teacherScheduleWeeklyPersonal), headers: {
@@ -45,7 +46,8 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
-  Future<ApiResult<List<Map<String, dynamic>>>> teacherSchedulePersonal() async {
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      teacherSchedulePersonal() async {
     try {
       final response = await http
           .get(Uri.parse(ApiConstant.teacherSchedulePersonal), headers: {
@@ -89,7 +91,8 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
-  Future<ApiResult<List<Map<String, dynamic>>>> scheduleByClass(String classId) async {
+  Future<ApiResult<List<Map<String, dynamic>>>> scheduleByClass(
+      String classId) async {
     try {
       final response = await http.get(
           Uri.parse('${ApiConstant.teacherScheduleClass}/$classId'),
@@ -134,7 +137,8 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
-  Future<ApiResult<Map<String, dynamic>>> detailInformationClass(String classId) async {
+  Future<ApiResult<Map<String, dynamic>>> detailInformationClass(
+      String classId) async {
     try {
       final response = await http.get(
           Uri.parse('${ApiConstant.detailInformationClass}/$classId'),
@@ -174,8 +178,8 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
-  // teacher only can access this endpoint to get all class they teach
-  Future<ApiResult<List<Map<String, dynamic>>>> teacherClasses({
+  // teacher only can access this endpoint to get all attendance history of student in class by date.
+  Future<ApiResult<List<Map<String, dynamic>>>> teacherClassesAttendance({
     required String classId,
     required DateTime date,
   }) async {
@@ -229,12 +233,60 @@ extension EndpointServiceTeacherX on EndpointService {
     }
   }
 
+  // get all classes attendance history daily for teacher by date and class id.
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      fetchClassesAttendanceHistoryDaily(
+          {required String classId, required String date // in format YYYY-MM-DD
+          }) async {
+    try {
+      final response = await http.get(
+        // /api/teacher/attendance/daily/class?id_class=1&date=2026-03-16
+        Uri.parse(
+            '${ApiConstant.reportStudentAttendanceDailyByClass}?id_class=$classId&date=$date'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken"
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200 || status == 201) {
+        final attendanceList = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        return ApiResult(
+          success: true,
+          data: attendanceList,
+          message: data["message"] ?? "Success",
+          statusCode: status,
+        );
+      } else {
+        return ApiResult(
+          success: false,
+          message: data["message"] ?? "Failed to fetch data",
+          statusCode: status,
+        );
+      }
+    } catch (e) {
+      log("Exception: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
+
   // send notification topic for teacher
   Future<ApiResult<Map<String, dynamic>>> sendAnnouncement({
     required String? title,
     required String message,
     required String idClass,
-    required AnnouncementTypeEnum type, // "class_canceled", "assignment". (add later if needed)
+    required AnnouncementTypeEnum
+        type, // "class_canceled", "assignment". (add later if needed)
   }) async {
     try {
       final response = await http.post(
@@ -278,7 +330,10 @@ extension EndpointServiceTeacherX on EndpointService {
           statusCode: response.statusCode,
           errors: rawErrors is Map<String, dynamic>
               ? rawErrors
-              : {"message": rawErrors?.toString() ?? "Failed to send announcement"},
+              : {
+                  "message":
+                      rawErrors?.toString() ?? "Failed to send announcement"
+                },
         );
       }
     } catch (e) {
@@ -292,12 +347,17 @@ extension EndpointServiceTeacherX on EndpointService {
   }
 
   /// permission student feature zone
-  
+
   // get permission by class.
-  Future<ApiResult<List<Map<String, dynamic>>>> permissionByClass(String classId) async {
+  Future<ApiResult<List<Map<String, dynamic>>>> permissionByClass(
+    String classId,
+    String startDate, // in format YYYY-MM-DD
+    String endDate, // in format YYYY-MM-DD
+  ) async {
     try {
       final response = await http.get(
-          Uri.parse('${ApiConstant.permissionReportByClass}/$classId'),
+          Uri.parse(
+              '${ApiConstant.permissionReportByClass}/$classId?start_date=$startDate&end_date=$endDate'),
           headers: {
             "Accept": "application/json",
             "Authorization": "$tokenType $accessToken"
@@ -340,7 +400,8 @@ extension EndpointServiceTeacherX on EndpointService {
   }
 
   // accept permission by id permission (teacher only)
-  Future<ApiResult<Map<String, dynamic>>> acceptPermission(String permissionId) async {
+  Future<ApiResult<Map<String, dynamic>>> acceptPermission(
+      String permissionId) async {
     try {
       final response = await http.post(
         Uri.parse(ApiConstant.permissionAccept),
@@ -384,7 +445,8 @@ extension EndpointServiceTeacherX on EndpointService {
   }
 
   // reject permission by id permission (teacher only)
-  Future<ApiResult<Map<String, dynamic>>> rejectPermission(String permissionId, String reasonReject) async {
+  Future<ApiResult<Map<String, dynamic>>> rejectPermission(
+      String permissionId, String reasonReject) async {
     try {
       final response = await http.post(
         Uri.parse(ApiConstant.permissionReject),
@@ -429,16 +491,13 @@ extension EndpointServiceTeacherX on EndpointService {
   }
 
   /// permission student feature zone END
-  
 
   /// disrepancy report feature zone (teacher only)
-  
   Future<ApiResult<Map<String, dynamic>>> submitDiscrepancyReport({
     required String attendanceHistoryId,
     required String disrepancyType,
     required String reason,
   }) async {
-
     try {
       final response = await http.post(
         Uri.parse(ApiConstant.discrepancyReport),
@@ -458,7 +517,8 @@ extension EndpointServiceTeacherX on EndpointService {
         log("Discrepancy report submitted successfully: ${data["message"]}");
         return ApiResult(
           success: data["success"] ?? true,
-          message: data["message"] ?? "Discrepancy report submitted successfully",
+          message:
+              data["message"] ?? "Discrepancy report submitted successfully",
           data: data["data"] is Map<String, dynamic>
               ? data["data"] as Map<String, dynamic>
               : null,
@@ -474,7 +534,10 @@ extension EndpointServiceTeacherX on EndpointService {
           statusCode: response.statusCode,
           errors: rawErrors is Map<String, dynamic>
               ? rawErrors
-              : {"message": rawErrors?.toString() ?? "Failed to submit discrepancy report"},
+              : {
+                  "message": rawErrors?.toString() ??
+                      "Failed to submit discrepancy report"
+                },
         );
       }
     } catch (e) {
@@ -486,9 +549,9 @@ extension EndpointServiceTeacherX on EndpointService {
       );
     }
   }
-  
-  
+
   /// disrepancy report feature zone END
 
-
+  // get all announcement from teacher here.
+  // todo...
 }

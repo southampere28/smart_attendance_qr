@@ -11,10 +11,17 @@ class MainController extends GetxController {
   // firebase messaging instance
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
+  // academic periods active period
+  final RxString activeAcademicPeriod = ''.obs;
+
   // data user and profile.
   final Rx<User?> userData = Rx<User?>(null);
   final Rx<Student?> studentData = Rx<Student?>(null);
   final Rx<Teacher?> teacherData = Rx<Teacher?>(null);
+
+  // refresh trigger obx
+  final RxInt refreshHomeStudent = 0.obs;
+
 
   /// login (next use shared_preference and flutter_secure_storage)
   
@@ -42,6 +49,13 @@ class MainController extends GetxController {
     }
   }
 
+  // unsubscribe from list of topics
+  Future<void> unsubscribeFromMultipleTopics(List<String> topics) async {
+    for (var topic in topics) {
+      await unsubscribeFromNotifications(topic);
+    }
+  }
+
   // unsubscribe from notifications
   Future<void> unsubscribeFromNotifications(String topic) async {
     try {
@@ -50,6 +64,33 @@ class MainController extends GetxController {
     } catch (e) {
       log('Unsubscribe failed: $e');
     }
+  }
+
+  // logout student
+  Future<void> logout() async {
+    // clear all topic subscriptions (if needed)
+
+    // get unsubscribe topic based on user data.
+    List<String> userTopicSubscribe = [];
+
+    if (userData.value?.topicSubscribe != null && userData.value!.topicSubscribe != null && userData.value!.topicSubscribe != '') {
+      // split topics by comma and trim whitespace
+      userTopicSubscribe = userData.value!.topicSubscribe!
+          .split(',')
+          .map((topic) => topic.trim())
+          .toList();
+    }
+
+    // unsubscribe from all user topics
+    await unsubscribeFromMultipleTopics(userTopicSubscribe);
+    
+    // clear user data
+    userData.value = null;
+    studentData.value = null;
+    teacherData.value = null;
+
+    // refresh token to invalidate old subscriptions
+    await refreshToken();
   }
 
   // refresh token for resetting token when user logout
@@ -63,5 +104,6 @@ class MainController extends GetxController {
       return '';
     }
   }
+
 
 }

@@ -87,6 +87,14 @@ class AttendanceStudentClassPage extends StatelessWidget {
                 ),
               ),
               SpacingSize.spacingBaseHeight,
+
+              // testing only on button
+              ElevatedButton(
+                  onPressed: () {
+                    controller.fetchAttendanceDaily(context);
+                  },
+                  child: const Text("Refresh")),
+
               // this will shown as widget card with 2 separated sections: today and history.
               Container(
                 width: double.infinity,
@@ -141,8 +149,8 @@ class AttendanceStudentClassPage extends StatelessWidget {
                                         }).toList(),
                                         ElevatedButton(
                                             onPressed: () {
-                                              controller
-                                                  .fetchAttendanceHistory(context);
+                                              controller.fetchAttendanceHistory(
+                                                  context);
                                             },
                                             child: const Text("Refresh"))
                                       ]),

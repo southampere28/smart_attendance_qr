@@ -55,4 +55,34 @@ class EndpointService extends GetxService {
 
     return this;
   }
+
+  // general endpoint service methods.
+  // get academic periods.
+  // {{wifirumah}}/api/academic-periods/active
+  Future<ApiResult<Map<String, dynamic>>> getActiveAcademicPeriod() async {
+    final url = Uri.parse('${ApiConstant.baseURL}/academic-periods/active');
+    try {
+      final response = await http.get(url, headers: {
+        'Accept': 'application/json',
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = result['data'] as Map<String, dynamic>;
+        
+        log('getActiveAcademicPeriod response: $data');
+        return ApiResult(
+          success: true, 
+          data: data,
+        );
+      } else {
+        log('getActiveAcademicPeriod failed: ${response.statusCode} ${response.body}');
+        return ApiResult(success: false, message: 'Failed to get active academic period');
+      }
+    } catch (e) {
+      log('getActiveAcademicPeriod error: $e');
+      return ApiResult(success: false, message: 'Error occurred while fetching active academic period');
+    }
+  }
+
 }
