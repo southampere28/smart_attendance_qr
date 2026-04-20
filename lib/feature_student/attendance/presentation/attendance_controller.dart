@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 class AttendanceController extends GetxController
     with GetSingleTickerProviderStateMixin {
   final EndpointService _httpService = Get.find<EndpointService>();
+  final MainController mainController = Get.find<MainController>();
   final RxBool isLoadingAttendanceHistory = true.obs;
   final RxBool isLoadingAttendanceDaily = true.obs;
 
@@ -21,6 +23,8 @@ class AttendanceController extends GetxController
       <AttendanceReportItem>[].obs;
 
   final Rx<AttendanceDaily?> attendanceDailyResult = Rx<AttendanceDaily?>(null);
+
+  RxString get activeAcademicPeriod => mainController.activeAcademicPeriod;
 
   @override
   void onInit() {

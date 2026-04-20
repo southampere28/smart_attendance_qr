@@ -18,33 +18,51 @@ class CardSubjectWeekly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColor.colorOutlineBoxinput, width: 1.0),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              subjectName,
-              style: AppFontStyle.primaryText
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
-            SpacingSize.spacingXSHeight,
-            Text(
-              'Pengajar: $teacherName',
-              style: AppFontStyle.subTitleText,
-            ),
-            SpacingSize.spacingXSHeight,
-            Text(
-              scheduleInfo,
-              style: AppFontStyle.subTitleText,
-            ),
-          ],
-        ));
+      width: double.infinity,
+      padding: EdgeInsets.only(bottom: 6, left: 20, right: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            subjectName,
+            style:
+                AppFontStyle.primaryText.copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(
+                Icons.person,
+                size: 16,
+                color: AppColor.primaryColor,
+              ),
+              SpacingSize.spacingXSWidth,
+              Text(
+                teacherName,
+                style: AppFontStyle.subTitleText,
+              ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.schedule, size: 16, color: AppColor.colorTextSubtitle),
+              SpacingSize.spacingXSWidth,
+              Expanded(
+                child: Text(
+                  '$scheduleInfo WIB',
+                  style: AppFontStyle.subTitleText,
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            thickness: 1,
+            color: AppColor.colorOutlineBoxinput,
+          ),
+        ],
+      ),
+    );
   }
 }

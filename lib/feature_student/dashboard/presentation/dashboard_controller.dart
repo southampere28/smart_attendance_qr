@@ -15,18 +15,21 @@ class DashboardController extends GetxController {
   final EndpointService _httpService = Get.find<EndpointService>();
 
   final GeolocationService _geolocationService = Get.find<GeolocationService>();
+  final MainController mainController = Get.find<MainController>();
 
   var isConnected = false.obs;
 
   // is weekend check
   bool get isWeekend {
     final int weekday = dateNow.weekday;
-    return weekday == DateTime.sunday;
+    // return weekday == DateTime.sunday;
+    // for testing return false
+    return false;
   }
 
-  final DateTime dateNow = DateTime.now();
+  DateTime dateNow = DateTime.now();
 
-  final DateTime dateDummyOnly = DateTime(2026, 2, 16);
+  // final DateTime dateDummyOnly = DateTime(2026, 2, 16, 8, 0, 0);
 
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
@@ -44,6 +47,10 @@ class DashboardController extends GetxController {
   RxBool isLoadingAttendanceHistory = true.obs;
   RxList<AttendanceReportItem> attendanceHistoryResult =
       <AttendanceReportItem>[].obs;
+
+  // upcoming or ongoing attendance
+  RxBool isLoadingUpcomingOrOngoingAttendance = true.obs;
+  AttendanceReportItem? upcomingOrOngoingAttendanceResult;
 
   RxBool isLoadingAttendanceByClassHistory = true.obs;
   RxList<ScheduleAttendanceReport> attendanceByClassHistoryResult =
@@ -87,17 +94,33 @@ class DashboardController extends GetxController {
       _geolocationService.placemarkResult.value?.subLocality ?? '';
 
   @override
-  void onInit() async {
-    // TODO: implement onInit
+  void onInit() {
     super.onInit();
     if (!hasStudentData) {
       Fluttertoast.showToast(msg: 'msg_missing_student_data');
     } else {
       /// data student is available
       _setProfileData();
-      await getHistoryAttendance();
-      await getAttendanceHistoryDaily();
-      await getHistoryAttendanceByClass();
+      // Load data asynchronously without blocking controller initialization
+      _loadDashboardData();
+    }
+
+    ever(mainController.refreshHomeStudent, (_) {
+      _loadDashboardData();
+    });
+    
+  }
+
+  void _loadDashboardData() async {
+    try {
+      await Future.wait([
+        getHistoryAttendance(),
+        getAttendanceHistoryDaily(),
+        getHistoryAttendanceByClass(),
+      ]);
+      await getUpcomingOrOngoingAttendance();
+    } catch (e) {
+      log('Error loading dashboard data: $e');
     }
   }
 
@@ -132,9 +155,9 @@ class DashboardController extends GetxController {
 
     // attendanceBySchedule expects strings: idClass and date (YYYY-MM-DD)
     final String idClassStr = idClass.toString();
-    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
-        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
-        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
+    final String dateStr = '${dateNow.year.toString().padLeft(4, '0')}-'
+        '${dateNow.month.toString().padLeft(2, '0')}-'
+        '${dateNow.day.toString().padLeft(2, '0')}';
 
     final result = await _httpService.attendanceBySchedule(
       idClass: idClassStr,
@@ -158,15 +181,107 @@ class DashboardController extends GetxController {
     isLoadingAttendanceHistory.value = false;
   }
 
+  // get upcoming or ongoing attendance based on history attendance
+  Future<void> getUpcomingOrOngoingAttendance() async {
+    isLoadingUpcomingOrOngoingAttendance.value = true;
+
+    log('data attendance history count: ${attendanceHistoryResult.length}');
+
+    /// load data index 0
+    log('data attendance history index 0: ${attendanceHistoryResult.isNotEmpty ? attendanceHistoryResult[0].schedule.toString() : 'No Data'}');
+
+    /// dummy date for testing
+
+    try {
+      if (attendanceHistoryResult.isNotEmpty) {
+        // Step 1: Try to find ONGOING attendance
+        final ongoing = attendanceHistoryResult.firstWhereOrNull((item) {
+          final timeStart = item.schedule.startTime;
+          final timeEnd = item.schedule.endTime;
+
+          final todayStartTime = DateTime(
+            dateNow.year,
+            dateNow.month,
+            dateNow.day,
+            timeStart.hour,
+            timeStart.minute,
+            timeStart.second,
+          );
+
+          final todayEndTime = DateTime(
+            dateNow.year,
+            dateNow.month,
+            dateNow.day,
+            timeEnd.hour,
+            timeEnd.minute,
+            timeEnd.second,
+          );
+
+          if (timeStart != null && timeEnd != null) {
+            return dateNow.isAfter(todayStartTime) &&
+                dateNow.isBefore(todayEndTime);
+          }
+          return false;
+        });
+
+        if (ongoing != null) {
+          upcomingOrOngoingAttendanceResult = ongoing;
+        } else {
+          // Step 2: No ongoing, find UPCOMING (nearest/terdekat)
+          final upcomingList = <AttendanceReportItem>[];
+
+          for (final item in attendanceHistoryResult) {
+            final timeStart = item.schedule.startTime;
+
+            if (timeStart == null) continue;
+
+            final todayStartTime = DateTime(
+              dateNow.year,
+              dateNow.month,
+              dateNow.day,
+              timeStart.hour,
+              timeStart.minute,
+              timeStart.second,
+            );
+
+            // Collect all upcoming items
+            if (dateNow.isBefore(todayStartTime)) {
+              upcomingList.add(item);
+            }
+          }
+
+          if (upcomingList.isNotEmpty) {
+            // Sort by startTime ascending to get the nearest upcoming
+            upcomingList.sort(
+              (a, b) => a.schedule.startTime.compareTo(b.schedule.startTime),
+            );
+            upcomingOrOngoingAttendanceResult = upcomingList.first;
+            log('Found nearest upcoming attendance at ${upcomingList.first.schedule.startTime}');
+          } else {
+            upcomingOrOngoingAttendanceResult = null;
+            log('No upcoming or ongoing attendance found');
+          }
+        }
+      } else {
+        upcomingOrOngoingAttendanceResult = null;
+        log('Attendance history is empty');
+      }
+    } catch (e) {
+      upcomingOrOngoingAttendanceResult = null;
+      log('Error getting upcoming attendance: $e');
+    }
+    isLoadingUpcomingOrOngoingAttendance.value = false;
+  }
+
   // get attendance daily by class history.
   Future<void> getAttendanceHistoryDaily() async {
     isLoadingAttendanceDaily.value = true;
 
-    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
-        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
-        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
+    final String dateStr = '${dateNow.year.toString().padLeft(4, '0')}-'
+        '${dateNow.month.toString().padLeft(2, '0')}-'
+        '${dateNow.day.toString().padLeft(2, '0')}';
 
-    final result = await _httpService.attendanceReportDaily(dateDummyOnly);
+    final result = await _httpService.attendanceReportDaily(dateNow);
     log('attendanceReportDaily result success: ${result.success} status: ${result.statusCode}');
 
     if (result.success) {
@@ -203,9 +318,9 @@ class DashboardController extends GetxController {
 
     // attendanceBySchedule expects strings: idClass and date (YYYY-MM-DD)
     final String idClassStr = idClass.toString();
-    final String dateStr = '${dateDummyOnly.year.toString().padLeft(4, '0')}-'
-        '${dateDummyOnly.month.toString().padLeft(2, '0')}-'
-        '${dateDummyOnly.day.toString().padLeft(2, '0')}';
+    final String dateStr = '${dateNow.year.toString().padLeft(4, '0')}-'
+        '${dateNow.month.toString().padLeft(2, '0')}-'
+        '${dateNow.day.toString().padLeft(2, '0')}';
 
     final result = await _httpService.attendanceReportByScheduleClass(
         idClass: idClassStr, date: dateStr);

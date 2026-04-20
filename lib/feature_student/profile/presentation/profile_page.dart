@@ -63,9 +63,9 @@ class ProfilePage extends StatelessWidget {
                       Icon(Icons.calendar_today)),
                   SpacingSize.spacingBaseHeight,
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // temporary only, logout and go to choose role page
-                      Get.offAllNamed(AppRoutes.chooserRoleUser);
+                      await controller.logout(context);
                     },
                     child: Text('logout'),
                   )

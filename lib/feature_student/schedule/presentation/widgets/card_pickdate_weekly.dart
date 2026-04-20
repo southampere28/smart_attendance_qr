@@ -22,29 +22,21 @@ class CardPickdateWeekly extends StatelessWidget {
       final int indexSelected = controller.indexSelected.value;
 
       return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         width: double.infinity,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColor.colorOutlineBoxinput,
-            width: 1.0,
-          ),
-        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(day.length, (index) {
             final bool isSelected = index == indexSelected;
 
             final titleStyle = isSelected
-                ? AppFontStyle.smallText
+                ? AppFontStyle.smallText.copyWith(color: AppColor.primaryColor)
                 : AppFontStyle.smallText.copyWith(
                     color: AppColor.colorTextSubtitle,
                   );
 
             final dateStyle = isSelected
-                ? AppFontStyle.primaryText.copyWith(fontSize: 20)
+                ? AppFontStyle.blueInfoText.copyWith(fontSize: 20)
                 : AppFontStyle.primaryText.copyWith(
                     color: AppColor.colorTextSubtitle,
                     fontSize: 20,

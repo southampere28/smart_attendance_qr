@@ -3,17 +3,19 @@ import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/core/helper/schedule_helper.dart';
+import 'package:absensi_qr/core/widgets/attendance_status_icon_widget.dart';
 import 'package:absensi_qr/core/widgets/card_attendance_daily_status.dart';
 import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
 import 'package:absensi_qr/domain/common/badges/attendance_status_badge.dart';
+import 'package:absensi_qr/domain/common/icons/attendance_status_icon.dart';
 import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
+import 'package:absensi_qr/feature_student/attendance/presentation/widgets/card_attendance_date_schedule.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
+import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/upcoming_attendance_card.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
-import 'package:absensi_qr/models/attendance_daily.dart';
-import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -34,9 +36,13 @@ class DashboardPage extends StatelessWidget {
       width: double.infinity,
       child: RefreshIndicator(
         onRefresh: () async {
-          await controller.getHistoryAttendance();
-          await controller.getAttendanceHistoryDaily();
-          await controller.getHistoryAttendanceByClass();
+          controller.dateNow = DateTime.now();
+          await Future.wait([
+            controller.getHistoryAttendance(),
+            controller.getAttendanceHistoryDaily(),
+            controller.getHistoryAttendanceByClass(),
+          ]);
+          await controller.getUpcomingOrOngoingAttendance();
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -71,6 +77,66 @@ class DashboardPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // upcoming schedule section
+                        Obx(() {
+                          if (controller
+                              .isLoadingUpcomingOrOngoingAttendance.value) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: ShimmerLoadCard(
+                                shimmerItemCount: 1,
+                              ),
+                            );
+                          }
+
+                          if (controller.upcomingOrOngoingAttendanceResult ==
+                              null) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Tidak ada absensi yang sedang berlangsung atau akan datang',
+                                  style: AppFontStyle.titleText,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final item =
+                              controller.upcomingOrOngoingAttendanceResult!;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: UpcomingAttendanceCard(
+                              timeStart: item.schedule.startTime,
+                              timeEnd: item.schedule.endTime,
+                              subjectName: item.schedule.subject?.name ??
+                                  'Nama Mata Pelajaran',
+                              teacherName:
+                                  item.schedule.teacher?.name ?? 'Nama Guru',
+                              attendanceStatus: item.attendanceStatus ??
+                                  AttendanceStatusEnum.none,
+                            ),
+                          );
+                        }),
+
+                        SpacingSize.spacingLGHeight,
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text('Mapel hari ini',
+                              style: AppFontStyle.subTitleText),
+                        ),
+
+                        // all attending schedule today
                         Obx(() {
                           if (controller.isLoadingAttendanceHistory.value) {
                             return Padding(
@@ -85,42 +151,48 @@ class DashboardPage extends StatelessWidget {
                           if (controller.attendanceHistoryResult.isEmpty) {
                             return Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 8),
+                                  horizontal: 16, vertical: 8),
                               child: Text('Tidak ada riwayat absensi hari ini',
                                   style: AppFontStyle.subTitleText),
                             );
                           }
 
                           // show list of attendance items
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                controller.attendanceHistoryResult.map((item) {
-                              final formattedTimeStart =
-                                  ScheduleHelper.convertTime2Pad(
-                                      item.schedule.startTime);
-                              final formattedTimeEnd =
-                                  ScheduleHelper.convertTime2Pad(
-                                      item.schedule.endTime);
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: controller.attendanceHistoryResult
+                                  .map((item) {
+                                final resolvedStatusAttendance =
+                                    item.attendance != null
+                                        ? item.attendance!.status
+                                        : AttendanceStatusEnum.none;
 
-                              final resolvedStatusAttendance =
-                                  item.attendance != null
-                                      ? item.attendance!.status
-                                      : AttendanceStatusEnum.none;
-
-                              return SubjectPreviewCard(
-                                subjectName: item.schedule.subject?.name ??
-                                    'Nama Mata Pelajaran',
-                                teacherName:
-                                    item.schedule.teacher?.name ?? 'Nama Guru',
-                                scheduleInfo:
-                                    "${item.schedule.dayOfWeek}, $formattedTimeStart - $formattedTimeEnd",
-                                badgeInfo: resolvedStatusAttendance.badge,
-                                isLive: false,
-                              );
-                            }).toList(),
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SubjectPreviewCard(
+                                      subjectName:
+                                          item.schedule.subject?.name ??
+                                              'Nama Mata Pelajaran',
+                                      attendanceDateTime:
+                                          item.attendance?.createdAt,
+                                      badgeInfo: resolvedStatusAttendance,
+                                    ),
+                                    if (item !=
+                                        controller.attendanceHistoryResult.last)
+                                      SpacingSize.spacingSMHeight,
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                           );
                         }),
+                        SpacingSize.spacingBaseHeight,
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: ButtonPrimaryWidget(
@@ -149,34 +221,36 @@ class DashboardPage extends StatelessWidget {
                       ],
                     )),
 
+                SpacingSize.spacingHugeHeight,
+
                 /// testing only
-                SizedBox(
-                  height: 300,
-                ),
-                Text('Dashboard Page'),
-                ElevatedButton(
-                    onPressed: () {
-                      controller.checkConnection();
-                    },
-                    child: Text('testconnection')),
-                SizedBox(
-                  height: 30,
-                ),
-                Obx(() => Text(
-                      controller.placemark != ''
-                          ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
-                          : 'Location: not fetched yet',
-                      style: AppFontStyle.primaryText,
-                    )),
-                SizedBox(
-                  height: 30,
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      // do something here
-                      await controller.getLocation();
-                    },
-                    child: Text('Check Status Location'))
+                // SizedBox(
+                //   height: 300,
+                // ),
+                // Text('Dashboard Page'),
+                // ElevatedButton(
+                //     onPressed: () {
+                //       controller.checkConnection();
+                //     },
+                //     child: Text('testconnection')),
+                // SizedBox(
+                //   height: 30,
+                // ),
+                // Obx(() => Text(
+                //       controller.placemark != ''
+                //           ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
+                //           : 'Location: not fetched yet',
+                //       style: AppFontStyle.primaryText,
+                //     )),
+                // SizedBox(
+                //   height: 30,
+                // ),
+                // ElevatedButton(
+                //     onPressed: () async {
+                //       // do something here
+                //       await controller.getLocation();
+                //     },
+                //     child: Text('Check Status Location'))
               ]),
         ),
       ),
@@ -227,10 +301,15 @@ class DashboardPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.notifications,
-                color: AppColor.primaryColor,
-                size: 30,
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(AppRoutes.notificationStudent);
+                },
+                child: Icon(
+                  Icons.notifications,
+                  color: AppColor.primaryColor,
+                  size: 30,
+                ),
               ),
             ],
           ),
@@ -336,11 +415,18 @@ class DashboardPage extends StatelessWidget {
                             AttendanceStatusEnum.dispensation)
                     .toList();
 
-                return CardAttendaceHistory(
-                  subjectTitle:
-                      item.schedule.subject?.name ?? 'Nama Mata Pelajaran',
-                  classTitle: item.schedule.classData?.name ?? 'Nama Kelas',
-                  attendanceRecords: allowedAttendanceFilter,
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CardAttendaceHistory(
+                      subjectTitle:
+                          item.schedule.subject?.name ?? 'Nama Mata Pelajaran',
+                      classTitle: item.schedule.classData?.name ?? 'Nama Kelas',
+                      attendanceRecords: allowedAttendanceFilter,
+                    ),
+                    if (item != controller.attendanceByClassHistoryResult.last)
+                      SpacingSize.spacingSMHeight,
+                  ],
                 );
               }).toList(),
             );

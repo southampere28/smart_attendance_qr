@@ -44,18 +44,32 @@ class SchedulePage extends StatelessWidget {
               physics: AlwaysScrollableScrollPhysics(),
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                padding: EdgeInsets.all(10),
+                // padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SpacingSize.spacingBaseHeight,
+                    Text(controller.monthYearOfWeek,
+                        style: AppFontStyle.primaryText
+                            .copyWith(fontWeight: FontWeight.bold)),
+                    SpacingSize.spacingMDHeight,
                     CardPickdateWeekly(
                       day: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
                       dateDay: controller.dateOfWeek,
                       controller: controller,
                     ),
                     SpacingSize.spacingBaseHeight,
+                    Divider(
+                      thickness: 1,
+                      color: AppColor.colorOutlineBoxinput,
+                    ),
+                    SpacingSize.spacingXSHeight,
                     Obx(() {
                       if (controller.isLoading.value) {
                         return ShimmerLoadCard(
@@ -78,29 +92,41 @@ class SchedulePage extends StatelessWidget {
                       }
 
                       return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: controller.filteredSchedule.map(
-                          (item) {
-                            final schedule = item;
-
-                            final startTime = ScheduleHelper.convertTime2Pad(
-                                schedule.startTime);
-                            final endTime = ScheduleHelper.convertTime2Pad(
-                                schedule.endTime);
-
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 12),
-                              child: CardSubjectWeekly(
-                                subjectName: schedule.subject?.name ??
-                                    '(Tidak Diketahui)',
-                                teacherName: schedule.teacher?.name ??
-                                    '(Tidak Diketahui)',
-                                scheduleInfo: '$startTime - $endTime WIB',
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: Text(
+                                'Mata Pelajaran',
+                                style: AppFontStyle.subTitleText
+                                    .copyWith(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.start,
                               ),
-                            );
-                          },
-                        ).toList(),
-                      );
+                            ),
+                            SpacingSize.spacingMDHeight,
+                            ...controller.filteredSchedule.map(
+                              (item) {
+                                final schedule = item;
+
+                                final startTime =
+                                    ScheduleHelper.convertTime2Pad(
+                                        schedule.startTime);
+                                final endTime = ScheduleHelper.convertTime2Pad(
+                                    schedule.endTime);
+
+                                return CardSubjectWeekly(
+                                  subjectName: schedule.subject?.name ??
+                                      '(Tidak Diketahui)',
+                                  teacherName: schedule.teacher?.name ??
+                                      '(Tidak Diketahui)',
+                                  scheduleInfo: '$startTime - $endTime WIB',
+                                );
+                              },
+                            ).toList(),
+                            SpacingSize.spacingHugeHeight,
+                          ]);
                     }),
                   ],
                 ),

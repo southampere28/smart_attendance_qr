@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/user/user.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 class QrController extends GetxController {
   late MobileScannerController scannerController;
   EndpointService apiService = Get.find<EndpointService>();
+  MainController mainController = Get.find<MainController>();
   GeolocationService _geoService = Get.find<GeolocationService>();
 
   // loading
@@ -51,12 +53,34 @@ class QrController extends GetxController {
     required String qrcode,
   }) async {
     try {
+      // check mockup location first to prevent cheating with fake location by user.
+      var isMockLocation = await _geoService.isMockLocation();
+
+      if (isMockLocation) {
+        Fluttertoast.showToast(
+            msg:
+                'Terdeteksi penggunaan mock location, pastikan Anda tidak menggunakan aplikasi fake location untuk melakukan absensi.');
+        // reset lokasi untuk mencegah kecurangan lebih lanjut
+        _geoService.lattitude = '';
+        _geoService.longitude = '';
+
+        // reset placemark value
+        _geoService.outputPlacemark.value = '';
+        _geoService.placemarkResult.value = null;
+
+        Get.back();
+        return;
+      }
+
       if ((_geoService.lattitude != '') && (_geoService.longitude != '')) {
         await doQrAttendance(
             idStudent: idStudent,
             idClass: idClass,
             qrcode: qrcode,
             context: context);
+        if (context.mounted) {
+          AppUtil.hideLoadingDialog(context);
+        }
       } else {
         Fluttertoast.showToast(msg: 'mencoba mendapatkan lokasi');
         var getLocation = await _geoService.getCurrentPosition(30);
@@ -69,17 +93,19 @@ class QrController extends GetxController {
             idClass: idClass,
             qrcode: qrcode,
           );
+          if (context.mounted) {
+            AppUtil.hideLoadingDialog(context);
+          }
         } else {
           Get.back();
         }
       }
     } catch (e, st) {
-      log("Error saat startScan: $e");
-      log("$st");
-    } finally {
       if (context.mounted) {
         AppUtil.hideLoadingDialog(context);
       }
+      log("Error saat startScan: $e");
+      log("$st");
     }
   }
 
@@ -108,12 +134,17 @@ class QrController extends GetxController {
       }
 
       if (result.success) {
+        mainController.refreshHomeStudent.value++;
         schedule.value = result.data?["schedule"] ?? {};
         attendance.value = result.data?["attendance"] ?? {};
 
         log("Absensi sukses: Berhasil");
         Fluttertoast.showToast(msg: 'Absensi Berhasil!');
-        Get.offNamed(AppRoutes.navigation);
+        
+        // Wait a moment for listener to trigger, then go back
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.back();
+        
       } else {
         log("Absensi gagal: ${result.message}");
         if (result.statusCode != 500) {
@@ -122,10 +153,12 @@ class QrController extends GetxController {
                 msg: result.message != null
                     ? 'gagal!, ${result.message}'
                     : 'Absensi Gagal');
-            Get.offNamed(AppRoutes.navigation);
+            // Wait a moment for listener to trigger, then go back
+            await Future.delayed(const Duration(milliseconds: 500));
+            Get.back();
           } else {
             Fluttertoast.showToast(msg: 'gagal!, Periksa Jaringan Anda');
-            Get.offNamed(AppRoutes.navigation);
+            Get.back();
           }
         } else {
           Fluttertoast.showToast(msg: 'Error Server 500!');

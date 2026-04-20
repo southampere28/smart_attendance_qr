@@ -62,6 +62,7 @@ class NavigationPage extends StatelessWidget {
     final NavigationController controller = Get.find<NavigationController>();
 
     return Scaffold(
+      backgroundColor: AppColor.backgroundColor,
       body: SafeArea(
         child: Obx(() => controller.pages[controller.currentIndex.value]),
       ),

@@ -25,8 +25,7 @@ class CardAttendaceHistory extends StatelessWidget {
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColor.colorOutlineBoxinput, width: 1.0),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +53,6 @@ class CardAttendaceHistory extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               )
-              
             else
               ...attendanceRecords.map((record) {
                 return Padding(

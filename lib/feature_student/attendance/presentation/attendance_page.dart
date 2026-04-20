@@ -25,8 +25,9 @@ class AttendancePage extends StatelessWidget {
             children: [
               Text('Riwayat Absensi',
                   style: AppFontStyle.titleText.copyWith(fontSize: 18)),
-              Text('Semester Ganjil 2023/2024',
-                  style: AppFontStyle.subTitleText),
+              Obx(() => Text(
+                  'Semester ${controller.activeAcademicPeriod.value}',
+                  style: AppFontStyle.subTitleText)),
               SpacingSize.spacingBaseHeight,
               // this will shown as calendar widget.
               Container(
