@@ -1,9 +1,12 @@
 import 'package:absensi_qr/app_routes.dart';
+import 'package:absensi_qr/constant/app_color.dart';
+import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/widgets/dialog_permission_detail_student.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/dialog_permission_detail.dart';
 import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
 import 'package:absensi_qr/models/permission_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -141,4 +144,19 @@ class AppUtil {
         return null; // default route jika tipe tidak dikenali
     }
   }
+
+  // getx snackbar helper
+  static void showGetSnackBar(String message, {bool isError = false}) {
+    Get.snackbar(
+      '',
+      '',
+      messageText: Text(message, style: AppFontStyle.primaryText.copyWith(color: isError ? Colors.white : Colors.black),),
+      backgroundColor: isError ? Colors.red : AppColor.successColor,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+  // note: how to call the getx snack bar:
+  // AppUtil.showGetSnackBar('This is a success message');
+
+
 }

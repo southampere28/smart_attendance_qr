@@ -142,7 +142,7 @@ class QrController extends GetxController {
         Fluttertoast.showToast(msg: 'Absensi Berhasil!');
         
         // Wait a moment for listener to trigger, then go back
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 1000));
         Get.back();
         
       } else {

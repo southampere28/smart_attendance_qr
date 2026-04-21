@@ -137,7 +137,8 @@ class LoginPage extends StatelessWidget {
                               const SizedBox(width: 4),
                               GestureDetector(
                                 onTap: () {
-                                  Get.toNamed(AppRoutes.registerStudent);
+                                  // Get.toNamed(AppRoutes.registerStudent);
+                                  Get.toNamed(AppRoutes.registerTeacher);
                                 },
                                 child: Text(
                                   'Buat Akun Siswa',
@@ -149,16 +150,16 @@ class LoginPage extends StatelessWidget {
                               )
                             ],
                           ),
-                          if (kDebugMode) ...[
-                            const SizedBox(height: 16),
-                            Center(
-                              child: TextButton(
-                                onPressed: () =>
-                                    Get.toNamed(AppRoutes.debugConfig),
-                                child: const Text('Atur Base URL (Debug)'),
-                              ),
-                            ),
-                          ],
+                          // if (kDebugMode) ...[
+                          //   const SizedBox(height: 16),
+                          //   Center(
+                          //     child: TextButton(
+                          //       onPressed: () =>
+                          //           Get.toNamed(AppRoutes.debugConfig),
+                          //       child: const Text('Atur Base URL (Debug)'),
+                          //     ),
+                          //   ),
+                          // ],
                         ],
                       ),
                     ),

@@ -11,6 +11,7 @@ class ScheduleStudentAttendanceReport {
   final Teacher? teacher;
   final Subject? subject;
   final List<AttendanceHistory> attendances;
+  final DateTime? dateAttendance;
 
   ScheduleStudentAttendanceReport({
     required this.schedule,
@@ -18,12 +19,17 @@ class ScheduleStudentAttendanceReport {
     this.teacher,
     this.subject,
     this.attendances = const [],
+    this.dateAttendance,
   });
 
   factory ScheduleStudentAttendanceReport.fromMap(Map<String, dynamic> map) {
     final scheduleMap = (map['schedule'] ?? map) as Map<String, dynamic>;
-    final classMap = map['classModel'] ?? map['class'] ?? scheduleMap['class'] ?? map['classroom'];
-    final teacherMap = scheduleMap['teacher'] ?? map['teacher'] ?? scheduleMap['teacher_data'];
+    final classMap = map['classModel'] ??
+        map['class'] ??
+        scheduleMap['class'] ??
+        map['classroom'];
+    final teacherMap =
+        scheduleMap['teacher'] ?? map['teacher'] ?? scheduleMap['teacher_data'];
     final subjectMap = scheduleMap['subject'] ?? map['subject'];
     final schedule = Schedule.fromMap(scheduleMap);
 
@@ -54,10 +60,32 @@ class ScheduleStudentAttendanceReport {
 
     return ScheduleStudentAttendanceReport(
       schedule: schedule,
-      classModel: classMap != null ? ClassModel.fromMap(classMap as Map<String, dynamic>) : null,
-      teacher: teacherMap != null ? Teacher.fromMap(teacherMap as Map<String, dynamic>) : null,
-      subject: subjectMap != null ? Subject.fromMap(subjectMap as Map<String, dynamic>) : null,
+      classModel: classMap != null
+          ? ClassModel.fromMap(classMap as Map<String, dynamic>)
+          : null,
+      teacher: teacherMap != null
+          ? Teacher.fromMap(teacherMap as Map<String, dynamic>)
+          : null,
+      subject: subjectMap != null
+          ? Subject.fromMap(subjectMap as Map<String, dynamic>)
+          : null,
       attendances: attendances,
+      dateAttendance: _parseDateTime(map['date_attendance']?.toString()) ??
+          _parseDateTime(map['date']?.toString()),
     );
+  }
+
+  /// Parse DateTime safely, handle invalid format gracefully
+  static DateTime? _parseDateTime(dynamic dateStr) {
+    try {
+      // handle iso string: date_attendance: 2026-04-22T00:00:00+07:00
+      if (dateStr is String) {
+        return DateTime.parse(dateStr);
+      }
+      return null;
+    
+    } catch (e) {
+      return null;
+    }
   }
 }

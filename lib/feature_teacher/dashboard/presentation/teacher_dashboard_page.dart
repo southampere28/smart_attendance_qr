@@ -2,6 +2,7 @@ import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_controller.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/widgets/statistic_card_teacher.dart';
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/widgets/teacher_subject_preview_card.dart';
@@ -38,7 +39,9 @@ class TeacherDashboardPage extends StatelessWidget {
               SpacingSize.spacingXLHeight,
               Obx(() {
                 if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
+                  return ShimmerLoadCard(
+                    shimmerItemCount: 1,
+                  );
                 } else {
                   if (controller.statiscticAttendanceToday.value == null) {
                     return Center(

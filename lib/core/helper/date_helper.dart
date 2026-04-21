@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class DateHelper {
   static DateTime? parseToLocal(dynamic v) {
     if (v == null) return null;
@@ -19,6 +21,12 @@ class DateHelper {
       return DateTime.now();
     }
     return parsed;
+  }
+
+  // format to day, with date and month in indonesian, ex: Senin, 17 Sep 2025
+  static String formatToDayDateMonthIndonesia(DateTime date) {
+    final formatter = DateFormat('EEEE, dd MMMM yyyy', 'id_ID');
+    return formatter.format(date);
   }
 
   static String formatToWIBTime(DateTime date) {

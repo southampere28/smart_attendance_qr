@@ -18,7 +18,7 @@ class AppColor {
   static const Color colorHeader = Color(0xffC3DFEC);
 
   // attendance color theme
-  static const Color colorPresent = primaryColor;
+  static const Color colorPresent = Color(0xff36B37E);
   static const Color colorPermission = Color(0xffFFCA28);
   static const Color colorAlpha = Color(0xffFF383C);
 

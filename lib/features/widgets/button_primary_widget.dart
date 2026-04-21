@@ -11,6 +11,9 @@ class ButtonPrimaryWidget extends StatelessWidget {
     this.customTextStyle,
     this.customPadding,
     this.margin,
+    this.customColor,
+    this.isMaxWidth = true,
+    this.isOutlineButton = false,
   });
 
   final String title;
@@ -19,23 +22,35 @@ class ButtonPrimaryWidget extends StatelessWidget {
   final TextStyle? customTextStyle;
   final EdgeInsetsGeometry? customPadding;
   final EdgeInsetsGeometry? margin;
+  final Color? customColor;
+  final bool isMaxWidth;
+  final bool isOutlineButton;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: margin ?? EdgeInsets.zero,
-      width: double.infinity,
+      width: isMaxWidth ? double.infinity : null,
       child: TextButton(
           onPressed: callback,
           style: TextButton.styleFrom(
-            backgroundColor: AppColor.primaryColor,
+            backgroundColor: isOutlineButton
+                ? Colors.transparent
+                : (customColor ?? AppColor.primaryColor),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12)),
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
+                side: isOutlineButton
+                    ? BorderSide(color: customColor ?? AppColor.primaryColor)
+                    : BorderSide.none),
             padding: customPadding ?? const EdgeInsets.all(8),
           ),
           child: Text(
             title,
-            style: customTextStyle ?? AppFontStyle.whiteBigText,
+            style: customTextStyle ??
+                AppFontStyle.whiteBigText.copyWith(
+                    color: isOutlineButton
+                        ? (customColor ?? AppColor.primaryColor)
+                        : Colors.white),
           )),
     );
   }

@@ -173,8 +173,7 @@ class AttendanceStudentClassPage extends StatelessWidget {
     return Card(
       child: GestureDetector(
         onTap: () {
-          Get.toNamed(AppRoutes.detailAttendanceStudentClass,
-              arguments: item.attendances);
+          Get.toNamed(AppRoutes.detailAttendanceStudentClass, arguments: item);
         },
         child: ListTile(
           title: Text(item.schedule.subject?.name ?? '(Mata Pelajaran)'),

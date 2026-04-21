@@ -2,9 +2,11 @@ import 'dart:developer';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/domain/enum/disrepancy_type_enum.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
-import 'package:absensi_qr/models/user/student.dart';
+import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 // import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:absensi_qr/utils/app_util.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class DetailAttendanceStudentClassController extends GetxController {
@@ -13,6 +15,9 @@ class DetailAttendanceStudentClassController extends GetxController {
 
   // get data attendance from argument (test only, change using single source of truth later like AttendanceStudentClassController).
   // for better dynamic state data passing, consider using GetX state management with observable variables and update them based on the data fetched from the service.
+
+  ScheduleStudentAttendanceReport attendanceReport =
+      Get.arguments as ScheduleStudentAttendanceReport;
   RxList<AttendanceHistory> attendanceHistoryResult = <AttendanceHistory>[].obs;
 
   // list of menus for attendance status.
@@ -39,10 +44,12 @@ class DetailAttendanceStudentClassController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    // argument is 
     final args = Get.arguments;
-    if (args != null && args is List<AttendanceHistory>) {
-      attendanceHistoryResult.value = args;
-      log('Received attendance history data with ${args.length} items');
+    if (args != null && args is ScheduleStudentAttendanceReport) {
+      attendanceReport = args;
+      attendanceHistoryResult.value = attendanceReport.attendances;
+      log('Received attendance history data with ${attendanceHistoryResult.length} items');
       // print data as json for debugging
       for (var attendance in attendanceHistoryResult) {
         log('Attendance item: ${attendance.toJson()}');
@@ -62,13 +69,28 @@ class DetailAttendanceStudentClassController extends GetxController {
 
   // report specific student attendance by class and date
   Future<void> submitDiscrepancyReport(
-    String idAttendanceHistory, DisrepancyTypeEnum disrepancyType, String reason) async {
+      BuildContext context,
+      String idAttendanceHistory,
+      DisrepancyTypeEnum disrepancyType,
+      String reason) async {
+    // loading dialog
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppUtil.showLoadingDialog(context,
+          message: 'Loading attendance history...');
+    });
+
     // call service to report discrepancy
     final result = await _httpService.submitDiscrepancyReport(
       attendanceHistoryId: idAttendanceHistory,
       disrepancyType: disrepancyType.name,
       reason: reason,
     );
+
+    // hide loading dialog
+    if (context.mounted) {
+      AppUtil.hideLoadingDialog(context);
+    }
+
     if (result.success) {
       log('Successfully reported attendance discrepancy for attendance history $idAttendanceHistory with type $disrepancyType and reason $reason');
       // Optionally, refresh the attendance history after reporting
@@ -80,30 +102,4 @@ class DetailAttendanceStudentClassController extends GetxController {
     }
   }
 
-  // List<AttendanceHistory> _generateDummyAttendance(int count) {
-  //   final statuses = [
-  //     AttendanceStatusEnum.valid,
-  //     AttendanceStatusEnum.invalid,
-  //     AttendanceStatusEnum.alpha,
-  //     AttendanceStatusEnum.dispensation,
-  //   ];
-
-  //   return List<AttendanceHistory>.generate(count, (index) {
-  //     final status = statuses[index % statuses.length];
-  //     return AttendanceHistory(
-  //       idStudent: BigInt.from(10 + index),
-  //       idSchedule: BigInt.from(99 + index),
-  //       periodNumber: (index % 10) + 1,
-  //       status: status,
-  //       student: Student(
-  //         id: BigInt.from(10 + index),
-  //         idUser: BigInt.from(20 + index),
-  //         idClass: BigInt.from(30),
-  //         name: 'Dummy Student ${index + 1}',
-  //         entryYear: 2024,
-  //       ),
-  //       createdAt: DateTime.now().subtract(Duration(days: index)),
-  //     );
-  //   });
-  // }
 }
