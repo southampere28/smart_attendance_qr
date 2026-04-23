@@ -4,7 +4,11 @@ import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
+import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/attendance_student_class_controller.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/widget/card_schedule_preview.dart';
+import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentation/widget/card_student_daily_preview.dart';
 import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +35,12 @@ class AttendanceStudentClassPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Riwayat Absensi',
-                style: AppFontStyle.titleText.copyWith(color: Colors.black),
-              ),
-
+              Text('Riwayat Absensi',
+                  style: AppFontStyle.titleText.copyWith(fontSize: 18)),
+              Obx(() => Text(
+                  'Semester ${controller.activeAcademicPeriod.value}',
+                  style: AppFontStyle.subTitleText)),
+              SpacingSize.spacingBaseHeight,
               Obx(() => DropdownInputWidget(
                   title: 'Kelas',
                   selected: controller.selectedItem.value,
@@ -49,16 +54,13 @@ class AttendanceStudentClassPage extends StatelessWidget {
                       log('Selected: $value, ID: $selectedId');
                       controller.selectedClassId = selectedId!;
                       controller.fetchAttendanceHistory(context);
+                      controller.fetchAttendanceDaily(context);
                     } else {
                       controller.selectedClassId = BigInt.from(-1);
                     }
                   },
                   hint: '(Pilih Kelas)')),
 
-              Text('Riwayat Absensi',
-                  style: AppFontStyle.titleText.copyWith(fontSize: 18)),
-              Text('Semester Ganjil 2023/2024',
-                  style: AppFontStyle.subTitleText),
               SpacingSize.spacingBaseHeight,
               // this will shown as calendar widget.
               Container(
@@ -82,18 +84,11 @@ class AttendanceStudentClassPage extends StatelessWidget {
                   onDateChanged: (DateTime date) {
                     controller.selectedDate.value = date;
                     controller.fetchAttendanceHistory(context);
-                    // controller.getAttendanceHistoryDaily();
+                    controller.fetchAttendanceDaily(context);
                   },
                 ),
               ),
               SpacingSize.spacingBaseHeight,
-
-              // testing only on button
-              ElevatedButton(
-                  onPressed: () {
-                    controller.fetchAttendanceDaily(context);
-                  },
-                  child: const Text("Refresh")),
 
               // this will shown as widget card with 2 separated sections: today and history.
               Container(
@@ -132,29 +127,78 @@ class AttendanceStudentClassPage extends StatelessWidget {
                         child: TabBarView(
                           children: [
                             /// data history attendance daily face recognition.
-                            Center(child: Text("Overview Content")),
+                            SingleChildScrollView(
+                              child: Obx(() => Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          controller.isLoadingAttendanceDaily
+                                                  .value
+                                              ? ShimmerLoadCard(
+                                                  shimmerItemCount: 30,
+                                                  customHeight: 60,
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    ListView.builder(
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      itemCount: controller
+                                                          .attendanceDailyResult
+                                                          .length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final item = controller
+                                                                .attendanceDailyResult[
+                                                            index];
+                                                        return CardStudentDailyPreview(
+                                                          studentName:
+                                                              item.student.name,
+                                                          status: item
+                                                              .attendanceDaily
+                                                              .status,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                        ]),
+                                  )),
+                            ),
 
                             /// data history attendance by subject with schedule info.
-                            Obx(() => Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ...controller.attendanceHistoryResult
-                                            .map((item) {
-                                          return _cardTestScheduleAttendance(
-                                              item);
-                                        }).toList(),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              controller.fetchAttendanceHistory(
-                                                  context);
-                                            },
-                                            child: const Text("Refresh"))
-                                      ]),
-                                )),
+                            SingleChildScrollView(
+                              child: Obx(() => Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          controller.isLoadingAttendanceHistory
+                                                  .value
+                                              ? ShimmerLoadCard(
+                                                  shimmerItemCount: 30,
+                                                  customHeight: 60,
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    ...controller
+                                                        .attendanceHistoryResult
+                                                        .map((item) {
+                                                      return CardSchedulePreview(
+                                                          schedulewithAttendance:
+                                                              item);
+                                                    }).toList(),
+                                                  ],
+                                                ),
+                                        ]),
+                                  )),
+                            ),
                           ],
                         ),
                       ),
@@ -169,18 +213,18 @@ class AttendanceStudentClassPage extends StatelessWidget {
     );
   }
 
-  Widget _cardTestScheduleAttendance(ScheduleStudentAttendanceReport item) {
-    return Card(
-      child: GestureDetector(
-        onTap: () {
-          Get.toNamed(AppRoutes.detailAttendanceStudentClass, arguments: item);
-        },
-        child: ListTile(
-          title: Text(item.schedule.subject?.name ?? '(Mata Pelajaran)'),
-          subtitle: Text(item.schedule.createdAt.toString()),
-          // trailing: Text(item.attendanceStatus?.toString() ?? 'No Status'),
-        ),
-      ),
-    );
-  }
+  // Widget _cardTestScheduleAttendance(ScheduleStudentAttendanceReport item) {
+  //   return Card(
+  //     child: GestureDetector(
+  //       onTap: () {
+  //         Get.toNamed(AppRoutes.detailAttendanceStudentClass, arguments: item);
+  //       },
+  //       child: ListTile(
+  //         title: Text(item.schedule.subject?.name ?? '(Mata Pelajaran)'),
+  //         subtitle: Text(item.schedule.createdAt.toString()),
+  //         // trailing: Text(item.attendanceStatus?.toString() ?? 'No Status'),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

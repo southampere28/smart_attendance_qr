@@ -1,6 +1,8 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/core/widgets/card_attendance_daily_status.dart';
+import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/feature_student/attendance/presentation/attendance_controller.dart';
 import 'package:absensi_qr/feature_student/attendance/presentation/widgets/card_attendance_date_schedule.dart';
@@ -58,6 +60,7 @@ class AttendancePage extends StatelessWidget {
               SpacingSize.spacingBaseHeight,
               // this will shown as widget card with 2 separated sections: today and history.
               Container(
+                constraints: const BoxConstraints(minHeight: 200),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -89,41 +92,76 @@ class AttendancePage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 400,
+                        height: 300,
                         child: TabBarView(
                           children: [
                             /// data history attendance daily face recognition.
-                            Center(child: Text("Overview Content")),
+                            SingleChildScrollView(
+                              child: Obx(() => Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          controller.isLoadingAttendanceDaily
+                                                  .value
+                                              ? ShimmerLoadCard(
+                                                  shimmerItemCount: 1,
+                                                  customHeight: 60,
+                                                )
+                                              : CardAttendanceDailyStatus(
+                                                  attendance: controller
+                                                      .attendanceDailyResult
+                                                      .value),
+                                          SpacingSize.spacingBaseHeight,
+                                        ]),
+                                  )),
+                            ),
 
                             /// data history attendance by subject with schedule info.
-                            Obx(() => Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ...controller.attendanceHistoryResult
-                                            .map((item) {
-                                          return CardAttendanceDateSchedule(
-                                              subjectName:
-                                                  item.schedule.subject?.name ??
-                                                      '(Mata Pelajaran)',
-                                              badgeInfo: item
-                                                          .attendance?.status !=
-                                                      null
-                                                  ? item.attendance!.status
-                                                  : AttendanceStatusEnum.alpha,
-                                              attendanceDateTime:
-                                                  item.attendance?.createdAt);
-                                        }).toList(),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              controller.getHistoryAttendance();
-                                            },
-                                            child: const Text("Refresh"))
-                                      ]),
-                                )),
+                            SingleChildScrollView(
+                              child: Obx(() => Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          controller.isLoadingAttendanceHistory
+                                                  .value
+                                              ? ShimmerLoadCard(
+                                                  shimmerItemCount: 3,
+                                                  customHeight: 60,
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    ...controller
+                                                        .attendanceHistoryResult
+                                                        .map((item) {
+                                                      return CardAttendanceDateSchedule(
+                                                          subjectName: item
+                                                                  .schedule
+                                                                  .subject
+                                                                  ?.name ??
+                                                              '(Mata Pelajaran)',
+                                                          badgeInfo: item
+                                                                      .attendance
+                                                                      ?.status !=
+                                                                  null
+                                                              ? item.attendance!
+                                                                  .status
+                                                              : AttendanceStatusEnum
+                                                                  .alpha,
+                                                          attendanceDateTime:
+                                                              item.attendance
+                                                                  ?.createdAt);
+                                                    }).toList(),
+                                                  ],
+                                                )
+                                        ]),
+                                  )),
+                            ),
                           ],
                         ),
                       ),

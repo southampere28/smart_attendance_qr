@@ -1,3 +1,4 @@
+import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -7,6 +8,7 @@ import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class StatisticCardTeacher extends StatelessWidget {
   const StatisticCardTeacher({
@@ -118,7 +120,9 @@ class StatisticCardTeacher extends StatelessWidget {
                               borderRadius: 20,
                               title: 'Lihat Detail Siswa',
                               callback: () {
-                                // todo here...
+                                Get.toNamed(
+                                    AppRoutes.detailAttendanceStudentClass,
+                                    arguments: dataToday);
                               }),
                         ),
                       ],

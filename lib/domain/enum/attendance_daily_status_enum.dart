@@ -1,6 +1,7 @@
 enum AttendanceDailyStatusEnum {
   ontime,
   late,
+  izin,
   none;
 
   static AttendanceDailyStatusEnum fromString(String value) {
@@ -11,6 +12,8 @@ enum AttendanceDailyStatusEnum {
       case 'terlambat':
       case 'late':
         return AttendanceDailyStatusEnum.late;
+      case 'izin':
+        return AttendanceDailyStatusEnum.izin;
       default:
         return AttendanceDailyStatusEnum.none; // fallback aman
     }
@@ -22,6 +25,8 @@ enum AttendanceDailyStatusEnum {
         return 'tepat_waktu';
       case AttendanceDailyStatusEnum.late:
         return 'terlambat';
+      case AttendanceDailyStatusEnum.izin:
+        return 'izin';
       case AttendanceDailyStatusEnum.none:
         return 'none'; // or null if you prefer to return null
     }
@@ -33,6 +38,8 @@ enum AttendanceDailyStatusEnum {
         return 'Hadir';
       case AttendanceDailyStatusEnum.late:
         return 'Terlambat';
+      case AttendanceDailyStatusEnum.izin:
+        return 'Izin';
       case AttendanceDailyStatusEnum.none:
         return 'Unknown';
     }
@@ -47,6 +54,8 @@ extension AttendanceDailyStatusEnumX on AttendanceDailyStatusEnum {
   bool get isOnTime => this == AttendanceDailyStatusEnum.ontime;
 
   bool get isLate => this == AttendanceDailyStatusEnum.late;
+
+  bool get isIzin => this == AttendanceDailyStatusEnum.izin;
 
   bool get isNone => this == AttendanceDailyStatusEnum.none;
 }

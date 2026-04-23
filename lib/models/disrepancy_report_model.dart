@@ -53,10 +53,10 @@ class DisrepancyReportModel {
         markedAsResolved: map['marked_as_resolved'] == 1 || map['marked_as_resolved'] == true,
         attendanceDate: DateHelper.parseToLocalNonNullable(map['attendance_date'] ?? map['date']),
         createdAt: map['created_at'] != null
-          ? DateTime.tryParse(map['created_at'].toString())
+          ? DateHelper.parseToLocal(map['created_at'].toString())
           : null,
         updatedAt: map['updated_at'] != null
-          ? DateTime.tryParse(map['updated_at'].toString())
+          ? DateHelper.parseToLocal(map['updated_at'].toString())
           : null,
     );
   }

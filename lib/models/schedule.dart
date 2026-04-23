@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/core/helper/date_helper.dart';
 import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/subject.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
@@ -91,13 +92,13 @@ class Schedule {
       endTime: DateFormat("HH:mm:ss").parse(map['end_time']),
       code: map['code'] as String,
       createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'].toString())
+          ? DateHelper.parseToLocal(map['created_at'].toString())
           : null,
       updatedAt: map['updated_at'] != null
-          ? DateTime.parse(map['updated_at'].toString())
+          ? DateHelper.parseToLocal(map['updated_at'].toString())
           : null,
       deletedAt: map['deleted_at'] != null
-          ? DateTime.parse(map['deleted_at'].toString())
+          ? DateHelper.parseToLocal(map['deleted_at'].toString())
           : null,
     );
   }

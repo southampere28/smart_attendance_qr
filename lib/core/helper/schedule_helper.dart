@@ -14,11 +14,7 @@ class ScheduleHelper {
         DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
 
     return List.generate(countDay, (index) {
-      return monday
-          .add(Duration(days: index))
-          .day
-          .toString()
-          .padLeft(2, '0');
+      return monday.add(Duration(days: index)).day.toString().padLeft(2, '0');
     });
   }
 
@@ -40,7 +36,8 @@ class ScheduleHelper {
     ];
 
     if (month < 1 || month > 12) {
-      throw ArgumentError('Invalid month: $month. Month should be between 1 and 12.');
+      throw ArgumentError(
+          'Invalid month: $month. Month should be between 1 and 12.');
     }
 
     final String formattedMonthYear = '${monthNames[month - 1]} $year';
@@ -52,5 +49,4 @@ class ScheduleHelper {
     // example: 08:00
     return '${datetime.hour.toString().padLeft(2, '0')}:${datetime.minute.toString().padLeft(2, '0')}';
   }
-
 }

@@ -7,8 +7,6 @@ class PermissionModel {
   final int? idStudent;
   final String information;
   final PermissionTypeEnum reason;
-  final DateTime? periodStart;
-  final DateTime? periodEnd;
   final DateTime datePermission;
   final int dayCount;
   final String evidence;
@@ -23,8 +21,6 @@ class PermissionModel {
     this.idStudent,
     required this.information,
     required this.reason,
-    this.periodStart,
-    this.periodEnd,
     required this.datePermission,
     required this.dayCount,
     required this.evidence,
@@ -43,12 +39,6 @@ class PermissionModel {
           : null,
       information: map['information'] ?? '',
       reason: PermissionTypeEnum.fromString(map['reason'] ?? ''),
-      periodStart: map['period_start'] != null
-          ? DateTime.tryParse(map['period_start'].toString())
-          : null,
-      periodEnd: map['period_end'] != null
-          ? DateTime.tryParse(map['period_end'].toString())
-          : null,
       datePermission:
           DateHelper.parseToLocalNonNullable(map['date_permission']),
       dayCount: map['time_period'] != null
@@ -61,10 +51,10 @@ class PermissionModel {
           ? int.tryParse(map['approved_by'].toString())
           : null,
       createdAt: map['created_at'] != null
-          ? DateTime.tryParse(map['created_at'].toString())
+          ? DateHelper.parseToLocal(map['created_at'].toString())
           : null,
       updatedAt: map['updated_at'] != null
-          ? DateTime.tryParse(map['updated_at'].toString())
+          ? DateHelper.parseToLocal(map['updated_at'].toString())
           : null,
     );
   }
@@ -82,8 +72,6 @@ class PermissionModel {
       'id_student': idStudent,
       'information': information,
       'reason': reason.name,
-      'period_start': periodStart?.toIso8601String(),
-      'period_end': periodEnd?.toIso8601String(),
       'date_permission': datePermission.toIso8601String(),
       'time_period': dayCount,
       'evidence': evidence,

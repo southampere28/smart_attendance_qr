@@ -46,11 +46,49 @@ class ScheduleClassController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    scrapStudentClases().then((success) {
-      if (success) {
-        getKelasItem();
+    // scrapStudentClases().then((success) {
+    //   if (success) {
+    //     getKelasItem();
+    //   }
+    // });
+    final arguments = Get.arguments;
+    final classIdArg = arguments != null && arguments is Map<String, dynamic>
+        ? arguments['classId']
+        : null;
+
+    log('Received arguments: $arguments');
+
+    if (arguments != null &&
+        arguments is Map<String, dynamic> &&
+        classIdArg != null) {
+      final classId = arguments['classId'];
+      log('Received classId: $classId');
+      selectedClassId = BigInt.tryParse(classId.toString()) ?? BigInt.from(-1);
+      _initializeClasses();
+    } else {
+      log('No valid arguments received, proceeding without pre-selected class');
+      _initializeClasses();
+    }
+  }
+
+  Future<void> _initializeClasses() async {
+    final success = await scrapStudentClases();
+    if (success) {
+      getKelasItem();
+    }
+    // select the class if classId is provided
+    if (selectedClassId != BigInt.from(-1)) {
+      final classModel = classDataList.firstWhere(
+        (c) => c.id == selectedClassId,
+      );
+      if (classModel.id != BigInt.from(-1)) {
+        selectedItem.value = classModel.name;
+        selectedClassId = classModel.id;
+        log('Pre-selected class: ${classModel.name} with ID: ${classModel.id}');
+      } else {
+        log('Class with ID $selectedClassId not found in classDataList');
       }
-    });
+    }
   }
 
   void filterScheduleByDay(int indexDay) {

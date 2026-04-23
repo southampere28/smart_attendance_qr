@@ -22,6 +22,11 @@ class AppColor {
   static const Color colorPermission = Color(0xffFFCA28);
   static const Color colorAlpha = Color(0xffFF383C);
 
+  // attendance daily color theme
+  static const Color colorOntime = colorPresent;
+  static const Color colorLate = colorAlpha;
+  static const Color colorIzin = colorPermission;
+
   // general color
   static const Color successColor = Color(0xff28A745); // success/active
   static const Color errorColor = Color(0xffED6363); // error/alert

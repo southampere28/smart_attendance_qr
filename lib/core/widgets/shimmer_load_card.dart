@@ -5,9 +5,12 @@ class ShimmerLoadCard extends StatelessWidget {
   const ShimmerLoadCard({
     super.key,
     this.shimmerItemCount = 3,
+    this.customHeight,
   });
 
   final int shimmerItemCount;
+
+  final double? customHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,7 @@ class ShimmerLoadCard extends StatelessWidget {
           highlightColor: Colors.grey[100]!,
           child: Container(
             width: double.infinity,
-            height: 100,
+            height: customHeight ?? 100,
             margin: EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
               color: Colors.grey[300],

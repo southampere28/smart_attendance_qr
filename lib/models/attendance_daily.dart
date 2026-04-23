@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:absensi_qr/core/helper/date_helper.dart';
 import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
@@ -39,9 +40,9 @@ class AttendanceDaily {
       idClass: BigInt.parse(map['id_class'].toString()),
       picture: map['picture']?.toString(),
       status: AttendanceDailyStatusEnum.fromString(map['status'].toString()),
-      createdAt: map['created_at'] != null ? DateTime.parse(map['created_at'].toString()) : null,
-      updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'].toString()) : null,
-      deletedAt: map['deleted_at'] != null ? DateTime.parse(map['deleted_at'].toString()) : null,
+      createdAt: map['created_at'] != null ? DateHelper.parseToLocal(map['created_at'].toString()) : null,
+      updatedAt: map['updated_at'] != null ? DateHelper.parseToLocal(map['updated_at'].toString()) : null,
+      deletedAt: map['deleted_at'] != null ? DateHelper.parseToLocal(map['deleted_at'].toString()) : null,
     );
   }
 

@@ -105,10 +105,16 @@ class NotificationStudentPage extends StatelessWidget {
     final Map<DateTime, List<NotificationModel>> groupedNotifications = {};
 
     for (final notification in notifications) {
+      final createdAtNotification = notification.createdAt;
+      if (createdAtNotification == null) {
+        log('Notification with null createdAt: ${notification.title}');
+        continue;
+      }
+
       final DateTime dayKey = DateTime(
-        notification.createdAt.year,
-        notification.createdAt.month,
-        notification.createdAt.day,
+        createdAtNotification.year,
+        createdAtNotification.month,
+        createdAtNotification.day,
       );
 
       groupedNotifications.putIfAbsent(dayKey, () => []);
@@ -136,7 +142,7 @@ class NotificationStudentPage extends StatelessWidget {
                       context,
                       notification.title,
                       notification.body,
-                      notification.createdAt,
+                      notification.createdAt!,
                       notification.type,
                     ),
                   )

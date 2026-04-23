@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/class_model.dart';
+import 'package:absensi_qr/models/model_merging/attendance_daily_student.dart';
 import 'package:absensi_qr/models/model_merging/class_info_item.dart';
 import 'package:absensi_qr/models/model_merging/schedule_report_item.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
@@ -16,11 +18,12 @@ class AttendanceStudentClassController extends GetxController {
   // service and controller.
   final EndpointService _httpService = Get.find<EndpointService>();
   final ClassCacheService _cacheService = ClassCacheService();
+  final MainController  mainController = Get.find<MainController>();
   final RxBool isLoadingAttendanceHistory = true.obs;
-  final RxBool isLoadingAttendanceDaily = true.obs;
+  final RxBool isLoadingAttendanceDaily = false.obs;
 
-  // dummy id class for testing.
-  // final String dummyIdClass = '1';
+  // using real academic period from main controller
+  RxString get activeAcademicPeriod => mainController.activeAcademicPeriod;
 
   // date selected for filter attendance data.
   final selectedDate = DateTime.now().obs;
@@ -42,8 +45,8 @@ class AttendanceStudentClassController extends GetxController {
   RxList<ScheduleStudentAttendanceReport> attendanceHistoryResult =
       <ScheduleStudentAttendanceReport>[].obs;
 
-  final RxList<AttendanceDaily> attendanceDailyResult =
-      RxList<AttendanceDaily>([]);
+  final RxList<AttendanceDailyStudent> attendanceDailyResult =
+      RxList<AttendanceDailyStudent>([]);
 
   @override
   void onInit() {
@@ -127,10 +130,6 @@ class AttendanceStudentClassController extends GetxController {
       isLoadingAttendanceHistory.value = false;
       return;
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppUtil.showLoadingDialog(context,
-          message: 'Loading attendance history...');
-    });
 
     final result = await _httpService.teacherClassesAttendance(
       classId: selectedClassId.toString(),
@@ -138,8 +137,6 @@ class AttendanceStudentClassController extends GetxController {
     );
 
     isLoadingAttendanceHistory.value = false;
-    // ignore: use_build_context_synchronously
-    AppUtil.hideLoadingDialog(context);
 
     if (result.success) {
       final List<dynamic>? rawList = result.data;
@@ -170,10 +167,6 @@ class AttendanceStudentClassController extends GetxController {
       isLoadingAttendanceDaily.value = false;
       return;
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppUtil.showLoadingDialog(context,
-          message: 'Loading today attendance...');
-    });
 
     // date: YYYY-MM-DD
     final dateString = '${selectedDate.value.year.toString().padLeft(4, '0')}-'
@@ -186,13 +179,13 @@ class AttendanceStudentClassController extends GetxController {
     );
 
     isLoadingAttendanceDaily.value = false;
-    // ignore: use_build_context_synchronously
-    AppUtil.hideLoadingDialog(context);
 
     if (result.success) {
       final List<Map<String, dynamic>>? raw = result.data;
       if (raw != null) {
-        final attendanceList =
+        final attendanceList = raw
+            .map((item) => AttendanceDailyStudent.fromMap(item))
+            .toList();
             raw.map((item) => AttendanceDaily.fromMap(item)).toList();
         attendanceDailyResult.value = attendanceList;
         log('Loaded daily attendance for class $selectedClassId on date ${selectedDate.value.toIso8601String()}');

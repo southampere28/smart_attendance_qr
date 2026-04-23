@@ -11,11 +11,13 @@ class SubjectPreviewCard extends StatelessWidget {
   const SubjectPreviewCard(
       {super.key,
       required this.subjectName,
-      this.attendanceDateTime,
+      required this.startedAt,
+      required this.endedAt,
       required this.badgeInfo});
 
   final String subjectName;
-  final DateTime? attendanceDateTime;
+  final DateTime startedAt;
+  final DateTime endedAt;
   final AttendanceStatusEnum badgeInfo;
 
   @override
@@ -50,9 +52,7 @@ class SubjectPreviewCard extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
                           Text(
-                              attendanceDateTime != null
-                                  ? '${attendanceDateTime!.hour}:${attendanceDateTime!.minute.toString().padLeft(2, '0')} WIB'
-                                  : '(waktu tidak tersedia)',
+                              '${startedAt.hour}:${startedAt.minute.toString().padLeft(2, '0')}-${endedAt.hour}:${endedAt.minute.toString().padLeft(2, '0')}',
                               style:
                                   TextStyle(fontSize: 14, color: Colors.grey)),
                         ],

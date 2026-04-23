@@ -15,6 +15,7 @@ class TeacherDashboardController extends GetxController {
   final GeolocationService _geolocationService = Get.find<GeolocationService>();
 
   final RxBool isLoading = false.obs;
+  final RxBool isLoadingStatistic = true.obs;
   final RxList<ScheduleReportItem> dataSchedule = <ScheduleReportItem>[].obs;
 
   /// data profile
@@ -223,6 +224,8 @@ class TeacherDashboardController extends GetxController {
 
   // schedule student attendance filetring logic based on date now and schedule time (endtime and start time)
   Future<void> filterClassAttendanceBySchedule() async {
+    isLoadingStatistic.value = true;
+
     final now = DateTime.now();
 
     final filteredSchedule = attendanceHistoryResult.where((item) {
@@ -245,6 +248,8 @@ class TeacherDashboardController extends GetxController {
       return normalizedStartTime.isBefore(now) &&
           normalizedEndTime.isAfter(now);
     }).toList();
+
+    isLoadingStatistic.value = false;
 
     if (filteredSchedule.isNotEmpty) {
       statiscticAttendanceToday.value = filteredSchedule.first;

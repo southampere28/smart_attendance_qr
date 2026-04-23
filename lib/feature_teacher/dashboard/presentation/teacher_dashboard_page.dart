@@ -38,9 +38,13 @@ class TeacherDashboardPage extends StatelessWidget {
               // teacher statistics student class.
               SpacingSize.spacingXLHeight,
               Obx(() {
-                if (controller.isLoading.value) {
-                  return ShimmerLoadCard(
-                    shimmerItemCount: 1,
+                if (controller.isLoadingStatistic.value) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ShimmerLoadCard(
+                      customHeight: 200,
+                      shimmerItemCount: 1,
+                    ),
                   );
                 } else {
                   if (controller.statiscticAttendanceToday.value == null) {
@@ -55,10 +59,10 @@ class TeacherDashboardPage extends StatelessWidget {
               SpacingSize.spacingXLHeight,
               _rowTextWidget(
                   title: 'Kelas Selanjutnya',
-                  linkTitle: 'Jadwal Anda',
+                  linkTitle: 'semua Jadwal',
                   onLinkTap: () {
                     // todo here...
-                    Get.toNamed(AppRoutes.scheduleTeacher);
+                    Get.toNamed(AppRoutes.detailInformationClass);
                   }),
 
               // next class information.
@@ -105,12 +109,13 @@ class TeacherDashboardPage extends StatelessWidget {
               ButtonPrimaryWidget(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   borderRadius: 20,
-                  title: "Lihat Semua Kelas",
+                  title: "Lihat Jadwal Anda",
                   callback: () {
-                    Get.toNamed(AppRoutes.detailInformationClass);
+                    Get.toNamed(AppRoutes.scheduleTeacher);
                   }),
 
               SpacingSize.spacingHugeHeight,
+            
             ],
           ),
         ),

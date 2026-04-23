@@ -179,8 +179,8 @@ class DashboardPage extends StatelessWidget {
                                       subjectName:
                                           item.schedule.subject?.name ??
                                               'Nama Mata Pelajaran',
-                                      attendanceDateTime:
-                                          item.attendance?.createdAt,
+                                      startedAt: item.schedule.startTime,
+                                      endedAt: item.schedule.endTime,
                                       badgeInfo: resolvedStatusAttendance,
                                     ),
                                     if (item !=

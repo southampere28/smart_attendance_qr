@@ -89,10 +89,6 @@ class DetailInformationClassPage extends StatelessWidget {
                           borderRadius: 20,
                           title: "Pengumuman",
                           callback: () {
-                            // Get.toNamed(AppRoutes.detailInformationClass);
-                            // if (controller.selectedClassId == BigInt.from(-1)) {
-                            //   return;
-                            // }
                             Get.toNamed(AppRoutes.sendAnnouncement, arguments: {
                               'classId': controller.selectedClassId != BigInt.from(-1)
                                   ? controller.selectedClassId.toString()
@@ -108,7 +104,14 @@ class DetailInformationClassPage extends StatelessWidget {
                       title: "Lihat Jadwal",
                       callback: () {
                         // Handle view schedule action
-                        Get.toNamed(AppRoutes.scheduleClass);
+                        Get.toNamed(AppRoutes.scheduleClass, 
+                        arguments: {
+                          'classId': controller.selectedClassId != BigInt.from(-1)
+                              ? controller.selectedClassId.toString()
+                              : null,
+                          'className': controller.selectedItem.value,
+                        }
+                        );
                       },
                     ),
                   ),

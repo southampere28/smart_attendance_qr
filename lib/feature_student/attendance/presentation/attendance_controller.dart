@@ -45,11 +45,8 @@ class AttendanceController extends GetxController
         final attendanceDaily = AttendanceDaily.fromMap(raw);
         attendanceDailyResult.value = attendanceDaily;
         log('Loaded attendance daily report for date ${selectedDate.value.toIso8601String()}');
-        Fluttertoast.showToast(
-            msg: 'Data: ${attendanceDailyResult.value?.status ?? 'No status'}');
       } else {
         attendanceDailyResult.value = null;
-        Fluttertoast.showToast(msg: 'Data: No Data Found on This Date');
       }
     } else {
       Fluttertoast.showToast(
@@ -60,23 +57,12 @@ class AttendanceController extends GetxController
 
   Future<void> getHistoryAttendance() async {
     isLoadingAttendanceHistory.value = true;
-    if (Get.context != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.context != null) {
-          AppUtil.showLoadingDialog(Get.context!,
-              message: 'Loading attendance history...');
-        }
-      });
-    }
     // guard: ensure student data and class id available
     final BigInt? idClass = _httpService.studentData?.idClass;
 
     if (idClass == null) {
       Fluttertoast.showToast(msg: 'missing_class_id');
       isLoadingAttendanceHistory.value = false;
-      if (Get.context != null) {
-        AppUtil.hideLoadingDialog(Get.context!);
-      }
       return;
     }
 
