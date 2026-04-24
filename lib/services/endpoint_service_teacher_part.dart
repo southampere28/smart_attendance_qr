@@ -552,6 +552,55 @@ extension EndpointServiceTeacherX on EndpointService {
 
   /// disrepancy report feature zone END
 
-  // get all announcement from teacher here.
-  // todo...
+  // get all activity from teacher here.
+  Future<ApiResult<List<Map<String, dynamic>>>> getTeacherActivity({
+    required String startDate, // in format YYYY-MM-DD
+    required String endDate, // in format YYYY-MM-DD
+  }) async {
+    try {
+      final response = await http.get(
+        // {{wifirumah}}/api/teacher/activity?start_date=2026-04-1&end_date=2026-04-23
+        Uri.parse(
+            '${ApiConstant.teacherActivity}?start_date=$startDate&end_date=$endDate'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken",
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200) {
+        final activities = (data["data"] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        log("Message: ${data["message"]}");
+        log("Activities: $activities");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: activities,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Get teacher activity error: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Something went wrong",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to fetch teacher activity",
+        );
+      }
+    } catch (e) {
+      log('Exception: $e');
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
 }

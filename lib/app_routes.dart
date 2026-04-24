@@ -92,6 +92,8 @@ class AppRoutes {
   static const profileTeacher = '/profile-teacher';
   static const attendanceStudentClass = '/attendance-student-class';
   static const detailAttendanceStudentClass = '/detail-attendance-student-class';
+  // activity of teacher: accept or reject permission, send announcement, submit report disrepancy student, etc.
+  static const activityTeacher = '/activity-teacher';
   // ==================
 
   static final routes = <GetPage>[

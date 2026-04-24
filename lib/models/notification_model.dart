@@ -2,11 +2,12 @@
 import 'dart:convert';
 
 import 'package:absensi_qr/core/helper/date_helper.dart';
+import 'package:absensi_qr/domain/enum/notification_type_enum.dart';
 
 class NotificationModel {
   final String title;
   final String body;
-  final String? type;
+  final NotificationTypeEnum type;
   final String? sendTo;
   final int? senderId; // id user pengirim. bisa guru atau admin
   final int? receiverId; // id user penerima.
@@ -17,7 +18,7 @@ class NotificationModel {
   NotificationModel({
     required this.title,
     required this.body,
-    this.type,
+    required this.type,
     this.sendTo,
     this.senderId,
     this.receiverId,
@@ -30,7 +31,7 @@ class NotificationModel {
     return <String, dynamic>{
       'title': title,
       'body': body,
-      'type': type,
+      'type': type.dbValue,
       'send_to': sendTo,
       'sender_id': senderId,
       'receiver_id': receiverId,
@@ -44,7 +45,7 @@ class NotificationModel {
     return NotificationModel(
       title: map['title'] as String,
       body: map['body'] as String,
-      type: map['type'] != null ? map['type'] as String : null,
+      type: map['type'] != null ? NotificationTypeEnum.fromString(map['type'] as String) : NotificationTypeEnum.none,
       sendTo: map['send_to'] != null ? map['send_to'] as String : null,
       senderId: map['sender_id'] != null ? map['sender_id'] as int : null,
       receiverId: map['receiver_id'] != null ? map['receiver_id'] as int : null,
