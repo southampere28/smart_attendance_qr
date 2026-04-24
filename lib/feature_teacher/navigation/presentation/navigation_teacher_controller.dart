@@ -4,6 +4,7 @@ import 'package:absensi_qr/feature_teacher/attendance_student/primary/presentati
 import 'package:absensi_qr/feature_teacher/dashboard/presentation/teacher_dashboard_page.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/teacher_permission_page.dart';
 import 'package:absensi_qr/feature_teacher/profile/presentation/profile_teacher_page.dart';
+import 'package:absensi_qr/feature_teacher/teacher_activity/presentation/activity_teacher_page.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class NavigationTeacherController extends GetxController {
     TeacherDashboardPage(),
     TeacherPermissionPage(),
     AttendanceStudentClassPage(),
+    ActivityTeacherPage(),
     ProfileTeacherPage(),
   ];
 

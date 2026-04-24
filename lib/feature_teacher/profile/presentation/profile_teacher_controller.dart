@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileTeacherController extends GetxController {
   final EndpointService _httpService = Get.find<EndpointService>();
@@ -10,7 +14,9 @@ class ProfileTeacherController extends GetxController {
   final RxString subject = ''.obs;
   final RxString entryYear = ''.obs;
   final RxString nip = ''.obs;
+  final RxString profileImageURL = ''.obs;
 
+  final RxBool isLoadingUpdateProfile = false.obs;
 
   @override
   void onInit() {
@@ -26,14 +32,70 @@ class ProfileTeacherController extends GetxController {
 
   _setProfileData() {
     final String? emailService = _httpService.userData != null
-      ? (_httpService.userData!['email'] as String?)
-      : null;
+        ? (_httpService.userData!['email'] as String?)
+        : null;
 
     name.value = _httpService.teacherData?.name ?? '';
     email.value = emailService ?? '';
     subject.value = _httpService.teacherData?.subject ?? '';
     nip.value = _httpService.teacherData?.nip ?? '';
+    final String? profilePicture = _httpService.userModel?.profilePicture;
+
+    if (profilePicture != null) {
+      final String actualURL =
+          ApiConstant.getProfilePictureURL(profilePicture, 'teacher');
+
+      profileImageURL.value = actualURL;
+    }
   }
 
+  // future function
+  Future<void> updateProfilePicture(String filePath) async {
+    final result =
+        await _httpService.updateProfilePicture(profilePicture: File(filePath));
 
+    if (result.success && result.data != null) {
+      final String profilePictureUrl =
+          result.data!['profile_picture_url'] as String;
+      final String profilePictureFilename =
+          result.data!['profile_picture'] as String;
+
+      profileImageURL.value = profilePictureUrl;
+
+      if (_httpService.userData != null) {
+        _httpService.userData!['profile_picture'] = profilePictureFilename;
+        await _httpService.persistUserData();
+      }
+
+      Fluttertoast.showToast(msg: 'Foto profil berhasil diperbarui');
+    } else {
+      Fluttertoast.showToast(
+          msg: 'Gagal memperbarui foto profil: ${result.message}');
+    }
+  }
+
+  final ImagePicker _imagePicker = ImagePicker();
+  final Rx<XFile?> pickedImage = Rx<XFile?>(null);
+
+  Future<void> pickAndUploadProfilePicture() async {
+    try {
+      final XFile? image =
+          await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        pickedImage.value = image;
+
+        // langsung upload setelah dipilih
+        isLoadingUpdateProfile.value = true;
+        await updateProfilePicture(image.path);
+        isLoadingUpdateProfile.value = false;
+      }
+    } catch (e) {
+      isLoadingUpdateProfile.value = false;
+      // handle error
+      print('Error picking image: $e');
+      Fluttertoast.showToast(msg: 'Gagal memilih gambar: $e');
+    } finally {
+      isLoadingUpdateProfile.value = false;
+    }
+  }
 }

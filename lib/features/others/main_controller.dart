@@ -21,6 +21,7 @@ class MainController extends GetxController {
 
   // refresh trigger obx
   final RxInt refreshHomeStudent = 0.obs;
+  final RxInt triggerUpdateProfile = 0.obs;
 
 
   /// login (next use shared_preference and flutter_secure_storage)

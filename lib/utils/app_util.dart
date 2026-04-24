@@ -1,6 +1,7 @@
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/domain/enum/notification_type_enum.dart';
 import 'package:absensi_qr/feature_student/permission/presentation/widgets/dialog_permission_detail_student.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/dialog_permission_detail.dart';
 import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
@@ -133,15 +134,22 @@ class AppUtil {
 //     case AttendanceViolation = 'attendance_violation';
 //     case PersonalNote = 'personal_note';
 // }
-  static String? mapNotificationTypeToRoute(String notificationType, {bool isStudent = true}) {
+  static String? mapNotificationTypeToRoute(NotificationTypeEnum notificationType, {bool isStudent = true}) {
     switch (notificationType) {
-      case 'permission':
-        if (isStudent) {
-          return AppRoutes.permission;
-        }
-        return null;
-      default:
-        return null; // default route jika tipe tidak dikenali
+      case NotificationTypeEnum.permission:
+        return isStudent ? AppRoutes.permission : AppRoutes.permissionTeacher;
+      case NotificationTypeEnum.announcementAcademic:
+      case NotificationTypeEnum.announcementGeneral:
+      case NotificationTypeEnum.announcementForClass:
+        return isStudent ? null : AppRoutes.sendAnnouncement;
+      case NotificationTypeEnum.attendanceViolation:
+        return isStudent ? AppRoutes.attendance : AppRoutes.attendanceStudentClass;
+      case NotificationTypeEnum.assignment:
+      case NotificationTypeEnum.lostAndFound:
+      case NotificationTypeEnum.emergencyInfo:
+      case NotificationTypeEnum.classCancelled:
+      case NotificationTypeEnum.personalNote:
+      case NotificationTypeEnum.none:
     }
   }
 

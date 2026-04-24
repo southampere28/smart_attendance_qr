@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/domain/enum/notification_type_enum.dart';
+import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
 import 'package:absensi_qr/feature_student/notification/presentation/notification_student_controller.dart';
 import 'package:absensi_qr/models/notification_model.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -139,7 +141,6 @@ class NotificationStudentPage extends StatelessWidget {
               ...groupedNotifications[day]!
                   .map(
                     (notification) => _cardNotification(
-                      context,
                       notification.title,
                       notification.body,
                       notification.createdAt!,
@@ -171,14 +172,14 @@ class NotificationStudentPage extends StatelessWidget {
     return AppUtil.formatDateIndonesia(dateTime);
   }
 
-  Widget _cardNotification(BuildContext context, String title, String message,
-      DateTime dateTime, String? type) {
+  Widget _cardNotification(String title, String message,
+      DateTime dateTime, NotificationTypeEnum type) {
     return GestureDetector(
       onTap: () {
-        if (type == null) return;
-        final route = AppUtil.mapNotificationTypeToRoute(type);
-        if (route != null) {
-          Navigator.pushNamed(context, route);
+        final int? navIndex = _mapTypeToNavIndex(type);
+        Get.back();
+        if (navIndex != null) {
+          Get.find<NavigationController>().changePage(navIndex);
         }
       },
       child: Container(
@@ -212,5 +213,16 @@ class NotificationStudentPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int? _mapTypeToNavIndex(NotificationTypeEnum type) {
+    switch (type) {
+      case NotificationTypeEnum.permission:
+        return 2;
+      case NotificationTypeEnum.attendanceViolation:
+        return 1;
+      default:
+        return null;
+    }
   }
 }

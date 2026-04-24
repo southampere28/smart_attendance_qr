@@ -19,7 +19,7 @@ class NavigationTeacherPage extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () => index != -1 ? controller.changePage(index) : null,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2),
         child: isActive
             ? Column(
                 mainAxisSize: MainAxisSize.min,
@@ -80,7 +80,7 @@ class NavigationTeacherPage extends StatelessWidget {
               shape: null,
               elevation: 6,
               child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 12),
+                padding: const EdgeInsets.only(left: 4, right: 4, bottom: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -102,10 +102,16 @@ class NavigationTeacherPage extends StatelessWidget {
                       icon: Icons.restore,
                       label: 'Presensi',
                     ),
-                    // SpacingSize.spacingHugeWidth,
                     _buildNavItem(
                       controller: controller,
                       index: 3,
+                      icon: Icons.assignment,
+                      label: 'Aktivitas',
+                    ),
+                    // SpacingSize.spacingHugeWidth,
+                    _buildNavItem(
+                      controller: controller,
+                      index: 4,
                       icon: Icons.person,
                       label: 'Profile',
                     ),

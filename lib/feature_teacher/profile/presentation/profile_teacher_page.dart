@@ -1,27 +1,51 @@
+import 'dart:async';
+
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_teacher/profile/presentation/profile_teacher_controller.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ProfileTeacherPage extends StatelessWidget {
+class ProfileTeacherPage extends StatefulWidget {
   const ProfileTeacherPage({super.key});
 
   @override
+  State<ProfileTeacherPage> createState() => _ProfileTeacherPageState();
+}
+
+class _ProfileTeacherPageState extends State<ProfileTeacherPage> {
+  final controller = Get.find<ProfileTeacherController>();
+  late final StreamSubscription<bool> _loadingUpdateProfileSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadingUpdateProfileSub = controller.isLoadingUpdateProfile.listen((isLoading) {
+      if (isLoading) {
+        AppUtil.showLoadingDialog( context, message: 'Mengunggah foto profil...');
+      } else {
+        try { AppUtil.hideLoadingDialog(context);} catch (_) {}
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ProfileTeacherController>();
     return Scaffold(
         body: Column(
       children: [
-        _profileImage(),
+        Obx(() => _profileImage(controller.profileImageURL.value,
+            controller.name.value, controller)),
         SpacingSize.spacingLGHeight,
         _profileInformation(controller),
       ],
     ));
   }
 
-  Widget _profileImage() {
+  Widget _profileImage(
+      String imageURL, String name, ProfileTeacherController controller) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -46,10 +70,51 @@ class ProfileTeacherPage extends StatelessWidget {
           ),
         ),
         SpacingSize.spacingLGHeight,
-        CircleAvatar(
-          radius: 50,
-          backgroundImage: NetworkImage(
-              'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: Image.network(
+                  imageURL,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    final String initials = name.isNotEmpty
+                        ? name.trim().split(' ').map((e) => e[0]).take(2).join()
+                        : '?';
+                    return Text(
+                      initials,
+                      style: TextStyle(
+                          color: AppColor.primaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -4,
+              right: -4,
+              child: GestureDetector(
+                onTap: () {
+                  controller.pickAndUploadProfilePicture();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColor.primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                ),
+              ),
+            ),
+          ],
         ),
         SpacingSize.spacingXLHeight,
       ]),

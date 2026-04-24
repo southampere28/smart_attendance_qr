@@ -117,6 +117,7 @@ extension EndpointServiceAuthX on EndpointService {
         accessToken = data["access_token"];
         tokenType = data["token_type"];
         userData = data["user"];
+        userModel = User.fromMap(userData!);
 
         // guard empty token or user data
         if (accessToken == null || userData == null) {
