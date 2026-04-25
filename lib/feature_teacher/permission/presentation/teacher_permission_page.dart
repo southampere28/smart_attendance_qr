@@ -6,6 +6,7 @@ import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/teacher_permission_controller.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/card_preview_permission_student.dart';
 import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
+import 'package:absensi_qr/features/widgets/datepicker_input_withtitle.dart';
 import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -38,15 +39,34 @@ class TeacherPermissionPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Perizinan',
-                    style: AppFontStyle.titleText.copyWith(color: Colors.black),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Perizinan',
+                          style: AppFontStyle.titleText
+                              .copyWith(color: Colors.black),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () =>
+                            _showFilterBottomSheet(context, controller),
+                        icon: const Icon(Icons.tune),
+                        color: AppColor.primaryColor,
+                      ),
+                    ],
                   ),
+                  Obx(() {
+                    final start = DateFormat('d MMMM yyyy', 'id_ID')
+                        .format(controller.filterStartDate.value);
+                    final end = DateFormat('d MMMM yyyy', 'id_ID')
+                        .format(controller.filterEndDate.value);
+                    return Text(
+                      'Menampilkan perizinan dari $start sampai $end',
+                      style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
+                    );
+                  }),
                   SpacingSize.spacingBaseHeight,
-                  Text(
-                      'Using Dummy Date ${DateFormat('yyyy-MM-dd').format(controller.dummyStartDate)} - ${DateFormat('yyyy-MM-dd').format(controller.dummyEndDate)}',
-                      style: AppFontStyle.subTitleText),
-
                   // subtitle
                   Text('Daftar perizinan yang telah dibuat',
                       style: AppFontStyle.subTitleText),
@@ -151,10 +171,6 @@ class TeacherPermissionPage extends StatelessWidget {
                             },
                             child: CardPreviewPermissionStudent(
                               permissionData: permission,
-                              onAccept: () {
-                                controller.acceptPermission(
-                                    context, permission.permission.id);
-                              },
                             ),
                           ),
                         );
@@ -166,6 +182,82 @@ class TeacherPermissionPage extends StatelessWidget {
                 ],
               ),
             )),
+      ),
+    );
+  }
+
+  void _showFilterBottomSheet(
+      BuildContext context, TeacherPermissionController controller) {
+    final startCtrl = TextEditingController(
+      text: DateFormat('dd/MM/yyyy').format(controller.filterStartDate.value),
+    );
+    final endCtrl = TextEditingController(
+      text: DateFormat('dd/MM/yyyy').format(controller.filterEndDate.value),
+    );
+
+    DateTime tempStart = controller.filterStartDate.value;
+    DateTime tempEnd = controller.filterEndDate.value;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Filter Perizinan',
+                style: AppFontStyle.titleText.copyWith(fontSize: 16)),
+            SpacingSize.spacingBaseHeight,
+            DatepickerInputWithtitle(
+              title: 'Pilih Tanggal Mulai',
+              controller: startCtrl,
+              hintTxt: 'Pilih tanggal mulai',
+              lastDate: DateTime(DateTime.now().year + 5),
+              initialDate: tempStart,
+            ),
+            SpacingSize.spacingBaseHeight,
+            DatepickerInputWithtitle(
+              title: 'Pilih Tanggal Selesai',
+              controller: endCtrl,
+              hintTxt: 'Pilih tanggal selesai',
+              lastDate: DateTime(DateTime.now().year + 5),
+              initialDate: tempEnd,
+            ),
+            SpacingSize.spacingLGHeight,
+            ButtonPrimaryWidget(
+              borderRadius: 20,
+              title: 'Terapkan',
+              callback: () {
+                try {
+                  final fmt = DateFormat('dd/MM/yyyy');
+                  if (startCtrl.text.isNotEmpty) {
+                    tempStart = fmt.parse(startCtrl.text);
+                  }
+                  if (endCtrl.text.isNotEmpty) {
+                    tempEnd = fmt.parse(endCtrl.text);
+                  }
+                  controller.filterStartDate.value = tempStart;
+                  controller.filterEndDate.value = tempEnd;
+                  Navigator.pop(context);
+                  if (controller.selectedClassId != BigInt.from(-1)) {
+                    controller.getDataPermissionByClass(
+                        controller.selectedClassId.toString());
+                  }
+                } catch (_) {}
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

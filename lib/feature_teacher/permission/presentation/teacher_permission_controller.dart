@@ -154,21 +154,24 @@ class TeacherPermissionController extends GetxController
     }
   }
 
-  // dummy date
-  final DateTime dummyEndDate = DateTime.now();
-  final DateTime dummyStartDate =
-      DateTime.now().subtract(const Duration(days: 30));
+  // filter date range
+  final Rx<DateTime> filterStartDate =
+      Rx<DateTime>(DateTime.now().subtract(const Duration(days: 30)));
+  final Rx<DateTime> filterEndDate = Rx<DateTime>(DateTime.now());
 
   Future<void> getDataPermissionByClass(String classId) async {
     isLoading.value = true;
 
+    final DateTime start = filterStartDate.value;
+    final DateTime end = filterEndDate.value;
     final String startDateStr =
-        '${dummyStartDate.year.toString().padLeft(4, '0')}-'
-        '${dummyStartDate.month.toString().padLeft(2, '0')}-'
-        '${dummyStartDate.day.toString().padLeft(2, '0')}';
-    final String endDateStr = '${dummyEndDate.year.toString().padLeft(4, '0')}-'
-        '${dummyEndDate.month.toString().padLeft(2, '0')}-'
-        '${dummyEndDate.day.toString().padLeft(2, '0')}';
+        '${start.year.toString().padLeft(4, '0')}-'
+        '${start.month.toString().padLeft(2, '0')}-'
+        '${start.day.toString().padLeft(2, '0')}';
+    final String endDateStr =
+        '${end.year.toString().padLeft(4, '0')}-'
+        '${end.month.toString().padLeft(2, '0')}-'
+        '${end.day.toString().padLeft(2, '0')}';
 
     var result =
         await _httpService.permissionByClass(classId, startDateStr, endDateStr);

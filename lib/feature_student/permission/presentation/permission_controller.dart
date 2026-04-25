@@ -14,7 +14,8 @@ class PermissionController extends GetxController
 
   // data state
   final RxList<PermissionModel> listPermission = <PermissionModel>[].obs;
-  final RxList<PermissionModel> filteredListPermission = <PermissionModel>[].obs;
+  final RxList<PermissionModel> filteredListPermission =
+      <PermissionModel>[].obs;
 
   // flag
   RxBool isLoading = false.obs;
@@ -31,7 +32,14 @@ class PermissionController extends GetxController
     2: PermissionStatusEnum.ditolak,
   };
 
-  final Rx<PermissionStatusEnum> statusSelected = PermissionStatusEnum.proses.obs;
+  final Rx<PermissionStatusEnum> statusSelected =
+      PermissionStatusEnum.proses.obs;
+
+  // filter date range
+  // 2 bulan terakhir
+  final Rx<DateTime> filterStartDate =
+      DateTime.now().subtract(const Duration(days: 60)).obs;
+  final Rx<DateTime> filterEndDate = DateTime.now().obs;
 
   // getter
   String get nameOfStudent => _httpService.studentData?.name ?? 'User';
@@ -43,17 +51,18 @@ class PermissionController extends GetxController
     tabController.addListener(() {
       if (!tabController.indexIsChanging) {
         statusIndexSelected.value = tabController.index;
-        statusSelected.value = permissionStatusByIndex[statusIndexSelected.value] ?? PermissionStatusEnum.proses;
+        statusSelected.value =
+            permissionStatusByIndex[statusIndexSelected.value] ??
+                PermissionStatusEnum.proses;
         log('status index selected: ${statusIndexSelected.value}');
 
         // filter list permission by status
         filteredListPermission.value = listPermission
             .where((permission) => permission.status == statusSelected.value)
             .toList();
-
       }
     });
-    
+
     getDataPermission();
   }
 
@@ -67,13 +76,8 @@ class PermissionController extends GetxController
   Future<void> getDataPermission() async {
     isLoading.value = true;
 
-    // dummy date
-    // 2026-03-08
-    final DateTime startDate = DateTime(2026, 3, 8);
-    final DateTime endDate = DateTime(2026, 4, 15);
-
     var result = await _httpService.getPermission(
-        startDate: startDate, endDate: endDate);
+        startDate: filterStartDate.value, endDate: filterEndDate.value);
 
     if (result.success) {
       final List<Map<String, dynamic>>? raw = result.data;
@@ -81,8 +85,7 @@ class PermissionController extends GetxController
       if (raw != null) {
         isLoading.value = false;
         print("Data Permission:");
-        final items = raw.map((e) => PermissionModel.fromJson(e))
-            .toList();
+        final items = raw.map((e) => PermissionModel.fromJson(e)).toList();
         listPermission.value = items;
         // filter list permission by status
         filteredListPermission.value = listPermission
