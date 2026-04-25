@@ -102,4 +102,9 @@ class AttendanceController extends GetxController
     }
     isLoadingAttendanceHistory.value = false;
   }
+
+  Future<void> refreshData() async {
+    await getAttendanceHistoryDaily();
+    await getHistoryAttendance();
+  }
 }

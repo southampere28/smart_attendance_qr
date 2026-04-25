@@ -85,6 +85,9 @@ class ScheduleClassController extends GetxController {
         selectedItem.value = classModel.name;
         selectedClassId = classModel.id;
         log('Pre-selected class: ${classModel.name} with ID: ${classModel.id}');
+
+        // fetch schedule for the pre-selected class
+        await fetchScheduleWeeklyTeacherByClass(selectedClassId.toString());
       } else {
         log('Class with ID $selectedClassId not found in classDataList');
       }

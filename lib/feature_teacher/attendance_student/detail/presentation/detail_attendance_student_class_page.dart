@@ -220,171 +220,229 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'Detail Siswa',
-                                style: AppFontStyle.primaryText
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              SpacingSize.spacingLGHeight,
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  SpacingSize.spacingSMWidth,
+                                  Expanded(
+                                    child: Text(
+                                      'Detail Siswa',
+                                      style: AppFontStyle.primaryText.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SpacingSize.spacingSMWidth,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Icon(Icons.close,
+                                        size: 20, color: Colors.black54),
+                                  ),
+                                ],
+                              ),
+
+                              const Divider(height: 24),
+                              // Nama siswa
+                              Row(
                                 children: [
                                   Icon(Icons.person,
                                       size: 20, color: getStatus()),
                                   SpacingSize.spacingSMWidth,
                                   Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          attendance.student?.name ??
-                                              '(No Name)',
-                                          style: AppFontStyle.primaryText
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          'Kelas : ${controller.attendanceReport.classModel?.name ?? '(No Class)'}',
-                                          style: AppFontStyle.subTitleText,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text('Status: ',
-                                                style:
-                                                    AppFontStyle.subTitleText),
-                                            Text(
-                                              '${controller.attendanceStatusMenu[attendance.status]}',
-                                              style: AppFontStyle.primaryText
-                                                  .copyWith(color: getStatus()),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                    child: Text(
+                                      attendance.student?.name ?? '(No Name)',
+                                      style: AppFontStyle.primaryText.copyWith(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ],
                               ),
+                              SpacingSize.spacingBaseHeight,
+
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 24),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text('Status',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey)),
+                                          Text(
+                                            controller.attendanceStatusMenu[
+                                                    attendance.status] ??
+                                                '-',
+                                            style: AppFontStyle.primaryText
+                                                .copyWith(color: getStatus()),
+                                          ),
+                                          SpacingSize.spacingBaseHeight,
+                                          Text('Kelas',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey)),
+                                          Text(
+                                            controller.attendanceReport
+                                                    .classModel?.name ??
+                                                '(No Class)',
+                                            style: AppFontStyle.primaryText,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SpacingSize.spacingMDWidth,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text('Jam Absensi',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey)),
+                                          Text(
+                                            attendance.createdAt != null
+                                                ? '${attendance.createdAt!.hour.toString().padLeft(2, '0')}:${attendance.createdAt!.minute.toString().padLeft(2, '0')}'
+                                                : '-',
+                                            style: AppFontStyle.primaryText,
+                                          ),
+                                          SpacingSize.spacingBaseHeight,
+                                          GestureDetector(
+                                            onTap: () async {
+                                              if (attendance.coordinates !=
+                                                  null) {
+                                                final splittedLatLng =
+                                                    attendance.coordinates
+                                                        .toString()
+                                                        .split(',');
+                                                if (splittedLatLng.length !=
+                                                    2) {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          'Format data lokasi tidak valid');
+                                                  return;
+                                                }
+                                                final lat = double.tryParse(
+                                                    splittedLatLng[0]);
+                                                final lng = double.tryParse(
+                                                    splittedLatLng[1]);
+                                                if (lat == null ||
+                                                    lng == null) {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          'Format data lokasi tidak valid');
+                                                  return;
+                                                }
+                                                final googleMapsUrl =
+                                                    'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+                                                try {
+                                                  final launched =
+                                                      await launchUrl(
+                                                    Uri.parse(googleMapsUrl),
+                                                    mode: LaunchMode
+                                                        .externalApplication,
+                                                  );
+                                                  if (!launched) {
+                                                    Fluttertoast.showToast(
+                                                        msg:
+                                                            'Gagal membuka Google Maps');
+                                                  }
+                                                } catch (e) {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          'Error: ${e.toString()}');
+                                                }
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        'Data lokasi tidak tersedia untuk absensi ini');
+                                              }
+                                            },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.location_on,
+                                                    size: 16,
+                                                    color:
+                                                        AppColor.primaryColor),
+                                                SpacingSize.spacingXSWidth,
+                                                Text(
+                                                  'Lihat Lokasi',
+                                                  style: AppFontStyle
+                                                      .primaryText
+                                                      .copyWith(
+                                                          color: AppColor
+                                                              .primaryColor),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SpacingSize.spacingLGHeight,
+                              
+                              
+                              // Tombol aksi
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  ButtonPrimaryWidget(
-                                    title: 'Batal',
-                                    isMaxWidth: false,
-                                    customColor: AppColor.colorAlpha,
-                                    borderRadius: 50, // make it rounded
-                                    isOutlineButton: true,
-                                    customPadding: EdgeInsets.symmetric(
-                                        horizontal: 14, vertical: 5),
-                                    callback: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-
-                                  SpacingSize.spacingSMWidth,
-
-                                  // show form dialog to submit discrepancy report
-                                  // get back and call new Dialog to submit discrepancy report with type selection
-                                  ButtonPrimaryWidget(
-                                    title: 'Laporkan',
-                                    isMaxWidth: false,
-                                    borderRadius: 50, // make it rounded
-                                    customColor: AppColor.colorAlpha,
-                                    customPadding: EdgeInsets.symmetric(
-                                        horizontal: 14, vertical: 5),
-                                    callback: () {
-                                      if (attendance.id != null) {
+                                  Expanded(
+                                    child: ButtonPrimaryWidget(
+                                      title: 'Batal',
+                                      customColor: AppColor.colorAlpha,
+                                      isOutlineButton: true,
+                                      customPadding: EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 5),
+                                      callback: () {
                                         Navigator.of(context).pop();
-                                        // open new dialog for submit discrepancy report
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return DialogSubmitDisrepancy(
-                                                controller: controller,
-                                                idAttendance:
-                                                    attendance.id!.toString(),
-                                                studentName:
-                                                    attendance.student?.name ??
-                                                        '(No Name)',
-                                                className: controller
-                                                        .attendanceReport
-                                                        .classModel
-                                                        ?.name ??
-                                                    '(No Class)',
-                                                statusAttendance: controller
-                                                            .attendanceStatusMenu[
-                                                        attendance.status] ??
-                                                    '(No Status)',
-                                              );
-                                            });
-                                      } else {
-                                        Fluttertoast.showToast(
-                                            msg: 'ID absensi tidak tersedia');
-                                      }
-                                    },
+                                      },
+                                    ),
+                                  ),
+                                  SpacingSize.spacingSMWidth,
+                                  Expanded(
+                                    child: ButtonPrimaryWidget(
+                                      title: 'Laporkan',
+                                      customColor: AppColor.colorAlpha,
+                                      customPadding: EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 5),
+                                      callback: () {
+                                        if (attendance.id != null) {
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return DialogSubmitDisrepancy(
+                                                  controller: controller,
+                                                  attendance: attendance,
+                                                );
+                                              });
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg: 'ID absensi tidak tersedia');
+                                        }
+                                      },
+                                    ),
                                   ),
                                   SpacingSize.spacingSMWidth,
                                 ],
-                              ),
-                              // test redirect to maps coordinates based on attendance location
-                              ButtonPrimaryWidget(
-                                title: 'Lihat Lokasi',
-                                isMaxWidth: false,
-                                borderRadius: 50, // make it rounded
-                                customColor: AppColor.colorAlpha,
-                                customPadding: EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 5),
-                                callback: () async {
-                                  if (attendance.coordinates != null) {
-                                    // coordinates : xxxxx,xxxxx
-                                    final splittedLatLng = attendance
-                                        .coordinates
-                                        .toString()
-                                        .split(',');
-                                    if (splittedLatLng.length != 2) {
-                                      Fluttertoast.showToast(
-                                          msg:
-                                              'Format data lokasi tidak valid');
-                                      return;
-                                    }
-
-                                    final lat =
-                                        double.tryParse(splittedLatLng[0]);
-                                    final lng =
-                                        double.tryParse(splittedLatLng[1]);
-
-                                    if (lat == null || lng == null) {
-                                      Fluttertoast.showToast(
-                                          msg:
-                                              'Format data lokasi tidak valid');
-                                      return;
-                                    }
-
-                                    final googleMapsUrl =
-                                        'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
-
-                                    // launch the url using url_launcher package
-                                    try {
-                                      final launched = await launchUrl(
-                                        Uri.parse(googleMapsUrl),
-                                        mode: LaunchMode.externalApplication,
-                                      );
-                                      if (!launched) {
-                                        Fluttertoast.showToast(
-                                            msg: 'Gagal membuka Google Maps');
-                                      }
-                                    } catch (e) {
-                                      Fluttertoast.showToast(
-                                          msg: 'Error: ${e.toString()}');
-                                    }
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'Data lokasi tidak tersedia untuk absensi ini');
-                                  }
-                                },
                               ),
                             ],
                           ),

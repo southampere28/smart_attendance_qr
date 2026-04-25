@@ -1,19 +1,48 @@
+import 'dart:async';
+
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_student/profile/presentation/profile_controller.dart';
+import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    ProfileController controller = Get.find<ProfileController>();
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> {
+  final controller = Get.find<ProfileController>();
+  late final StreamSubscription<bool> _loadingUpdateProfileSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadingUpdateProfileSub =
+        controller.isLoadingUpdateProfile.listen((isLoading) {
+      if (isLoading) {
+        AppUtil.showLoadingDialog(context, message: 'Mengunggah foto profil...');
+      } else {
+        try {
+          AppUtil.hideLoadingDialog(context);
+        } catch (_) {}
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _loadingUpdateProfileSub.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: Padding(
@@ -22,11 +51,59 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SpacingSize.spacingHugeHeight,
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(
-                  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'),
-            ),
+            Obx(() => Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                      child: ClipOval(
+                        child: Image.network(
+                          controller.profileImageURL.value,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            final String initials =
+                                controller.name.value.isNotEmpty
+                                    ? controller.name.value
+                                        .trim()
+                                        .split(' ')
+                                        .map((e) => e[0])
+                                        .take(2)
+                                        .join()
+                                    : '?';
+                            return Text(
+                              initials,
+                              style: TextStyle(
+                                  color: AppColor.primaryColor,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -4,
+                      right: -4,
+                      child: GestureDetector(
+                        onTap: () {
+                          controller.pickAndUploadProfilePicture();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColor.primaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.camera_alt,
+                              color: Colors.white, size: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
             SpacingSize.spacingHugeHeight,
             Container(
               width: double.infinity,

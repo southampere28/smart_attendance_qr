@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:absensi_qr/configs/api_constant.dart';
+import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
@@ -13,6 +15,8 @@ import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
   final EndpointService _httpService = Get.find<EndpointService>();
+  final NavigationController navigationController =
+      Get.find<NavigationController>();
 
   final GeolocationService _geolocationService = Get.find<GeolocationService>();
   final MainController mainController = Get.find<MainController>();
@@ -42,6 +46,7 @@ class DashboardController extends GetxController {
   final RxString className = ''.obs;
   final RxString major = ''.obs;
   final RxString entryYear = ''.obs;
+  final RxString profileImageURL = ''.obs;
 
   // attendance history
   RxBool isLoadingAttendanceHistory = true.obs;
@@ -108,7 +113,10 @@ class DashboardController extends GetxController {
     ever(mainController.refreshHomeStudent, (_) {
       _loadDashboardData();
     });
-    
+
+    ever(mainController.triggerUpdateProfile, (_) {
+      _setProfileData();
+    });
   }
 
   void _loadDashboardData() async {
@@ -139,6 +147,12 @@ class DashboardController extends GetxController {
     entryYear.value = _httpService.studentData != null
         ? _httpService.studentData!.entryYear.toString()
         : '';
+
+    final String? profilePicture = _httpService.userModel?.profilePicture;
+    if (profilePicture != null) {
+      profileImageURL.value =
+          ApiConstant.getProfilePictureURL(profilePicture, 'student');
+    }
   }
 
   // get attendance history by now
@@ -290,11 +304,8 @@ class DashboardController extends GetxController {
         final attendanceDaily = AttendanceDaily.fromMap(raw);
         attendanceDailyResult.value = attendanceDaily;
         log('Loaded attendance daily report for date ${dateStr}');
-        Fluttertoast.showToast(
-            msg: 'Data: ${attendanceDailyResult.value?.status ?? 'No status'}');
       } else {
         attendanceDailyResult.value = null;
-        Fluttertoast.showToast(msg: 'Data: No Data Found on This Date');
       }
     } else {
       Fluttertoast.showToast(

@@ -24,7 +24,7 @@ class AttendanceStudentClassPage extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         if (controller.selectedClassId != BigInt.from(-1)) {
-          await controller.fetchAttendanceHistory(context);
+          await controller.fetchAttendanceHistory();
         }
       },
       child: SingleChildScrollView(
@@ -53,8 +53,8 @@ class AttendanceStudentClassPage extends StatelessWidget {
                       final selectedId = controller.classMap[value];
                       log('Selected: $value, ID: $selectedId');
                       controller.selectedClassId = selectedId!;
-                      controller.fetchAttendanceHistory(context);
-                      controller.fetchAttendanceDaily(context);
+                      controller.fetchAttendanceHistory();
+                      controller.fetchAttendanceDaily();
                     } else {
                       controller.selectedClassId = BigInt.from(-1);
                     }
@@ -83,8 +83,8 @@ class AttendanceStudentClassPage extends StatelessWidget {
                   lastDate: DateTime(2030),
                   onDateChanged: (DateTime date) {
                     controller.selectedDate.value = date;
-                    controller.fetchAttendanceHistory(context);
-                    controller.fetchAttendanceDaily(context);
+                    controller.fetchAttendanceHistory();
+                    controller.fetchAttendanceDaily();
                   },
                 ),
               ),

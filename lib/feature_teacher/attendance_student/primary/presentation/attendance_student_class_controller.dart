@@ -121,7 +121,7 @@ class AttendanceStudentClassController extends GetxController {
   }
 
   // future service.
-  Future<void> fetchAttendanceHistory(BuildContext context) async {
+  Future<void> fetchAttendanceHistory() async {
     isLoadingAttendanceHistory.value = true;
 
     // use dummy, change later to get from student data class id.
@@ -158,7 +158,7 @@ class AttendanceStudentClassController extends GetxController {
     isLoadingAttendanceHistory.value = false;
   }
 
-  Future<void> fetchAttendanceDaily(BuildContext context) async {
+  Future<void> fetchAttendanceDaily() async {
     isLoadingAttendanceDaily.value = true;
 
     // use dummy, change later to get from student data class id.

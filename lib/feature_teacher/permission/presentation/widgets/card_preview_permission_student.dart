@@ -7,12 +7,9 @@ import 'package:absensi_qr/models/model_merging/permission_student_item.dart';
 import 'package:flutter/material.dart';
 
 class CardPreviewPermissionStudent extends StatelessWidget {
-  const CardPreviewPermissionStudent(
-      {super.key, required this.permissionData, required this.onAccept});
+  const CardPreviewPermissionStudent({super.key, required this.permissionData});
 
   final PermissionStudentItem permissionData;
-
-  final VoidCallback onAccept;
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +84,6 @@ class CardPreviewPermissionStudent extends StatelessWidget {
                 ),
               ],
             ),
-            // testing button for accept or reject permission
-            ElevatedButton(
-              onPressed: onAccept,
-              child: const Text('Accept (testing)'),
-            )
           ],
         ));
   }

@@ -132,4 +132,14 @@ class EndpointService extends GetxService {
       await _secureStorage.write(key: 'user', value: jsonEncode(userData));
     }
   }
+
+  /// Update profile picture filename in both [userData] and [userModel],
+  /// then persist to secure storage.
+  Future<void> applyProfilePictureUpdate(String filename) async {
+    if (userData != null) {
+      userData!['profile_picture'] = filename;
+      userModel = User.fromMap(userData!);
+      await persistUserData();
+    }
+  }
 }

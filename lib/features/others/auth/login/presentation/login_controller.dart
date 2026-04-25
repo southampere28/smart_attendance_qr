@@ -44,6 +44,9 @@ class LoginController extends GetxController {
         log("Token: ${endpointService.accessToken}");
         log("User logged in: ${user.email} (${user.role})");
 
+        // load academic period jika belum ada
+        await _loadActiveAcademicPeriodIfEmpty();
+
         Fluttertoast.showToast(msg: msg);
 
         // Navigate based on role
@@ -112,6 +115,21 @@ class LoginController extends GetxController {
       }
     } else {
       log('No role argument provided');
+    }
+  }
+
+  Future<void> _loadActiveAcademicPeriodIfEmpty() async {
+    if (mainController.activeAcademicPeriod.value.isNotEmpty) return;
+
+    try {
+      final activePeriod = await endpointService.getActiveAcademicPeriod();
+      if (activePeriod.success && activePeriod.data != null) {
+        mainController.activeAcademicPeriod.value =
+            activePeriod.data!['name'] ?? '';
+        log('Academic period loaded on login: ${mainController.activeAcademicPeriod.value}');
+      }
+    } catch (e) {
+      log('Failed to load academic period on login: $e');
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:absensi_qr/configs/api_constant.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileTeacherController extends GetxController {
   final EndpointService _httpService = Get.find<EndpointService>();
+  final MainController mainController = Get.find<MainController>();
 
   final RxString name = ''.obs;
   final RxString email = ''.obs;
@@ -60,13 +62,12 @@ class ProfileTeacherController extends GetxController {
       final String profilePictureFilename =
           result.data!['profile_picture'] as String;
 
+      // update service state (userData + userModel) dan persist
+      await _httpService.applyProfilePictureUpdate(profilePictureFilename);
+
       profileImageURL.value = profilePictureUrl;
 
-      if (_httpService.userData != null) {
-        _httpService.userData!['profile_picture'] = profilePictureFilename;
-        await _httpService.persistUserData();
-      }
-
+      mainController.triggerUpdateProfile.value++;
       Fluttertoast.showToast(msg: 'Foto profil berhasil diperbarui');
     } else {
       Fluttertoast.showToast(

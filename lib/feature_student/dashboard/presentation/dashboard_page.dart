@@ -2,15 +2,9 @@ import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
-import 'package:absensi_qr/core/helper/schedule_helper.dart';
-import 'package:absensi_qr/core/widgets/attendance_status_icon_widget.dart';
 import 'package:absensi_qr/core/widgets/card_attendance_daily_status.dart';
 import 'package:absensi_qr/core/widgets/shimmer_load_card.dart';
-import 'package:absensi_qr/domain/common/badges/attendance_status_badge.dart';
-import 'package:absensi_qr/domain/common/icons/attendance_status_icon.dart';
-import 'package:absensi_qr/domain/enum/attendance_daily_status_enum.dart';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
-import 'package:absensi_qr/feature_student/attendance/presentation/widgets/card_attendance_date_schedule.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/dashboard_controller.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/card_attendace_history.dart';
 import 'package:absensi_qr/feature_student/dashboard/presentation/widgets/subject_preview_card.dart';
@@ -222,35 +216,6 @@ class DashboardPage extends StatelessWidget {
                     )),
 
                 SpacingSize.spacingHugeHeight,
-
-                /// testing only
-                // SizedBox(
-                //   height: 300,
-                // ),
-                // Text('Dashboard Page'),
-                // ElevatedButton(
-                //     onPressed: () {
-                //       controller.checkConnection();
-                //     },
-                //     child: Text('testconnection')),
-                // SizedBox(
-                //   height: 30,
-                // ),
-                // Obx(() => Text(
-                //       controller.placemark != ''
-                //           ? '${controller.placemarkVillage}, ${controller.placemarkLocality}, ${controller.placemarkCity}'
-                //           : 'Location: not fetched yet',
-                //       style: AppFontStyle.primaryText,
-                //     )),
-                // SizedBox(
-                //   height: 30,
-                // ),
-                // ElevatedButton(
-                //     onPressed: () async {
-                //       // do something here
-                //       await controller.getLocation();
-                //     },
-                //     child: Text('Check Status Location'))
               ]),
         ),
       ),
@@ -275,17 +240,39 @@ class DashboardPage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(AppRoutes.profileTeacher);
+                  controller.navigationController.changePage(3);
                 },
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.black,
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 14,
-                  ),
-                ),
+                child: Obx(() => CircleAvatar(
+                      radius: 16,
+                      backgroundColor: AppColor.softColorPrimary,
+                      child: ClipOval(
+                        child: Image.network(
+                          controller.profileImageURL.value,
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            final String initials =
+                                controller.name.value.isNotEmpty
+                                    ? controller.name.value
+                                        .trim()
+                                        .split(' ')
+                                        .map((e) => e[0])
+                                        .take(2)
+                                        .join()
+                                    : '?';
+                            return Text(
+                              initials,
+                              style: TextStyle(
+                                color: AppColor.primaryColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )),
               ),
               SpacingSize.spacingSMWidth,
               Expanded(

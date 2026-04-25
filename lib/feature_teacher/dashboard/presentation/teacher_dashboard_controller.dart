@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:absensi_qr/configs/api_constant.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/model_merging/schedule_report_item.dart';
 import 'package:absensi_qr/models/model_merging/schedule_student_attendance_report.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
@@ -11,11 +13,12 @@ import 'package:get/get.dart';
 class TeacherDashboardController extends GetxController {
   // service controller
   final EndpointService _httpService = Get.find<EndpointService>();
+  final MainController mainController = Get.find<MainController>();
 
   final GeolocationService _geolocationService = Get.find<GeolocationService>();
 
   final RxBool isLoading = false.obs;
-  final RxBool isLoadingStatistic = true.obs;
+  final RxBool isLoadingStatistic = false.obs;
   final RxList<ScheduleReportItem> dataSchedule = <ScheduleReportItem>[].obs;
 
   /// data profile
@@ -24,6 +27,7 @@ class TeacherDashboardController extends GetxController {
   final RxString email = ''.obs;
   final RxString subject = ''.obs;
   final RxString nip = ''.obs;
+  final RxString profileImageURL = ''.obs;
 
   /// attendance history
   final RxBool isLoadingAttendanceHistory = false.obs;
@@ -67,8 +71,11 @@ class TeacherDashboardController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     _setProfileData();
+    ever(mainController.triggerUpdateProfile, (_) {
+      _setProfileData();
+    });
     await fetchTodayScheduleTeacher();
-    await fetchAttendanceHistory(Get.context!);
+    await fetchAttendanceHistory();
   }
 
   // === SERVICE ZONE ===
@@ -86,6 +93,12 @@ class TeacherDashboardController extends GetxController {
     email.value = emailService ?? '';
     subject.value = _httpService.teacherData?.subject ?? '';
     nip.value = _httpService.teacherData?.nip ?? '';
+
+    final String? profilePicture = _httpService.userModel?.profilePicture;
+    if (profilePicture != null) {
+      profileImageURL.value =
+          ApiConstant.getProfilePictureURL(profilePicture, 'teacher');
+    }
   }
 
   Future<void> fetchTodayScheduleTeacher() async {
@@ -116,7 +129,7 @@ class TeacherDashboardController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<void> fetchAttendanceHistory(BuildContext context) async {
+  Future<void> fetchAttendanceHistory() async {
     final now = DateTime.now();
 
     isLoadingAttendanceHistory.value = true;
@@ -175,18 +188,18 @@ class TeacherDashboardController extends GetxController {
         log('Auto-selected nearest upcoming class ID: ${selectedClassId.value} at ${schedule.schedule.startTime}');
       } else {
         log('No upcoming schedule found.');
-        Fluttertoast.showToast(
-            msg:
-                'No active or upcoming schedule found. Please select a class manually.');
+        Fluttertoast.showToast(msg: 'Tidak ada kelas yang berjalan saat ini.');
         isLoadingAttendanceHistory.value = false;
+        isLoadingStatistic.value = false;
         return;
       }
     }
 
     if (selectedClassId.value == BigInt.from(-1)) {
       log('Invalid class ID: ${selectedClassId.value}. Cannot fetch attendance history.');
-      Fluttertoast.showToast(msg: 'Schedule is empty.');
+      Fluttertoast.showToast(msg: 'Jadwal kosong.');
       isLoadingAttendanceHistory.value = false;
+      isLoadingStatistic.value = false;
       return;
     }
 
@@ -208,7 +221,7 @@ class TeacherDashboardController extends GetxController {
         // jangan lupa tambahkan filter schedule hasilnya berdasarkan range waktu upcoming / ongoing schedule. dan tampilkan di dashboard statistik.
 
         /// filter logic here...
-        await filterClassAttendanceBySchedule();
+        filterClassAttendanceBySchedule();
       } else {
         attendanceHistoryResult.clear();
         Fluttertoast.showToast(msg: 'Data: No Data Found on This Date');
@@ -223,7 +236,7 @@ class TeacherDashboardController extends GetxController {
   }
 
   // schedule student attendance filetring logic based on date now and schedule time (endtime and start time)
-  Future<void> filterClassAttendanceBySchedule() async {
+  void filterClassAttendanceBySchedule() {
     isLoadingStatistic.value = true;
 
     final now = DateTime.now();
@@ -245,6 +258,7 @@ class TeacherDashboardController extends GetxController {
         item.schedule.endTime.minute,
       );
 
+      isLoadingStatistic.value = false;
       return normalizedStartTime.isBefore(now) &&
           normalizedEndTime.isAfter(now);
     }).toList();
@@ -287,5 +301,11 @@ class TeacherDashboardController extends GetxController {
       log('Statistic attendance for today - class: ${statiscticAttendanceToday.value?.classModel ?? 'No Class'}');
       log('Statistic attendance for today - class: ${statiscticAttendanceToday.value?.classModel?.name ?? 'No Class'}');
     }
+  }
+
+  Future<void> refreshData() async {
+    await fetchTodayScheduleTeacher();
+    await fetchAttendanceHistory();
+    filterClassAttendanceBySchedule();
   }
 }

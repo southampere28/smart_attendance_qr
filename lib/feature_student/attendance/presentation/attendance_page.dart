@@ -18,158 +18,163 @@ class AttendancePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Riwayat Absensi',
-                  style: AppFontStyle.titleText.copyWith(fontSize: 18)),
-              Obx(() => Text(
-                  'Semester ${controller.activeAcademicPeriod.value}',
-                  style: AppFontStyle.subTitleText)),
-              SpacingSize.spacingBaseHeight,
-              // this will shown as calendar widget.
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.colorShadowBox,
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: CalendarDatePicker(
-                  initialDate: controller.selectedDate.value,
-                  firstDate: DateTime(2025),
-                  lastDate: DateTime(2030),
-                  onDateChanged: (DateTime date) {
-                    controller.selectedDate.value = date;
-                    controller.getHistoryAttendance();
-                    controller.getAttendanceHistoryDaily();
-                  },
-                ),
-              ),
-              SpacingSize.spacingBaseHeight,
-              // this will shown as widget card with 2 separated sections: today and history.
-              Container(
-                constraints: const BoxConstraints(minHeight: 200),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.colorShadowBox,
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: DefaultTabController(
-                  length: 2,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: TabBar(
-                          labelColor: AppColor.primaryColor,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: AppColor.primaryColor,
-                          tabs: const [
-                            Tab(text: 'Absensi Harian'),
-                            Tab(text: 'Absensi Mapel'),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 300,
-                        child: TabBarView(
-                          children: [
-                            /// data history attendance daily face recognition.
-                            SingleChildScrollView(
-                              child: Obx(() => Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          controller.isLoadingAttendanceDaily
-                                                  .value
-                                              ? ShimmerLoadCard(
-                                                  shimmerItemCount: 1,
-                                                  customHeight: 60,
-                                                )
-                                              : CardAttendanceDailyStatus(
-                                                  attendance: controller
-                                                      .attendanceDailyResult
-                                                      .value),
-                                          SpacingSize.spacingBaseHeight,
-                                        ]),
-                                  )),
-                            ),
-
-                            /// data history attendance by subject with schedule info.
-                            SingleChildScrollView(
-                              child: Obx(() => Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          controller.isLoadingAttendanceHistory
-                                                  .value
-                                              ? ShimmerLoadCard(
-                                                  shimmerItemCount: 3,
-                                                  customHeight: 60,
-                                                )
-                                              : Column(
-                                                  children: [
-                                                    ...controller
-                                                        .attendanceHistoryResult
-                                                        .map((item) {
-                                                      return CardAttendanceDateSchedule(
-                                                          subjectName: item
-                                                                  .schedule
-                                                                  .subject
-                                                                  ?.name ??
-                                                              '(Mata Pelajaran)',
-                                                          badgeInfo: item
-                                                                      .attendance
-                                                                      ?.status !=
-                                                                  null
-                                                              ? item.attendance!
-                                                                  .status
-                                                              : AttendanceStatusEnum
-                                                                  .alpha,
-                                                          attendanceDateTime:
-                                                              item.attendance
-                                                                  ?.createdAt);
-                                                    }).toList(),
-                                                  ],
-                                                )
-                                        ]),
-                                  )),
-                            ),
-                          ],
-                        ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.refreshData();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Riwayat Absensi',
+                    style: AppFontStyle.titleText.copyWith(fontSize: 18)),
+                Obx(() => Text(
+                    'Semester ${controller.activeAcademicPeriod.value}',
+                    style: AppFontStyle.subTitleText)),
+                SpacingSize.spacingBaseHeight,
+                // this will shown as calendar widget.
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.colorShadowBox,
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
+                  child: CalendarDatePicker(
+                    initialDate: controller.selectedDate.value,
+                    firstDate: DateTime(2025),
+                    lastDate: DateTime(2030),
+                    onDateChanged: (DateTime date) {
+                      controller.selectedDate.value = date;
+                      controller.getHistoryAttendance();
+                      controller.getAttendanceHistoryDaily();
+                    },
+                  ),
                 ),
-              ),
-            ],
+                SpacingSize.spacingBaseHeight,
+                // this will shown as widget card with 2 separated sections: today and history.
+                Container(
+                  constraints: const BoxConstraints(minHeight: 200),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.colorShadowBox,
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: DefaultTabController(
+                    length: 2,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: TabBar(
+                            labelColor: AppColor.primaryColor,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorColor: AppColor.primaryColor,
+                            tabs: const [
+                              Tab(text: 'Absensi Harian'),
+                              Tab(text: 'Absensi Mapel'),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 300,
+                          child: TabBarView(
+                            children: [
+                              /// data history attendance daily face recognition.
+                              SingleChildScrollView(
+                                child: Obx(() => Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            controller.isLoadingAttendanceDaily
+                                                    .value
+                                                ? ShimmerLoadCard(
+                                                    shimmerItemCount: 1,
+                                                    customHeight: 60,
+                                                  )
+                                                : CardAttendanceDailyStatus(
+                                                    attendance: controller
+                                                        .attendanceDailyResult
+                                                        .value),
+                                            SpacingSize.spacingBaseHeight,
+                                          ]),
+                                    )),
+                              ),
+        
+                              /// data history attendance by subject with schedule info.
+                              SingleChildScrollView(
+                                child: Obx(() => Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            controller.isLoadingAttendanceHistory
+                                                    .value
+                                                ? ShimmerLoadCard(
+                                                    shimmerItemCount: 3,
+                                                    customHeight: 60,
+                                                  )
+                                                : Column(
+                                                    children: [
+                                                      ...controller
+                                                          .attendanceHistoryResult
+                                                          .map((item) {
+                                                        return CardAttendanceDateSchedule(
+                                                            subjectName: item
+                                                                    .schedule
+                                                                    .subject
+                                                                    ?.name ??
+                                                                '(Mata Pelajaran)',
+                                                            badgeInfo: item
+                                                                        .attendance
+                                                                        ?.status !=
+                                                                    null
+                                                                ? item.attendance!
+                                                                    .status
+                                                                : AttendanceStatusEnum
+                                                                    .alpha,
+                                                            attendanceDateTime:
+                                                                item.attendance
+                                                                    ?.createdAt);
+                                                      }).toList(),
+                                                    ],
+                                                  )
+                                          ]),
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
