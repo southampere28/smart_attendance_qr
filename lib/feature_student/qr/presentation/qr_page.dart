@@ -13,186 +13,169 @@ class QrPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     QrController controller = Get.find<QrController>();
+    final double scanBoxSize = MediaQuery.of(context).size.width - 90;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Qr Code Scan'),
+        titleSpacing: 0,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('Absensi', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(Icons.chevron_left, color: Colors.white, size: 30)),
       ),
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-                child: Container(
-              width: double.infinity,
-              color: Colors.white,
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+      body: Stack(
+        children: [
+          // Full screen camera
+          SizedBox.expand(
+            child: MobileScanner(
+              fit: BoxFit.cover,
+              allowDuplicates: false,
+              controller: controller.scannerController,
+              onDetect: (barcode, args) {
+                if (!controller.isScanCompleted) {
+                  if (barcode.rawValue == null) {
+                    debugPrint('Failed to scan Barcode');
+                  } else {
+                    final String code = barcode.rawValue!;
+                    debugPrint('Barcode found! $code');
+                    controller.isScanCompleted = true; // tandai scan selesai
+
+                    if (controller.userData != null) {
+                      if (controller.userData!.student == null) {
+                        Fluttertoast.showToast(msg: 'Anda bukan siswa!');
+                        Get.back();
+                      } else {
+                        if (controller.userData == null) {
+                          Fluttertoast.showToast(
+                              msg: 'Silahkan Login Terlebih dahulu!');
+                          Get.offNamed(AppRoutes.login);
+                          return;
+                        }
+
+                        var studentId =
+                            controller.userData!.student!.id.toString();
+                        var classId =
+                            controller.userData!.student!.idClass.toString();
+
+                        controller.startScan(
+                            context: context,
+                            idStudent: studentId,
+                            idClass: classId,
+                            qrcode: code);
+                      }
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: 'Silahkan Login Terlebih dahulu!');
+                      Get.offAllNamed(AppRoutes.login);
+                    }
+                  }
+                }
+              },
+            ),
+          ),
+
+          // Dark overlay with transparent cutout in center
+          CustomPaint(
+            painter: _ScanOverlayPainter(scanBoxSize: scanBoxSize),
+            child: const SizedBox.expand(),
+          ),
+
+          // Corner bracket decorations
+          Center(
+            child: SizedBox(
+              width: scanBoxSize + 20,
+              height: scanBoxSize + 20,
+              child: Stack(
                 children: [
-                  Text('Place the QR Code in this area'),
-                  Text('Scanning will be started automatically'),
-                  SizedBox(
-                    height: 12,
-                  ),
+                  Positioned(
+                      top: 0,
+                      left: 0,
+                      child:
+                          Container(width: 40, height: 4, color: Colors.white)),
+                  Positioned(
+                      top: 0,
+                      left: 0,
+                      child:
+                          Container(width: 4, height: 40, color: Colors.white)),
+                  Positioned(
+                      top: 0,
+                      right: 0,
+                      child:
+                          Container(width: 40, height: 4, color: Colors.white)),
+                  Positioned(
+                      top: 0,
+                      right: 0,
+                      child:
+                          Container(width: 4, height: 40, color: Colors.white)),
+                  Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child:
+                          Container(width: 40, height: 4, color: Colors.white)),
+                  Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child:
+                          Container(width: 4, height: 40, color: Colors.white)),
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child:
+                          Container(width: 40, height: 4, color: Colors.white)),
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child:
+                          Container(width: 4, height: 40, color: Colors.white)),
                 ],
               ),
-            )),
-            Expanded(
-                flex: 4,
-                child: Center(
-                  child: Stack(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        height: MediaQuery.of(context).size.width - 50,
-                        width: MediaQuery.of(context).size.width - 50,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: MobileScanner(
-                              allowDuplicates: false,
-                              controller: controller.scannerController,
-                              onDetect: (barcode, args) {
-                                if (!controller.isScanCompleted) {
-                                  if (barcode.rawValue == null) {
-                                    debugPrint('Failed to scan Barcode');
-                                  } else {
-                                    final String code = barcode.rawValue!;
-                                    debugPrint('Barcode found! $code');
-                                    controller.isScanCompleted =
-                                        true; // tandai scan selesai
+            ),
+          ),
 
-                                    if (controller.userData != null) {
-                                      if (controller.userData!.student ==
-                                          null) {
-                                        Fluttertoast.showToast(
-                                            msg: 'Anda bukan siswa!');
-                                        Get.back();
-                                      } else {
-
-                                        if (controller.userData == null) {
-                                          Fluttertoast.showToast(
-                                              msg:
-                                                  'Silahkan Login Terlebih dahulu!');
-                                          Get.offNamed(AppRoutes.login);
-                                          return;
-                                        }
-
-                                        var studentId = controller
-                                            .userData!.student!.id
-                                            .toString();
-                                        var classId = controller
-                                            .userData!.student!.idClass
-                                            .toString();
-
-                                        controller.startScan(
-                                          context: context,
-                                            idStudent: studentId,
-                                            idClass: classId,
-                                            qrcode: code);
-                                      }
-                                    } else {
-                                      Fluttertoast.showToast(
-                                          msg:
-                                              'Silahkan Login Terlebih dahulu!');
-                                      Get.offAllNamed(AppRoutes.login);
-                                    }
-                                  }
-                                }
-                              },
-                            )),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          width: 4,
-                          height: 40,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 4,
-                          height: 40,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          width: 4,
-                          height: 40,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: 4,
-                          height: 40,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 30),
-                color: AppColor.primaryColor,
-                child: Center(
-                  child: Text(
-                    'qrscanner developed by Pramudya',
-                    style: AppFontStyle.whiteText,
-                  ),
-                ),
+          // Bottom label
+          Positioned(
+            bottom: 150,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Arahkan ke Kode QR',
+                style: AppFontStyle.primaryText.copyWith(color: Colors.white),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _ScanOverlayPainter extends CustomPainter {
+  final double scanBoxSize;
+
+  const _ScanOverlayPainter({required this.scanBoxSize});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.black.withOpacity(0.55);
+
+    final scanBoxLeft = (size.width - scanBoxSize) / 2;
+    final scanBoxTop = (size.height - scanBoxSize) / 2;
+    final scanRect =
+        Rect.fromLTWH(scanBoxLeft, scanBoxTop, scanBoxSize, scanBoxSize);
+
+    final path = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRRect(RRect.fromRectAndRadius(scanRect, const Radius.circular(4)));
+    path.fillType = PathFillType.evenOdd;
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
