@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/domain/enum/notification_type_enum.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
@@ -172,8 +173,10 @@ class NotificationStudentPage extends StatelessWidget {
     return AppUtil.formatDateIndonesia(dateTime);
   }
 
-  Widget _cardNotification(String title, String message,
-      DateTime dateTime, NotificationTypeEnum type) {
+  Widget _cardNotification(String title, String message, DateTime dateTime,
+      NotificationTypeEnum type) {
+    final iconPath = AssetConstant.getNotificationIconByType(type.dbValue);
+
     return GestureDetector(
       onTap: () {
         final int? navIndex = _mapTypeToNavIndex(type);
@@ -184,16 +187,40 @@ class NotificationStudentPage extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
+                // map type to icon
+                Image.asset(
+                  iconPath,
+                  width: 24,
+                  height: 24,
+                  errorBuilder: (context, error, stackTrace) {
+                    log('Error loading icon for type ${type.dbValue}: $error');
+                    return Icon(Icons.notifications,
+                        color: AppColor.primaryColor, size: 24);
+                  },
+                ),
+                SpacingSize.spacingMDWidth,
                 Expanded(
-                  child: Text(title,
-                      style: AppFontStyle.primaryText
-                          .copyWith(fontWeight: FontWeight.w500)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: AppFontStyle.primaryText
+                              .copyWith(fontWeight: FontWeight.bold)),
+                      SpacingSize.spacingXSHeight,
+                      Text(message, style: AppFontStyle.subTitleText),
+                    ],
+                  ),
                 ),
                 SpacingSize.spacingMDWidth,
                 Text(
@@ -203,12 +230,6 @@ class NotificationStudentPage extends StatelessWidget {
                 ),
               ],
             ),
-            SpacingSize.spacingXSHeight,
-            Text(message, style: AppFontStyle.subTitleText),
-            SpacingSize.spacingXSHeight,
-            Divider(
-              color: AppColor.colorOutlineBoxinput,
-            )
           ],
         ),
       ),
@@ -217,7 +238,7 @@ class NotificationStudentPage extends StatelessWidget {
 
   int? _mapTypeToNavIndex(NotificationTypeEnum type) {
     switch (type) {
-      case NotificationTypeEnum.permission:
+      case NotificationTypeEnum.permission || NotificationTypeEnum.permissionAccepted || NotificationTypeEnum.permissionRejected:
         return 2;
       case NotificationTypeEnum.attendanceViolation:
         return 1;

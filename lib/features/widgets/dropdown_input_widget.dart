@@ -11,6 +11,7 @@ class DropdownInputWidget extends StatelessWidget {
     required this.items,
     required this.onChanged,
     required this.hint,
+    this.customTitleTextStyle,
     this.readOnly = false,
     this.useTransparentBackground = true,
   });
@@ -19,6 +20,7 @@ class DropdownInputWidget extends StatelessWidget {
   final String? selected;
   final List<String> items;
   final String hint;
+  final TextStyle? customTitleTextStyle;
   final void Function(String?)? onChanged;
   final bool readOnly;
   final bool useTransparentBackground;
@@ -30,7 +32,7 @@ class DropdownInputWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(title, style: AppFontStyle.subTitleText),
+        Text(title, style: customTitleTextStyle ?? AppFontStyle.subTitleText),
         SpacingSize.spacingSMHeight,
         Container(
           width: double.infinity,

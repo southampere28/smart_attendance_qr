@@ -54,6 +54,7 @@ class DialogPermissionDetail extends StatelessWidget {
     final isWaiting = status == PermissionStatusEnum.proses;
 
     return Dialog(
+      insetPadding: EdgeInsets.zero,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(
@@ -64,25 +65,55 @@ class DialogPermissionDetail extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ── Header: nama siswa + badge status ──────────────────────
+              // ── Header: title + close ──────────────────────────────────
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const SizedBox(height: 30, width: 30),
                   Expanded(
                     child: Text(
-                      student.name,
+                      'Detail Perizinan',
                       style: AppFontStyle.primaryText.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 16,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  SpacingSize.spacingSMWidth,
-                  _StatusBadge(status: status, color: statusColor),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColor.inactiveColor,
+                      size: 30,
+                    ),
+                  ),
                 ],
               ),
 
               const Divider(height: 24),
+
+              // ── Person icon + nama siswa + status ──────────────────────
+              Row(
+                children: [
+                  const Icon(Icons.person,
+                      color: AppColor.primaryColor, size: 24),
+                  SpacingSize.spacingSMWidth,
+                  Expanded(
+                    child: Text(
+                      student.name,
+                      style: AppFontStyle.primaryText
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                    status.title,
+                    style: AppFontStyle.smallText.copyWith(color: statusColor),
+                  ),
+                ],
+              ),
+
+              SpacingSize.spacingBaseHeight,
 
               // ── Info rows ───────────────────────────────────────────────
               _InfoRow(
@@ -91,7 +122,7 @@ class DialogPermissionDetail extends StatelessWidget {
               ),
               SpacingSize.spacingMDHeight,
               _InfoRow(
-                label: 'Alasan',
+                label: 'Jenis Perizinan',
                 value: permission.reason.title,
               ),
               SpacingSize.spacingMDHeight,
@@ -118,6 +149,33 @@ class DialogPermissionDetail extends StatelessWidget {
                         '${ApiConstant.permissionEvidenceURL}/${permission.evidence}')
                     : null,
               ),
+
+              // ── Alasan penolakan (hanya saat status ditolak) ────────────
+              if (status == PermissionStatusEnum.ditolak) ...[
+                SpacingSize.spacingBaseHeight,
+                Text(
+                  'Alasan Penolakan',
+                  style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
+                ),
+                SpacingSize.spacingXSHeight,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColor.errorColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColor.errorColor),
+                  ),
+                  child: Text(
+                    permission.feedback.isNotEmpty
+                        ? permission.feedback
+                        : 'Tidak ada alasan penolakan',
+                    style: AppFontStyle.primaryText.copyWith(
+                      color: AppColor.errorColor,
+                    ),
+                  ),
+                ),
+              ],
 
               // ── Tombol Tolak / Setuju (hanya saat status proses) ────────
               if (isWaiting) ...[
@@ -262,48 +320,68 @@ class _EvidenceImage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
-        alignment: Alignment.bottomRight,
+        alignment: Alignment.center,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              imageUrl,
+            child: SizedBox(
               width: double.infinity,
               height: 180,
-              fit: BoxFit.cover,
-              loadingBuilder: (_, child, progress) => progress == null
-                  ? child
-                  : Container(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    imageUrl,
+                    width: double.infinity,
+                    height: 180,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (_, child, progress) => progress == null
+                        ? child
+                        : Container(
+                            height: 180,
+                            color: AppColor.colorBackgroundApp,
+                            child: const Center(
+                                child: CircularProgressIndicator()),
+                          ),
+                    errorBuilder: (_, __, ___) => Container(
                       height: 180,
                       color: AppColor.colorBackgroundApp,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: const Center(
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          color: AppColor.inactiveColor,
+                          size: 48,
+                        ),
+                      ),
                     ),
-              errorBuilder: (_, __, ___) => Container(
-                height: 180,
-                color: AppColor.colorBackgroundApp,
-                child: const Center(
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    color: AppColor.inactiveColor,
-                    size: 48,
                   ),
-                ),
+                  // semi-transparent black overlay on top of image
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black45,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          // hint ikon fullscreen di pojok kanan bawah
-          Container(
-            margin: const EdgeInsets.all(8),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: const Icon(
-              Icons.fullscreen,
-              color: Colors.white,
-              size: 18,
-            ),
+          // ikon fullscreen + label di tengah
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                child: const Icon(
+                  Icons.fullscreen,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              SpacingSize.spacingXSHeight,
+              Text('Lihat Gambar',
+                  style: AppFontStyle.whiteText.copyWith(fontSize: 14)),
+            ],
           ),
         ],
       ),

@@ -89,7 +89,7 @@ class AppUtil {
     required PermissionStudentItem permissionData,
     required VoidCallback onAccept,
     required VoidCallback onReject,
-    double widthFactor = 0.92,
+    double widthFactor = 0.90,
   }) {
     showDialog(
       context: context,
@@ -134,16 +134,20 @@ class AppUtil {
 //     case AttendanceViolation = 'attendance_violation';
 //     case PersonalNote = 'personal_note';
 // }
-  static String? mapNotificationTypeToRoute(NotificationTypeEnum notificationType, {bool isStudent = true}) {
+  static String? mapNotificationTypeToRoute(
+      NotificationTypeEnum notificationType,
+      {bool isStudent = true}) {
     switch (notificationType) {
-      case NotificationTypeEnum.permission:
+      case NotificationTypeEnum.permission || NotificationTypeEnum.permissionAccepted || NotificationTypeEnum.permissionRejected:
         return isStudent ? AppRoutes.permission : AppRoutes.permissionTeacher;
       case NotificationTypeEnum.announcementAcademic:
       case NotificationTypeEnum.announcementGeneral:
       case NotificationTypeEnum.announcementForClass:
         return isStudent ? null : AppRoutes.sendAnnouncement;
       case NotificationTypeEnum.attendanceViolation:
-        return isStudent ? AppRoutes.attendance : AppRoutes.attendanceStudentClass;
+        return isStudent
+            ? AppRoutes.attendance
+            : AppRoutes.attendanceStudentClass;
       case NotificationTypeEnum.assignment:
       case NotificationTypeEnum.lostAndFound:
       case NotificationTypeEnum.emergencyInfo:
@@ -158,13 +162,15 @@ class AppUtil {
     Get.snackbar(
       '',
       '',
-      messageText: Text(message, style: AppFontStyle.primaryText.copyWith(color: isError ? Colors.white : Colors.black),),
+      messageText: Text(
+        message,
+        style: AppFontStyle.primaryText
+            .copyWith(color: isError ? Colors.white : Colors.black),
+      ),
       backgroundColor: isError ? Colors.red : AppColor.successColor,
       snackPosition: SnackPosition.BOTTOM,
     );
   }
   // note: how to call the getx snack bar:
   // AppUtil.showGetSnackBar('This is a success message');
-
-
 }

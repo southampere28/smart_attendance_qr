@@ -279,15 +279,12 @@ class _DialogSubmitDisrepancyState extends State<DialogSubmitDisrepancy> {
                           EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                       callback: () {
                         if (attendance.id != null) {
-                          Navigator.of(context).pop();
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DialogSubmitDisrepancy(
-                                  controller: controller,
-                                  attendance: attendance,
-                                );
-                              });
+                          widget.controller.submitDiscrepancyReport(
+                            context,
+                            (attendance.id!).toString(),
+                            selectedType ?? DisrepancyTypeEnum.hp_tidak_tersedia,
+                            additionalInfoController.text,
+                          );
                         } else {
                           Fluttertoast.showToast(
                               msg: 'ID absensi tidak tersedia');

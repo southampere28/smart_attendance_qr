@@ -44,7 +44,7 @@ class TextareaWithTitle extends StatelessWidget {
         Container(
           padding: customPadding ?? EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: AppColor.backgroundColor,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextFormField(

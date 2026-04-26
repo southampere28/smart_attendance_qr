@@ -32,7 +32,8 @@ class DatepickerInputWithtitle extends StatelessWidget {
       lastDate: lastDate ?? DateTime(now.year + 10),
     );
     if (selected != null) {
-      controller.text = '${selected.day.toString().padLeft(2, '0')}/${selected.month.toString().padLeft(2, '0')}/${selected.year}';
+      controller.text =
+          '${selected.day.toString().padLeft(2, '0')}/${selected.month.toString().padLeft(2, '0')}/${selected.year}';
     }
   }
 
@@ -53,7 +54,7 @@ class DatepickerInputWithtitle extends StatelessWidget {
         Container(
           padding: customPadding ?? EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: AppColor.backgroundColor,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextFormField(
