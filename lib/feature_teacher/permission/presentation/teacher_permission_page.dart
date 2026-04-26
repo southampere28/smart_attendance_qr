@@ -9,7 +9,6 @@ import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/features/widgets/datepicker_input_withtitle.dart';
 import 'package:absensi_qr/features/widgets/dropdown_input_widget.dart';
 import 'package:intl/intl.dart';
-import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,24 +55,12 @@ class TeacherPermissionPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Obx(() {
-                    final start = DateFormat('d MMMM yyyy', 'id_ID')
-                        .format(controller.filterStartDate.value);
-                    final end = DateFormat('d MMMM yyyy', 'id_ID')
-                        .format(controller.filterEndDate.value);
-                    return Text(
-                      'Menampilkan perizinan dari $start sampai $end',
-                      style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
-                    );
-                  }),
-                  SpacingSize.spacingBaseHeight,
-                  // subtitle
-                  Text('Daftar perizinan yang telah dibuat',
-                      style: AppFontStyle.subTitleText),
 
-                  // using dummy class for testing only
+                  SpacingSize.spacingBaseHeight,
+
+                  // using dropdown for class selection
                   Obx(() => DropdownInputWidget(
-                      title: 'Kelas',
+                      title: 'Pilih Kelas',
                       selected: controller.selectedItem.value,
                       items: controller.classItemList.toList(),
                       onChanged: (value) {
@@ -151,27 +138,19 @@ class TeacherPermissionPage extends StatelessWidget {
                             controller.filteredListPermission[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              AppUtil.showPermissionDetailDialog(
-                                context,
-                                permissionData: permission,
-                                onAccept: () {
-                                  controller.acceptPermission(
-                                      context, permission.permission.id);
-                                },
-                                onReject: () {
-                                  // Fluttertoast.showToast(msg: 'Reject permission is not implemented yet');
-                                  controller.rejectPermission(
-                                      context,
-                                      permission.permission.id,
-                                      'testing doang sih ini');
-                                },
-                              );
+                          child: CardPreviewPermissionStudent(
+                            permissionData: permission,
+                            onAccept: () {
+                              controller.acceptPermission(
+                                  context, permission.permission.id);
                             },
-                            child: CardPreviewPermissionStudent(
-                              permissionData: permission,
-                            ),
+                            onReject: () {
+                              // Fluttertoast.showToast(msg: 'Reject permission is not implemented yet');
+                              controller.rejectPermission(
+                                  context,
+                                  permission.permission.id,
+                                  'testing doang sih ini');
+                            },
                           ),
                         );
                       },

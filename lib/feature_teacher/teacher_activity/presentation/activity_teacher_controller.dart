@@ -47,7 +47,10 @@ class ActivityTeacherController extends GetxController {
         dataNotifications.where((notification) {
           switch (label) {
             case 'Perizinan':
-              return notification.type == NotificationTypeEnum.permission;
+              return notification.type == NotificationTypeEnum.permission ||
+                  notification.type ==
+                      NotificationTypeEnum.permissionAccepted ||
+                  notification.type == NotificationTypeEnum.permissionRejected;
             case 'Pengumuman':
               return notification.type ==
                       NotificationTypeEnum.announcementForClass ||

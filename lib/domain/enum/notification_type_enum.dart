@@ -7,6 +7,8 @@ enum NotificationTypeEnum {
   announcementForClass,
   assignment,
   permission,
+  permissionAccepted,
+  permissionRejected,
   attendanceViolation,
   personalNote,
   none;
@@ -29,6 +31,10 @@ enum NotificationTypeEnum {
         return NotificationTypeEnum.assignment;
       case 'permission':
         return NotificationTypeEnum.permission;
+      case 'permission_accepted':
+        return NotificationTypeEnum.permissionAccepted;
+      case 'permission_rejected':
+        return NotificationTypeEnum.permissionRejected;
       case 'attendance_violation':
         return NotificationTypeEnum.attendanceViolation;
       case 'personal_note':
@@ -56,6 +62,10 @@ enum NotificationTypeEnum {
         return 'assignment';
       case NotificationTypeEnum.permission:
         return 'permission';
+      case NotificationTypeEnum.permissionAccepted:
+        return 'permission_accepted';
+      case NotificationTypeEnum.permissionRejected:
+        return 'permission_rejected';
       case NotificationTypeEnum.attendanceViolation:
         return 'attendance_violation';
       case NotificationTypeEnum.personalNote:
@@ -87,6 +97,10 @@ extension NotificationTypeEnumX on NotificationTypeEnum {
         return 'Tugas';
       case NotificationTypeEnum.permission:
         return 'Perizinan';
+      case NotificationTypeEnum.permissionAccepted:
+        return 'Perizinan Diterima';
+      case NotificationTypeEnum.permissionRejected:
+        return 'Perizinan Ditolak';
       case NotificationTypeEnum.attendanceViolation:
         return 'Pelanggaran Kehadiran';
       case NotificationTypeEnum.personalNote:

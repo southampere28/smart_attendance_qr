@@ -60,6 +60,10 @@ class PermissionController extends GetxController
         filteredListPermission.value = listPermission
             .where((permission) => permission.status == statusSelected.value)
             .toList();
+
+        // sort by createdAt desc
+        filteredListPermission.sort((a, b) =>
+            b.createdAt!.compareTo(a.createdAt!)); // sort by createdAt desc
       }
     });
 

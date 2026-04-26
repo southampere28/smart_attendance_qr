@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/domain/enum/notification_type_enum.dart';
 import 'package:absensi_qr/feature_teacher/navigation/presentation/navigation_teacher_controller.dart';
@@ -15,7 +18,9 @@ class ActivityTeacherPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ActivityTeacherController>();
     return Scaffold(
+        backgroundColor: AppColor.backgroundColor,
         appBar: AppBar(
+          backgroundColor: AppColor.backgroundColor,
           automaticallyImplyLeading: false,
           title: Text(
             'Aktivitas',
@@ -39,6 +44,7 @@ class ActivityTeacherPage extends StatelessWidget {
                     ),
                   )),
             ),
+            SpacingSize.spacingBaseHeight,
             Expanded(child: SingleChildScrollView(
               child: Obx(() {
                 if (controller.isLoading.value) {
@@ -48,15 +54,12 @@ class ActivityTeacherPage extends StatelessWidget {
                 if (notifications.isEmpty) {
                   return const Center(child: Text('Tidak ada notifikasi'));
                 }
-                return Column(
-                  children: notifications
-                      .map((notification) => _cardNotification(
-                            notification.title,
-                            notification.body,
-                            notification.createdAt ?? DateTime.now(),
-                            notification.type,
-                          ))
-                      .toList(),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _buildGroupedNotifications(notifications),
+                  ),
                 );
               }),
             )),
@@ -64,8 +67,63 @@ class ActivityTeacherPage extends StatelessWidget {
         ));
   }
 
+  List<Widget> _buildGroupedNotifications(notifications) {
+    final Map<DateTime, List> groupedNotifications = {};
+
+    for (final notification in notifications) {
+      final createdAt = notification.createdAt;
+      if (createdAt == null) continue;
+      final dayKey = DateTime(createdAt.year, createdAt.month, createdAt.day);
+      groupedNotifications.putIfAbsent(dayKey, () => []);
+      groupedNotifications[dayKey]!.add(notification);
+    }
+
+    final sortedDays = groupedNotifications.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    return sortedDays
+        .map(
+          (day) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatDayLabel(day),
+                style: AppFontStyle.primaryText.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SpacingSize.spacingBaseHeight,
+              ...groupedNotifications[day]!
+                  .map(
+                    (notification) => _cardNotification(
+                      notification.title,
+                      notification.body,
+                      notification.createdAt ?? DateTime.now(),
+                      notification.type,
+                    ),
+                  )
+                  .toList(),
+            ],
+          ),
+        )
+        .toList();
+  }
+
+  String _formatDayLabel(DateTime dateTime) {
+    final today = DateTime.now();
+    final currentDay = DateTime(today.year, today.month, today.day);
+    final targetDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final diffDays = currentDay.difference(targetDay).inDays;
+
+    if (diffDays == 0) return 'Hari ini';
+    if (diffDays == 1) return 'Kemarin';
+    return AppUtil.formatDateIndonesia(dateTime);
+  }
+
   Widget _cardNotification(String title, String message, DateTime dateTime,
       NotificationTypeEnum type) {
+    final iconPath = AssetConstant.getNotificationIconByType(type.dbValue);
+
     return GestureDetector(
       onTap: () {
         final int? navIndex = _mapTypeToNavIndex(type);
@@ -75,16 +133,40 @@ class ActivityTeacherPage extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
+                // map type to icon
+                Image.asset(
+                  iconPath,
+                  width: 24,
+                  height: 24,
+                  errorBuilder: (context, error, stackTrace) {
+                    log('Error loading icon for type ${type.dbValue}: $error');
+                    return Icon(Icons.notifications,
+                        color: AppColor.primaryColor, size: 24);
+                  },
+                ),
+                SpacingSize.spacingMDWidth,
                 Expanded(
-                  child: Text(title,
-                      style: AppFontStyle.primaryText
-                          .copyWith(fontWeight: FontWeight.w500)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: AppFontStyle.primaryText
+                              .copyWith(fontWeight: FontWeight.bold)),
+                      SpacingSize.spacingXSHeight,
+                      Text(message, style: AppFontStyle.subTitleText),
+                    ],
+                  ),
                 ),
                 SpacingSize.spacingMDWidth,
                 Text(
@@ -94,12 +176,6 @@ class ActivityTeacherPage extends StatelessWidget {
                 ),
               ],
             ),
-            SpacingSize.spacingXSHeight,
-            Text(message, style: AppFontStyle.subTitleText),
-            SpacingSize.spacingXSHeight,
-            Divider(
-              color: AppColor.colorOutlineBoxinput,
-            )
           ],
         ),
       ),
@@ -108,7 +184,9 @@ class ActivityTeacherPage extends StatelessWidget {
 
   int? _mapTypeToNavIndex(NotificationTypeEnum type) {
     switch (type) {
-      case NotificationTypeEnum.permission:
+      case NotificationTypeEnum.permission ||
+            NotificationTypeEnum.permissionAccepted ||
+            NotificationTypeEnum.permissionRejected:
         return 1;
       case NotificationTypeEnum.attendanceViolation:
         return 2;
@@ -126,7 +204,7 @@ class ActivityTeacherPage extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         padding: const EdgeInsets.all(4),
-        margin: const EdgeInsets.only(right: 6),
+        margin: const EdgeInsets.only(left: 8),
         decoration: BoxDecoration(
           color: isActive
               ? AppColor.primaryColor.withOpacity(0.1)

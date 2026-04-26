@@ -211,11 +211,6 @@ class TeacherDashboardPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.notifications,
-                color: AppColor.primaryColor,
-                size: 30,
-              ),
             ],
           ),
           SpacingSize.spacingBaseHeight,

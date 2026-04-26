@@ -1,6 +1,7 @@
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/core/helper/permission_helper.dart';
 import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
@@ -235,62 +236,101 @@ class PermissionPage extends StatelessWidget {
       PermissionStatusEnum.proses: Colors.orange,
     };
 
-    return GestureDetector(
-      onTap: () {
-        // Handle tap event, e.g., navigate to detail page or show dialog
-        AppUtil.showPermissionDetailDialogStudent(
-          context,
-          permissionData: permission,
-          studentName: nameOfStudent,
-          onTap: () {
-            // handle to create new form permission.
-            Get.toNamed(AppRoutes.permissionForm);
-          },
-        );
-      },
-      child: Container(
-          padding: const EdgeInsets.all(16),
-          width: double.infinity,
-          // height: 150,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        reason,
-                        style: AppFontStyle.primaryText
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      SpacingSize.spacingXSHeight,
-                      Text(
-                        formattedDate,
-                        style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
-                      ),
-                    ],
-                  )),
-                  SpacingSize.spacingBaseWidth,
-                  Text(
-                    status,
-                    style: AppFontStyle.subTitleText.copyWith(
-                        color: permissionStatusMap[permission.status] ??
-                            Colors.grey),
+    // permission icon path
+    final permissionIconPath = AssetConstant.getPermissionIconStatus(status);
+
+    return Container(
+        padding: const EdgeInsets.all(16),
+        width: double.infinity,
+        // height: 150,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: AppColor.primaryColor.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 5,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(
+                  permissionIconPath,
+                  width: 40,
+                  height: 40,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.description,
+                    size: 40,
+                    color: AppColor.colorOutlineBoxinput,
                   ),
+                ),
+                SpacingSize.spacingSMWidth,
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      reason,
+                      style: AppFontStyle.primaryText
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    SpacingSize.spacingXSHeight,
+                    Text(
+                      formattedDate,
+                      style: AppFontStyle.subTitleText.copyWith(fontSize: 12),
+                    ),
+                  ],
+                )),
+                SpacingSize.spacingBaseWidth,
+                Text(
+                  status,
+                  style: AppFontStyle.subTitleText.copyWith(
+                      color: permissionStatusMap[permission.status] ??
+                          Colors.grey),
+                ),
+              ],
+            ),
+            SpacingSize.spacingSMHeight,
+            Divider(color: AppColor.colorOutlineBoxinput),
+            SpacingSize.spacingXSHeight,
+            GestureDetector(
+              onTap: () {
+                // Handle tap event, e.g., navigate to detail page or show dialog
+                AppUtil.showPermissionDetailDialogStudent(
+                  context,
+                  permissionData: permission,
+                  studentName: nameOfStudent,
+                  onTap: () {
+                    // handle to create new form permission.
+                    Get.toNamed(AppRoutes.permissionForm);
+                  },
+                );
+              },
+              child: Row(
+                children: [
+                  Text(
+                    'Lihat Detail Perizinan',
+                    style: AppFontStyle.blueInfoText.copyWith(fontSize: 12),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 12,
+                    color: AppColor.primaryColor,
+                  )
                 ],
               ),
-            ],
-          )),
-    );
+            ),
+          ],
+        ));
   }
 }

@@ -75,6 +75,9 @@ class TeacherPermissionController extends GetxController
             .where((permission) =>
                 permission.permission.status == statusSelected.value)
             .toList();
+
+        filteredListPermission.sort((a, b) => b.permission.createdAt!
+            .compareTo(a.permission.createdAt!)); // sort by createdAt desc
       }
     });
 
@@ -164,12 +167,10 @@ class TeacherPermissionController extends GetxController
 
     final DateTime start = filterStartDate.value;
     final DateTime end = filterEndDate.value;
-    final String startDateStr =
-        '${start.year.toString().padLeft(4, '0')}-'
+    final String startDateStr = '${start.year.toString().padLeft(4, '0')}-'
         '${start.month.toString().padLeft(2, '0')}-'
         '${start.day.toString().padLeft(2, '0')}';
-    final String endDateStr =
-        '${end.year.toString().padLeft(4, '0')}-'
+    final String endDateStr = '${end.year.toString().padLeft(4, '0')}-'
         '${end.month.toString().padLeft(2, '0')}-'
         '${end.day.toString().padLeft(2, '0')}';
 
