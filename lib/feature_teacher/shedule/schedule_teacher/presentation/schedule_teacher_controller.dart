@@ -32,6 +32,25 @@ class ScheduleTeacherController extends GetxController {
         DateTime.now().month, DateTime.now().year);
   }
 
+  String getDateOfSelectedSchedule() {
+    final DateTime monday =
+        DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+    final DateTime selectedDate =
+        monday.add(Duration(days: indexSelected.value));
+    const List<String> dayNames = [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu'
+    ];
+    final String dayName = dayNames[indexSelected.value];
+    final String monthYear = ScheduleHelper.getMonthName(
+        selectedDate.month, selectedDate.year);
+    return '$dayName, ${selectedDate.day} $monthYear';
+  }
+
   @override
   void onInit() {
     super.onInit();

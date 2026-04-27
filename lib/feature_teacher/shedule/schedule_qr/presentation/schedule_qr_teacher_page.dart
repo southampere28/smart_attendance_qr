@@ -39,7 +39,8 @@ class ScheduleQrTeacherPage extends StatelessWidget {
               style: AppFontStyle.primaryText
                   .copyWith(fontWeight: FontWeight.bold)),
           SpacingSize.spacingXSHeight,
-          Text(controller.dateNowFormatted, style: AppFontStyle.subTitleText),
+          Text(controller.dateSchedule ?? controller.dateNowFormatted,
+              style: AppFontStyle.subTitleText),
           SpacingSize.spacingBaseHeight,
           controller.codeQR != null
               ? SizedBox(
@@ -61,8 +62,8 @@ class ScheduleQrTeacherPage extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         padding: EdgeInsets.all(4),
-                        child: Image.asset('assets/icons/icon_app.png',
-                            fit: BoxFit.contain),
+                        child: Icon(Icons.qr_code,
+                            size: 24, color: AppColor.primaryColor),
                       ),
                     ],
                   ),
@@ -80,15 +81,20 @@ class ScheduleQrTeacherPage extends StatelessWidget {
           Text('Pindai kode qr diatas untuk berbagi',
               style: AppFontStyle.subTitleText),
           SpacingSize.spacingXSHeight,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Salin Kode QR',
-                  style: AppFontStyle.blueInfoText
-                      .copyWith(fontWeight: FontWeight.w500)),
-              SpacingSize.spacingXSWidth,
-              Icon(Icons.copy, size: 16, color: AppColor.primaryColor),
-            ],
+          GestureDetector(
+            onTap: () {
+              controller.copyCodeQRToClipboard();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Salin Kode QR',
+                    style: AppFontStyle.blueInfoText
+                        .copyWith(fontWeight: FontWeight.w500)),
+                SpacingSize.spacingXSWidth,
+                Icon(Icons.copy, size: 16, color: AppColor.primaryColor),
+              ],
+            ),
           ),
         ],
       ),

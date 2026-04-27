@@ -4,6 +4,7 @@ import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
 import 'package:absensi_qr/feature_teacher/profile/presentation/profile_teacher_controller.dart';
+import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,12 +23,16 @@ class _ProfileTeacherPageState extends State<ProfileTeacherPage> {
   @override
   void initState() {
     super.initState();
-    _loadingUpdateProfileSub = controller.isLoadingUpdateProfile.listen((isLoading) {
+    _loadingUpdateProfileSub =
+        controller.isLoadingUpdateProfile.listen((isLoading) {
       if (!mounted) return;
       if (isLoading) {
-        AppUtil.showLoadingDialog(context, message: 'Mengunggah foto profil...');
+        AppUtil.showLoadingDialog(context,
+            message: 'Mengunggah foto profil...');
       } else {
-        try { AppUtil.hideLoadingDialog(context); } catch (_) {}
+        try {
+          AppUtil.hideLoadingDialog(context);
+        } catch (_) {}
       }
     });
   }
@@ -41,13 +46,21 @@ class _ProfileTeacherPageState extends State<ProfileTeacherPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        Obx(() => _profileImage(controller.profileImageURL.value,
-            controller.name.value, controller)),
-        SpacingSize.spacingLGHeight,
-        _profileInformation(controller),
-      ],
+        body: SingleChildScrollView(
+      child: Column(
+        children: [
+          Obx(() => _profileImage(controller.profileImageURL.value,
+              controller.name.value, controller)),
+          SpacingSize.spacingLGHeight,
+          _profileInformation(controller),
+          SpacingSize.spacingBaseHeight,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buttonLogout('Keluar'),
+          ),
+          SpacingSize.spacingHugeHeight,
+        ],
+      ),
     ));
   }
 
@@ -123,8 +136,79 @@ class _ProfileTeacherPageState extends State<ProfileTeacherPage> {
             ),
           ],
         ),
-        SpacingSize.spacingXLHeight,
+        SpacingSize.spacingMDHeight,
+
+        // nama dan role
+        Text(name,
+            style: AppFontStyle.primaryText
+                .copyWith(fontWeight: FontWeight.bold, fontSize: 16)),
+        SpacingSize.spacingXSHeight,
+        Text('Guru', style: AppFontStyle.subTitleText.copyWith(fontSize: 12)),
+        SpacingSize.spacingMDHeight,
       ]),
+    );
+  }
+
+  Widget _buttonLogout(String title) {
+    return Container(
+      margin: EdgeInsets.zero,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: TextButton(
+          onPressed: () async {
+            final bool? confirm = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('Konfirmasi Keluar'),
+                content: const Text('Apakah kamu yakin ingin keluar?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    child: const Text('Batal'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    child: Text(
+                      'Keluar',
+                      style: TextStyle(color: AppColor.colorAlpha),
+                    ),
+                  ),
+                ],
+              ),
+            );
+            if (confirm == true) {
+              controller.logout(context);
+            }
+          },
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), side: BorderSide.none),
+            padding: const EdgeInsets.all(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.logout, color: AppColor.colorAlpha, size: 20),
+              SpacingSize.spacingSMWidth,
+              Text(
+                title,
+                style: AppFontStyle.whiteBigText
+                    .copyWith(color: AppColor.colorAlpha),
+              ),
+            ],
+          )),
     );
   }
 

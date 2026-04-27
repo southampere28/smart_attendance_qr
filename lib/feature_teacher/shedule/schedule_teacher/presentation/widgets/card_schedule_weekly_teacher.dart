@@ -214,6 +214,8 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
               Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
                 'codeQR': codeQR,
                 'subjectName': subjectName,
+                // hari schedule teacher pada week ini
+                'dateSchedule': controller.getDateOfSelectedSchedule()
               });
             },
             child: Column(

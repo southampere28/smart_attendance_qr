@@ -1,3 +1,6 @@
+import 'package:absensi_qr/constant/app_color.dart';
+import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,10 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PermissionFormController extends GetxController {
-  
   // === service ===
   final EndpointService _httpService = Get.find<EndpointService>();
-  
+
   // === flag ===
   RxBool isloadingSubmit = false.obs;
 
@@ -37,6 +39,61 @@ class PermissionFormController extends GetxController {
     super.onInit();
   }
 
+  void showExampleImage() {
+    Get.dialog(
+      Dialog(
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)),
+        child: Builder(
+          builder: (context) => SizedBox(
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 30, height: 30),
+                      Expanded(
+                        child: Text(
+                          'Contoh Surat Izin',
+                          style: AppFontStyle.primaryText.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Icon(
+                          Icons.close,
+                          color: AppColor.inactiveColor,
+                          size: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 24),
+                  Image.asset(
+                    AssetConstant.imageExamplePermission,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void validateAndSubmit() {
     // validate form
     if (typeSelected.value.isEmpty ||
@@ -59,7 +116,6 @@ class PermissionFormController extends GetxController {
 
     // submit form
     submitPermission();
-  
   }
 
   // function helper
@@ -78,7 +134,6 @@ class PermissionFormController extends GetxController {
 
   // function to connect endpoint service for submit permission form
   Future<void> submitPermission() async {
-
     // set loading state
     isloadingSubmit.value = true;
 
@@ -132,7 +187,5 @@ class PermissionFormController extends GetxController {
 
     // finish loading state
     isloadingSubmit.value = false;
-  
   }
-
 }

@@ -214,6 +214,7 @@ class CardScheduleWeeklyClassTeacher extends StatelessWidget {
               Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
                 'codeQR': codeQR,
                 'subjectName': subjectName,
+                'dateSchedule': controller.getDateOfSelectedSchedule()
               });
             },
             child: SvgPicture.asset(

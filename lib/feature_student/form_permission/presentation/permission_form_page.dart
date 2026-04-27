@@ -170,9 +170,25 @@ class _PermissionFormPageState extends State<PermissionFormPage> {
                             ),
 
                             SpacingSize.spacingBaseHeight,
-                            Text('Bukti Pendukung',
-                                style: AppFontStyle.primaryText
-                                    .copyWith(fontWeight: FontWeight.w500)),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Bukti Pendukung',
+                                    style: AppFontStyle.primaryText
+                                        .copyWith(fontWeight: FontWeight.w500)),
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.showExampleImage();
+                                  },
+                                  child: Text(
+                                    'Lihat Contoh Surat',
+                                    style: AppFontStyle.smallText
+                                        .copyWith(color: AppColor.primaryColor),
+                                  ),
+                                )
+                              ],
+                            ),
                             SpacingSize.spacingSMHeight,
                             // todo: area for upload image surat izin
                             Obx(() => controller.pickedImage.value != null

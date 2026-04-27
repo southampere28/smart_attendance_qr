@@ -12,6 +12,9 @@ class AssetConstant {
   static const String svgIconSubject = '$baseIconPath/icon_subject.svg';
   static const String svgIconSubjectThin =
       '$baseIconPath/icon_subject_thin.svg';
+  
+  // image core general
+  static const String imageExamplePermission = '$baseImagePath/example_permission.png';
 
   // attendance status icons
   static const String iconAttValid = '$baseIconPath/ic-attendance-valid.svg';

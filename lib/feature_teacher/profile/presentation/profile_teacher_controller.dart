@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
+import 'package:absensi_qr/utils/app_util.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -97,6 +99,21 @@ class ProfileTeacherController extends GetxController {
       Fluttertoast.showToast(msg: 'Gagal memilih gambar: $e');
     } finally {
       isLoadingUpdateProfile.value = false;
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    AppUtil.showLoadingDialog(context, message: 'Logging out...');
+    try {
+      await mainController.logout();
+      Fluttertoast.showToast(msg: 'Logout berhasil');
+      Get.offAllNamed('/login');
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Logout gagal: $e');
+    } finally {
+      if (context.mounted) {
+        AppUtil.hideLoadingDialog(context);
+      }
     }
   }
 }
