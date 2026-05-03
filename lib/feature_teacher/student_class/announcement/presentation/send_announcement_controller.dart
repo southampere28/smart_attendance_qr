@@ -182,4 +182,5 @@ class SendAnnouncementController extends GetxController {
           msg: result.message ?? 'Gagal mengirim pengumuman');
     }
   }
+
 }
