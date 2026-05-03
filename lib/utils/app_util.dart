@@ -120,57 +120,42 @@ class AppUtil {
     );
   }
 
-  // notification feature mapping routes
-//   enum NotificationType: string
-// {
-//     case AnnouncementAcademic = 'announcement_academic';
-//     case AnnouncementGeneral = 'announcement_general';
-//     case LostAndFound = 'lost_and_found';
-//     case EmergencyInfo = 'emergency_info';
-//     case ClassCancelled = 'class_cancelled';
-//     case AnnouncementForClass = 'announcement_for_class';
-//     case Assignment = 'assignment';
-//     case Permission = 'permission';
-//     case AttendanceViolation = 'attendance_violation';
-//     case PersonalNote = 'personal_note';
-// }
-  static String? mapNotificationTypeToRoute(
-      NotificationTypeEnum notificationType,
-      {bool isStudent = true}) {
-    switch (notificationType) {
-      case NotificationTypeEnum.permission || NotificationTypeEnum.permissionAccepted || NotificationTypeEnum.permissionRejected:
-        return isStudent ? AppRoutes.permission : AppRoutes.permissionTeacher;
-      case NotificationTypeEnum.announcementAcademic:
-      case NotificationTypeEnum.announcementGeneral:
-      case NotificationTypeEnum.announcementForClass:
-        return isStudent ? null : AppRoutes.sendAnnouncement;
-      case NotificationTypeEnum.attendanceViolation:
-        return isStudent
-            ? AppRoutes.attendance
-            : AppRoutes.attendanceStudentClass;
-      case NotificationTypeEnum.assignment:
-      case NotificationTypeEnum.lostAndFound:
-      case NotificationTypeEnum.emergencyInfo:
-      case NotificationTypeEnum.classCancelled:
-      case NotificationTypeEnum.personalNote:
-      case NotificationTypeEnum.none:
+  // helper form validation
+  static String? validateEmail(String? value) {
+
+    // value null or empty
+    if (value == null || value.isEmpty) {
+      return 'Email tidak boleh kosong';
     }
+
+    // validate email format (simple regex), should contain "@" and "."
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+      return 'Format email tidak valid';
+    }
+
+    return null;
   }
 
-  // getx snackbar helper
-  static void showGetSnackBar(String message, {bool isError = false}) {
+  static String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password tidak boleh kosong';
+    }
+    if (value.length < 6) {
+      return 'Password minimal 6 karakter';
+    }
+    return null;
+  }
+
+  // snackbar error
+  static void showGetSnackBar(String title, String message, {bool isError = false}) {
     Get.snackbar(
-      '',
-      '',
-      messageText: Text(
-        message,
-        style: AppFontStyle.primaryText
-            .copyWith(color: isError ? Colors.white : Colors.black),
-      ),
-      backgroundColor: isError ? Colors.red : AppColor.successColor,
-      snackPosition: SnackPosition.BOTTOM,
+      title,
+      message,
+      backgroundColor: isError ? Colors.red : Colors.green,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
     );
   }
-  // note: how to call the getx snack bar:
-  // AppUtil.showGetSnackBar('This is a success message');
+
 }
