@@ -110,7 +110,7 @@ class PermissionFormController extends GetxController {
       return;
     }
     if (dayCountController.text.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi lama perizinan');
+      Get.snackbar('Error', 'Jumlah hari izin minimal 1 hari');
       return;
     }
 
@@ -140,13 +140,33 @@ class PermissionFormController extends GetxController {
     // guard: ensure typeSelected is valid
     if (typeSelected.value.isEmpty ||
         typeSelected.value == '(Pilih Jenis Perizinan)') {
-      Get.snackbar('Error', 'Silahkan pilih jenis perizinan');
+      AppUtil.showGetSnackBar('Error', 'Silahkan pilih jenis perizinan',
+          isError: true);
       isloadingSubmit.value = false;
       return;
     }
 
     if (pickedImagePath == null || pickedImagePath!.isEmpty) {
-      Get.snackbar('Error', 'Silahkan upload bukti surat izin');
+      AppUtil.showGetSnackBar('Error', 'Silahkan upload bukti surat izin',
+          isError: true);
+      isloadingSubmit.value = false;
+      return;
+    }
+
+    // guard: ensure date is picked and valid
+    if (datePickController.text.isEmpty) {
+      AppUtil.showGetSnackBar('Error', 'Silahkan pilih tanggal perizinan',
+          isError: true);
+      isloadingSubmit.value = false;
+      return;
+    }
+
+    // cek jumlah hari izin harus lebih dari 0
+    if (dayCountController.text.isEmpty ||
+        int.tryParse(dayCountController.text) == null ||
+        int.parse(dayCountController.text) <= 0) {
+      AppUtil.showGetSnackBar('Error', 'Jumlah hari izin minimal 1 hari',
+          isError: true);
       isloadingSubmit.value = false;
       return;
     }

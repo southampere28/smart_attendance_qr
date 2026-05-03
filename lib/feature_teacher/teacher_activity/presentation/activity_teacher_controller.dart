@@ -72,12 +72,12 @@ class ActivityTeacherController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchNotifications();
+    fetchTeacherActivity();
   }
 
   /// future function
   // get notification data from endpoint laravel.
-  Future<void> fetchNotifications() async {
+  Future<void> fetchTeacherActivity() async {
     isLoading.value = true;
 
     // fetch notifications for 1 month, endDate is today.

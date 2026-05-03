@@ -312,8 +312,11 @@ class DashboardPage extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.location_on,
-                    size: 16, color: AppColor.primaryColor),
+                GestureDetector(
+                  onTap: () => controller.getLocation(),
+                  child: const Icon(Icons.location_on,
+                      size: 16, color: AppColor.primaryColor),
+                ),
                 SpacingSize.spacingSMWidth,
                 Expanded(
                     child: Obx(() => Text(

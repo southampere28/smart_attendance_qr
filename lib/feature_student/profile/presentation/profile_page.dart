@@ -244,6 +244,9 @@ class _ProfilePageState extends State<ProfilePage> {
               'NISN', controller.nisn.value, const Icon(Icons.badge)),
           SpacingSize.spacingBaseHeight,
           _profileInfoItem(
+              'Email', controller.email.value, const Icon(Icons.email)),
+          SpacingSize.spacingBaseHeight,
+          _profileInfoItem(
               'Kelas', controller.className.value, const Icon(Icons.school)),
           SpacingSize.spacingBaseHeight,
           _profileInfoItem('Tahun Masuk', controller.entryYear.value,

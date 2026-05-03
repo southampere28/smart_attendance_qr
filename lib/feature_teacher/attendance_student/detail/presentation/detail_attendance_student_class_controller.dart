@@ -93,6 +93,7 @@ class DetailAttendanceStudentClassController extends GetxController {
 
     if (result.success) {
       log('Successfully reported attendance discrepancy for attendance history $idAttendanceHistory with type $disrepancyType and reason $reason');
+      Get.snackbar('Success', 'Berhasil melaporkan ketidaksesuaian absensi!');
       // Optionally, refresh the attendance history after reporting
       // fetchAttendanceHistory();
     } else {

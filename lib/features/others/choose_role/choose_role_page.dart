@@ -60,8 +60,7 @@ class ChooseRolePage extends StatelessWidget {
           ButtonTextPrimary(
             text: 'Guru',
             onPressed: () {
-              // Get.toNamed(AppRoutes.login, arguments: 'teacher');
-              Get.toNamed(AppRoutes.dashboardTeacher);
+              Get.toNamed(AppRoutes.login, arguments: 'teacher');
             },
           ),
           Spacer(

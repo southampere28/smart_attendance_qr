@@ -45,7 +45,7 @@ class RegisterStudentController extends GetxController {
       // Build new list to trigger reactivity
       final newItems = ['(Pilih Kelas)'];
       classMap.clear();
-      
+
       for (var i = 0; i < classDataList.length; i++) {
         final name = classDataList[i].name;
         final id = classDataList[i].id;
@@ -53,7 +53,7 @@ class RegisterStudentController extends GetxController {
         newItems.add(name);
         classMap[name] = id;
       }
-      
+
       // Assign once to trigger Obx update
       classItemList.value = newItems;
       log('Class map updated: ${classMap.toString()}');
@@ -107,13 +107,20 @@ class RegisterStudentController extends GetxController {
   }
 
   // validate all field before register
-  void validateAndSubmit(BuildContext context, String name, String email, String password, String confirmPassword,
-      String nisn, int idClass, int entryYear) {
+  void validateAndSubmit(
+      BuildContext context,
+      String name,
+      String email,
+      String password,
+      String confirmPassword,
+      String nisn,
+      int idClass,
+      int entryYear) {
     // validate form
     if (name.isEmpty) {
       Get.snackbar('Error', 'Silahkan isi nama lengkap');
       return;
-    } 
+    }
     if (email.isEmpty) {
       Get.snackbar('Error', 'Silahkan isi email');
       return;
@@ -138,19 +145,41 @@ class RegisterStudentController extends GetxController {
       Get.snackbar('Error', 'Silahkan isi tahun masuk yang valid');
       return;
     }
+
+    // email and password validation using helper
+    final emailError = AppUtil.validateEmail(email);
+    final passwordError = AppUtil.validatePassword(password);
+
+    if (emailError != null) {
+      Get.snackbar('Error', emailError);
+      return;
+    }
+
+    if (passwordError != null) {
+      Get.snackbar('Error', passwordError);
+      return;
+    }
+
     if (password != confirmPassController.text) {
       Get.snackbar('Error', 'Kata sandi dan konfirmasi kata sandi tidak cocok');
       return;
     }
 
     // submit form
-    doRegister(context, name, email, password, confirmPassword, nisn, idClass, entryYear);
-  
+    doRegister(context, name, email, password, confirmPassword, nisn, idClass,
+        entryYear);
   }
 
   // function to register
-  Future<void> doRegister(BuildContext context, String name, String email,
-      String password, String confirmPassword, String nisn, int idClass, int entryYear) async {
+  Future<void> doRegister(
+      BuildContext context,
+      String name,
+      String email,
+      String password,
+      String confirmPassword,
+      String nisn,
+      int idClass,
+      int entryYear) async {
     isLoading.value = true;
     AppUtil.showLoadingDialog(context, message: "Register in process...");
 
@@ -176,16 +205,17 @@ class RegisterStudentController extends GetxController {
         log("User registered: ${result.data!.email}");
         log("User role: ${result.data!.role}");
         Get.offNamed(AppRoutes.login);
-        Fluttertoast.showToast(msg: msg);
+        AppUtil.showGetSnackBar('Register Berhasil', msg);
       } else {
         if (result.errors != null) {
           result.errors!.forEach((field, messages) {
             log("Field: $field, Messages: $messages");
             // bisa tampilkan toast per field
-            Fluttertoast.showToast(msg: "${messages[0]}");
+            AppUtil.showGetSnackBar('Error $field', messages.join(', '),
+                isError: true);
           });
         } else {
-          Fluttertoast.showToast(msg: msg);
+          AppUtil.showGetSnackBar('Error', msg, isError: true);
         }
       }
     } catch (e) {
@@ -193,7 +223,7 @@ class RegisterStudentController extends GetxController {
         AppUtil.hideLoadingDialog(context);
       }
       isLoading.value = false;
-      Fluttertoast.showToast(msg: 'Error 500!');
+      AppUtil.showGetSnackBar('Error', 'Error 500!', isError: true);
       log('error while register : $e');
     }
   }

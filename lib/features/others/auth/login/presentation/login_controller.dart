@@ -15,6 +15,7 @@ class LoginController extends GetxController {
 
   var isLoading = false.obs;
   var argument = ''.obs;
+  var isPassObscure = true.obs;
 
   // variable controller textfield
   var emailController = TextEditingController();
@@ -24,6 +25,35 @@ class LoginController extends GetxController {
       BuildContext context, String email, String password) async {
     isLoading.value = true;
     AppUtil.showLoadingDialog(context, message: "Sedang login...");
+
+    // validate email and password
+    if (email.isEmpty || password.isEmpty) {
+      isLoading.value = false;
+      AppUtil.hideLoadingDialog(context);
+      // Fluttertoast.showToast(msg: 'Email dan password tidak boleh kosong!');
+      AppUtil.showGetSnackBar(
+          'Login Gagal', 'Email dan password tidak boleh kosong!',
+          isError: true);
+      return;
+    }
+
+    // validate email using helper
+    final emailError = AppUtil.validateEmail(email);
+    if (emailError != null) {
+      isLoading.value = false;
+      AppUtil.hideLoadingDialog(context);
+      AppUtil.showGetSnackBar('Login Gagal', emailError, isError: true);
+      return;
+    } else {
+      // validate password using helper
+      final passwordError = AppUtil.validatePassword(password);
+      if (passwordError != null) {
+        isLoading.value = false;
+        AppUtil.hideLoadingDialog(context);
+        AppUtil.showGetSnackBar('Login Gagal', passwordError, isError: true);
+        return;
+      }
+    }
 
     try {
       final result = await endpointService.login(
@@ -84,14 +114,14 @@ class LoginController extends GetxController {
         if (context.mounted) {
           AppUtil.hideLoadingDialog(context);
         }
-        Fluttertoast.showToast(msg: msg);
+        AppUtil.showGetSnackBar('Login Gagal', msg, isError: true);
       }
     } catch (e) {
       if (context.mounted) {
         AppUtil.hideLoadingDialog(context);
       }
       isLoading.value = false;
-      Fluttertoast.showToast(msg: 'Error!');
+      AppUtil.showGetSnackBar('Login Gagal', 'Error!', isError: true);
       log('error while login : $e');
     }
   }

@@ -10,6 +10,7 @@ import 'package:absensi_qr/models/model_merging/schedule_attendance_report.dart'
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
@@ -72,8 +73,19 @@ class DashboardController extends GetxController {
 
   // geolocation
   Future<void> getLocation() async {
-    await _geolocationService.getCurrentPosition(30);
-    // await getPlacemarkLocation();
+    try {
+      await _geolocationService.waitForGpsEnabled(maxRetries: 5);
+    } catch (e) {
+      log("Gagal menunggu GPS aktif: $e");
+      if (Get.isSnackbarOpen == false) {
+        Get.snackbar(
+          'GPS Tidak Aktif',
+          'Mohon nyalakan GPS untuk menggunakan aplikasi',
+          duration: const Duration(seconds: 3),
+        );
+      }
+      AppSettings.openAppSettings(type: AppSettingsType.location);
+    }
   }
 
   // guard check student data

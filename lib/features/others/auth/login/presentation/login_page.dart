@@ -105,13 +105,20 @@ class LoginPage extends StatelessWidget {
                           SpacingSize.spacingMDHeight,
 
                           // Password
-                          TextfieldWithTitle(
-                            title: 'Kata Sandi',
-                            controller: controller.passController,
-                            hintTxt: "Masukkan Kata Sandi",
-                            keyboardType: TextInputType.text,
-                            hide: true,
-                          ),
+                          Obx(() => TextfieldWithTitle(
+                                title: 'Kata Sandi',
+                                controller: controller.passController,
+                                hintTxt: "Masukkan Kata Sandi",
+                                keyboardType: TextInputType.visiblePassword,
+                                hide: controller.isPassObscure.value,
+                                suffixIcon: controller.isPassObscure.value
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                onTapSuffixIcon: () {
+                                  controller.isPassObscure.value =
+                                      !controller.isPassObscure.value;
+                                },
+                              )),
                           SpacingSize.spacingBaseHeight,
 
                           // Login Button
@@ -137,8 +144,7 @@ class LoginPage extends StatelessWidget {
                               const SizedBox(width: 4),
                               GestureDetector(
                                 onTap: () {
-                                  // Get.toNamed(AppRoutes.registerStudent);
-                                  Get.toNamed(AppRoutes.registerTeacher);
+                                  Get.toNamed(AppRoutes.registerStudent);
                                 },
                                 child: Text(
                                   'Buat Akun Siswa',
