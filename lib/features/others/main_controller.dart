@@ -1,13 +1,18 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:absensi_qr/models/user/student.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:absensi_qr/models/user/user.dart';
+import 'package:absensi_qr/utils/app_util.dart';
+import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class MainController extends GetxController {
-  
   // firebase messaging instance
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -23,9 +28,12 @@ class MainController extends GetxController {
   final RxInt refreshHomeStudent = 0.obs;
   final RxInt triggerUpdateProfile = 0.obs;
 
+  // connectivity internet status check
+  final RxList<ConnectivityResult> _connectionStatus =
+      <ConnectivityResult>[ConnectivityResult.none].obs;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  /// login (next use shared_preference and flutter_secure_storage)
-  
   // service for notification
   // testing button for subscribe and unsubscribe to notifications
   Future<void> subscribeToNotifications(String topic) async {
@@ -74,7 +82,9 @@ class MainController extends GetxController {
     // get unsubscribe topic based on user data.
     List<String> userTopicSubscribe = [];
 
-    if (userData.value?.topicSubscribe != null && userData.value!.topicSubscribe != null && userData.value!.topicSubscribe != '') {
+    if (userData.value?.topicSubscribe != null &&
+        userData.value!.topicSubscribe != null &&
+        userData.value!.topicSubscribe != '') {
       // split topics by comma and trim whitespace
       userTopicSubscribe = userData.value!.topicSubscribe!
           .split(',')
@@ -84,7 +94,7 @@ class MainController extends GetxController {
 
     // unsubscribe from all user topics
     await unsubscribeFromMultipleTopics(userTopicSubscribe);
-    
+
     // clear user data
     userData.value = null;
     studentData.value = null;
@@ -106,5 +116,52 @@ class MainController extends GetxController {
     }
   }
 
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    // initialize current connectivity
+    initConnectivity();
 
+    // listen to connectivity changes
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void onClose() {
+    _connectivitySubscription.cancel();
+    super.onClose();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      log("Couldn't check connectivity status", error: e);
+      return;
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List result) async {
+    _connectionStatus.assignAll(result.cast<ConnectivityResult>());
+    // Fluttertoast.showToast(msg: 'Koneksi: ${_connectionStatus.map((e) => e.toString().split('.').last).join(', ')}');
+    // jika status koneksi tidak ada, tampilkan toast error
+    if (_connectionStatus.contains(ConnectivityResult.none)) {
+      AppUtil.showGetSnackBar(
+        'Koneksi Terputus',
+        'Tidak ada koneksi internet. Beberapa fitur mungkin tidak berfungsi.',
+        isError: true,
+      );
+    } else {
+      AppUtil.showGetSnackBar(
+        'Koneksi Tersambung',
+        'Koneksi internet tersedia: ${_connectionStatus.map((e) => e.toString().split('.').last).join(', ')}',
+      );
+    }
+  }
 }

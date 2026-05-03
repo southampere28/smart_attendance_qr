@@ -8,6 +8,9 @@
     <!-- permission camera -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- internet permission check -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!-- permission internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
