@@ -28,7 +28,7 @@ void main() async {
   await initializeDateFormatting('id_ID', null);
 
   // load persisted base URL override for debugging
-  await ApiConstant.loadBaseUrl();
+  // await ApiConstant.loadBaseUrl();
 
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));

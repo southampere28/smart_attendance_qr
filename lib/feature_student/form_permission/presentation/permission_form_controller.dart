@@ -1,6 +1,7 @@
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/asset_constant.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 
 class PermissionFormController extends GetxController {
   // === service ===
+  final MainController mainController = Get.find<MainController>();
   final EndpointService _httpService = Get.find<EndpointService>();
 
   // === flag ===
@@ -201,6 +203,10 @@ class PermissionFormController extends GetxController {
       datePickController.clear();
       dayCountController.clear();
       pickedImage.value = null;
+
+      // trigger refresh permission list page
+      mainController.refreshPermission.value++;
+
     } else {
       Get.snackbar('Error', 'Gagal mengajukan perizinan');
     }

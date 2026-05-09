@@ -27,6 +27,12 @@ class SplashScreenController extends GetxController {
     // await Future.delayed(Duration(seconds: 2));
     await _loadActiveAcademicPeriod();
 
+    if (_restoreSavedSession()) {
+      messageLoading.value = '✅ Sesi ditemukan, membuka aplikasi...';
+      await Future.delayed(const Duration(seconds: 1));
+      _redirectToSavedHome();
+      return;
+    }
 
     messageLoading.value = '✅ Selesai, menuju halaman login...';
     await Future.delayed(Duration(seconds: 1));
@@ -34,10 +40,38 @@ class SplashScreenController extends GetxController {
     // Get.offAllNamed(AppRoutes.navigation);
   }
 
+  bool _restoreSavedSession() {
+    if (endpointService.accessToken == null || endpointService.userModel == null) {
+      return false;
+    }
+
+    mainController.userData.value = endpointService.userModel;
+    mainController.studentData.value = endpointService.studentData;
+    mainController.teacherData.value = endpointService.teacherData;
+
+    return true;
+  }
+
+  void _redirectToSavedHome() {
+    final role = endpointService.userData?['role'];
+
+    if (role == 'teacher') {
+      Get.offAllNamed(AppRoutes.navigationTeacher);
+      return;
+    }
+
+    if (role == 'student') {
+      Get.offAllNamed(AppRoutes.navigation);
+      return;
+    }
+
+    Get.offNamed(AppRoutes.chooserRoleUser);
+  }
+
   // get academic period active from endpoint service
   Future<void> _loadActiveAcademicPeriod() async {
     try {
-      final activePeriod = await endpointService.getActiveAcademicPeriod();
+      final activePeriod = await endpointService.getActiveAcademicPeriod(timeout: const Duration(seconds: 5));
 
       if (activePeriod.success && activePeriod.data != null) {
         mainController.activeAcademicPeriod.value =

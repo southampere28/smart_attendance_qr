@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:absensi_qr/models/user/student.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:absensi_qr/models/user/user.dart';
+import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -27,6 +28,9 @@ class MainController extends GetxController {
   // refresh trigger obx
   final RxInt refreshHomeStudent = 0.obs;
   final RxInt triggerUpdateProfile = 0.obs;
+
+  final RxInt refreshPermission = 0.obs;
+  final RxInt refreshHistory = 0.obs;
 
   // connectivity internet status check
   final RxList<ConnectivityResult> _connectionStatus =
@@ -94,6 +98,8 @@ class MainController extends GetxController {
 
     // unsubscribe from all user topics
     await unsubscribeFromMultipleTopics(userTopicSubscribe);
+
+    await Get.find<EndpointService>().clearAuthState();
 
     // clear user data
     userData.value = null;

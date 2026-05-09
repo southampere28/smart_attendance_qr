@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
+import 'package:absensi_qr/features/others/main_controller.dart';
 import 'package:absensi_qr/models/permission_model.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -11,6 +12,7 @@ class PermissionController extends GetxController
     with GetSingleTickerProviderStateMixin {
   // service
   final EndpointService _httpService = Get.find<EndpointService>();
+  final MainController mainController = Get.find<MainController>();
 
   // data state
   final RxList<PermissionModel> listPermission = <PermissionModel>[].obs;
@@ -65,6 +67,9 @@ class PermissionController extends GetxController
         filteredListPermission.sort((a, b) =>
             b.createdAt!.compareTo(a.createdAt!)); // sort by createdAt desc
       }
+    });
+    ever(mainController.refreshPermission, (value) {
+      getDataPermission();
     });
 
     getDataPermission();

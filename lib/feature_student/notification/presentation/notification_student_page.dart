@@ -62,38 +62,6 @@ class NotificationStudentPage extends StatelessWidget {
                   )),
 
               SpacingSize.spacingHugeHeight,
-              Text('Testing Zone',
-                  style: AppFontStyle.primaryText
-                      .copyWith(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              // field for testing topic name
-              // add obx to auto update the text field value when topic name is changed
-              TextfieldInputWidget(
-                  controller: controller.topicController,
-                  hintTxt: 'Enter topic name',
-                  keyboardType: TextInputType.text),
-
-              // subscribe and unsubsribe button for testing
-              ElevatedButton(
-                onPressed: () {
-                  controller.mainController.subscribeToNotifications(
-                      controller.topicController.text);
-                },
-                child: Text('Subscribe to Notifications'),
-              ),
-
-              ElevatedButton(
-                onPressed: () async {
-                  final topic = controller.topicController.text;
-                  log('Topic: $topic'); // debug print
-                  if (topic.isEmpty) {
-                    log('Topic kosong!');
-                    return;
-                  }
-                  controller.mainController.unsubscribeFromNotifications(topic);
-                },
-                child: Text('Unsubscribe from Notifications'),
-              )
             ],
           ),
         ),
@@ -238,7 +206,9 @@ class NotificationStudentPage extends StatelessWidget {
 
   int? _mapTypeToNavIndex(NotificationTypeEnum type) {
     switch (type) {
-      case NotificationTypeEnum.permission || NotificationTypeEnum.permissionAccepted || NotificationTypeEnum.permissionRejected:
+      case NotificationTypeEnum.permission ||
+            NotificationTypeEnum.permissionAccepted ||
+            NotificationTypeEnum.permissionRejected:
         return 2;
       case NotificationTypeEnum.attendanceViolation:
         return 1;

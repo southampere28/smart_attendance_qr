@@ -41,12 +41,6 @@ class SplashScreenPage extends StatelessWidget {
               )),
         ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.offAllNamed(AppRoutes.navigation);
-        },
-        child: const Icon(Icons.skip_next),
-      ),
     );
   }
 }

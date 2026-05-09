@@ -60,13 +60,32 @@ class EndpointService extends GetxService {
     return this;
   }
 
+  Future<void> clearAuthState() async {
+    accessToken = null;
+    tokenType = null;
+    userData = null;
+    userModel = null;
+    studentData = null;
+    teacherData = null;
+
+    await _secureStorage.delete(key: 'access_token');
+    await _secureStorage.delete(key: 'token_type');
+    await _secureStorage.delete(key: 'user');
+  }
+
   // general endpoint service methods.
   // get academic periods.
-  Future<ApiResult<Map<String, dynamic>>> getActiveAcademicPeriod() async {
+  Future<ApiResult<Map<String, dynamic>>> getActiveAcademicPeriod({
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
     final url = Uri.parse('${ApiConstant.baseURL}/academic-periods/active');
     try {
-      final response = await http.get(url, headers: {
-        'Accept': 'application/json',
+      final response = await http
+          .get(url, headers: {
+            'Accept': 'application/json',
+          })
+          .timeout(timeout, onTimeout: () {
+        throw TimeoutException('Request timed out after $timeout');
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -83,6 +102,12 @@ class EndpointService extends GetxService {
         return ApiResult(
             success: false, message: 'Failed to get active academic period');
       }
+    } on TimeoutException catch (e) {
+      log('getActiveAcademicPeriod timeout: $e');
+      return ApiResult(
+        success: false,
+        message: 'Request timed out while fetching active academic period',
+      );
     } catch (e) {
       log('getActiveAcademicPeriod error: $e');
       return ApiResult(
