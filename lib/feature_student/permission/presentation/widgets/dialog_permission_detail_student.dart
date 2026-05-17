@@ -1,4 +1,5 @@
 import 'package:absensi_qr/configs/api_constant.dart';
+import 'package:absensi_qr/core/helper/date_helper.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
@@ -46,6 +47,9 @@ class DialogPermissionDetailStudent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final permission = permissionData;
+    // tanggal perizinan (mulai)
+    final datePermissionFormatted =
+        DateHelper.formatToDayDateMonthIndonesia(permission.datePermission);
     final status = permission.status;
     final statusColor = _statusColor(status);
     final isRejected = status == PermissionStatusEnum.ditolak;
@@ -105,13 +109,18 @@ class DialogPermissionDetailStudent extends StatelessWidget {
               ),
               SpacingSize.spacingSMHeight,
               _InfoRow(
-                label: 'Jenis',
-                value: permission.reason.title,
+                label: 'Tanggal Izin',
+                value: datePermissionFormatted,
               ),
               SpacingSize.spacingXSHeight,
               _InfoRow(
                 label: 'Jumlah Hari',
                 value: '${permission.dayCount} hari',
+              ),
+              SpacingSize.spacingXSHeight,
+              _InfoRow(
+                label: 'Jenis',
+                value: permission.reason.title,
               ),
               SpacingSize.spacingXSHeight,
               _InfoRow(

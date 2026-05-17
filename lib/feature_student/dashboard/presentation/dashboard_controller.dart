@@ -27,9 +27,8 @@ class DashboardController extends GetxController {
   // is weekend check
   bool get isWeekend {
     final int weekday = dateNow.weekday;
-    // return weekday == DateTime.sunday;
-    // for testing return false
-    return false;
+    return weekday == DateTime.sunday;
+    // return weekday;
   }
 
   DateTime dateNow = DateTime.now();

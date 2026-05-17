@@ -42,6 +42,8 @@ class AppUtil {
       barrierDismissible: false, // tidak bisa ditutup dengan tap di luar
       useRootNavigator: true,
       builder: (context) {
+        // capture the dialog's own BuildContext so we can pop using it
+        _loadingDialogContext = context;
         return Dialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -62,6 +64,7 @@ class AppUtil {
       },
     ).then((_) {
       _isLoadingDialogVisible = false;
+      _loadingDialogContext = null;
     });
   }
 
@@ -69,15 +72,26 @@ class AppUtil {
   static void hideLoadingDialog(BuildContext context) {
     if (!_isLoadingDialogVisible) return;
     try {
-      if (Navigator.of(context, rootNavigator: true).canPop()) {
-        Navigator.of(context, rootNavigator: true).pop();
+      // prefer popping using the dialog's own context
+      if (_loadingDialogContext != null) {
+        final dialogCtx = _loadingDialogContext!;
+        if (Navigator.of(dialogCtx).canPop()) {
+          Navigator.of(dialogCtx).pop();
+        }
+      } else {
+        // fallback to popping using provided context (root navigator)
+        if (Navigator.of(context, rootNavigator: true).canPop()) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
       }
     } catch (_) {
       // ignore errors when popping fails
     } finally {
       _isLoadingDialogVisible = false;
+      _loadingDialogContext = null;
     }
   }
+  static BuildContext? _loadingDialogContext;
 
   static bool _isLoadingDialogVisible = false;
 
@@ -122,7 +136,6 @@ class AppUtil {
 
   // helper form validation
   static String? validateEmail(String? value) {
-
     // value null or empty
     if (value == null || value.isEmpty) {
       return 'Email tidak boleh kosong';
@@ -147,7 +160,8 @@ class AppUtil {
   }
 
   // snackbar error
-  static void showGetSnackBar(String title, String message, {bool isError = false}) {
+  static void showGetSnackBar(String title, String message,
+      {bool isError = false}) {
     Get.snackbar(
       title,
       message,
@@ -157,5 +171,4 @@ class AppUtil {
       margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
     );
   }
-
 }

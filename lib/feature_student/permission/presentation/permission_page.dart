@@ -222,9 +222,9 @@ class PermissionPage extends StatelessWidget {
     PermissionModel permission,
     String nameOfStudent,
   ) {
-    final datePermission = permission.datePermission;
+    final dateCreated = permission.createdAt ?? DateTime.now();
     final formattedDate =
-        PermissionHelper.formatDisplayPermissionInfo(datePermission);
+        PermissionHelper.formatDisplayPermissionInfo(dateCreated);
 
     final reason = permission.reason.name;
     final status = permission.status.name;
@@ -284,6 +284,7 @@ class PermissionPage extends StatelessWidget {
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     SpacingSize.spacingXSHeight,
+                    // tanggal perizinan dibuat.
                     Text(
                       formattedDate,
                       style: AppFontStyle.subTitleText.copyWith(fontSize: 12),

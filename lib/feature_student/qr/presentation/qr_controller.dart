@@ -59,7 +59,7 @@ class QrController extends GetxController {
       if (isMockLocation) {
         Fluttertoast.showToast(
             msg:
-                'Terdeteksi penggunaan mock location, pastikan Anda tidak menggunakan aplikasi fake location untuk melakukan absensi.');
+                'Anda terdeteksi Fake GPS! Pastikan GPS Anda asli dan tidak menggunakan aplikasi Fake GPS untuk melakukan absensi.');
         // reset lokasi untuk mencegah kecurangan lebih lanjut
         _geoService.lattitude = '';
         _geoService.longitude = '';
@@ -140,11 +140,10 @@ class QrController extends GetxController {
 
         log("Absensi sukses: Berhasil");
         Fluttertoast.showToast(msg: 'Absensi Berhasil!');
-        
+
         // Wait a moment for listener to trigger, then go back
         await Future.delayed(const Duration(milliseconds: 1000));
         Get.back();
-        
       } else {
         log("Absensi gagal: ${result.message}");
         if (result.statusCode != 500) {

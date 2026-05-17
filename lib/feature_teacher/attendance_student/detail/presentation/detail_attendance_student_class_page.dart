@@ -72,6 +72,7 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
                 return Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 50),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -398,8 +399,7 @@ class DetailAttendanceStudentClassPage extends StatelessWidget {
                                 ),
                               ),
                               SpacingSize.spacingLGHeight,
-                              
-                              
+
                               // Tombol aksi
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
