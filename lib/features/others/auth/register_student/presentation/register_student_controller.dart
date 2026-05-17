@@ -8,6 +8,10 @@ import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:absensi_qr/constant/app_color.dart';
+import 'package:absensi_qr/constant/app_font_style.dart';
+import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 
 class RegisterStudentController extends GetxController {
   final EndpointService endpointService = Get.find<EndpointService>();
@@ -165,9 +169,88 @@ class RegisterStudentController extends GetxController {
       return;
     }
 
-    // submit form
-    doRegister(context, name, email, password, confirmPassword, nisn, idClass,
-        entryYear);
+    // show themed confirmation dialog similar to DialogPermissionDetailStudent
+    _showConfirmationDialog(context, () {
+      doRegister(context, name, email, password, confirmPassword, nisn, idClass,
+          entryYear);
+    });
+  }
+
+  void _showConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
+    Get.dialog(
+      Dialog(
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(height: 30, width: 30),
+                    Expanded(
+                      child: Text(
+                        'Konfirmasi Registrasi',
+                        style: AppFontStyle.primaryText.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Icon(
+                        Icons.close,
+                        color: AppColor.inactiveColor,
+                        size: 30,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(height: 24),
+                Text(
+                  'Pastikan Data Sudah Benar dan Sesuai',
+                  style: AppFontStyle.primaryText,
+                ),
+                SpacingSize.spacingBaseHeight,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ButtonPrimaryWidget(
+                          customColor: AppColor.colorAlpha,
+                          title: 'Batal',
+                          callback: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                      SpacingSize.spacingSMWidth,
+                      Expanded(
+                        child: ButtonPrimaryWidget(
+                          title: 'Konfirmasi',
+                          callback: () {
+                            Navigator.of(context).pop();
+                            onConfirm();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   // function to register
