@@ -9,6 +9,7 @@ import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/form_permission_rejection.dart';
 
 class TeacherPermissionController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -209,9 +210,6 @@ class TeacherPermissionController extends GetxController
       final result =
           await _httpService.acceptPermission(permissionId.toString());
 
-      // ignore: use_build_context_synchronously
-      AppUtil.hideLoadingDialog(context);
-
       if (result != null && result.success) {
         Fluttertoast.showToast(msg: 'Permission accepted successfully!');
         // Refresh the permission list after accepting (optional, depending on API response)
@@ -222,6 +220,11 @@ class TeacherPermissionController extends GetxController
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Error accepting permission: $e');
+    } finally {
+      // ensure loading dialog is hidden regardless of outcome
+      try {
+        AppUtil.hideLoadingDialog(context);
+      } catch (_) {}
     }
   }
 
@@ -233,9 +236,6 @@ class TeacherPermissionController extends GetxController
       final result = await _httpService.rejectPermission(
           permissionId.toString(), reasonRejection);
 
-      // ignore: use_build_context_synchronously
-      AppUtil.hideLoadingDialog(context);
-
       if (result != null && result.success) {
         Fluttertoast.showToast(msg: 'Permission rejected successfully!');
         // Refresh the permission list after rejecting (optional, depending on API response)
@@ -246,7 +246,24 @@ class TeacherPermissionController extends GetxController
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Error rejecting permission: $e');
+    } finally {
+      // ensure loading dialog is hidden regardless of outcome
+      try {
+        AppUtil.hideLoadingDialog(context);
+      } catch (_) {}
     }
+  }
+
+  /// Show rejection form dialog and call API with provided reason.
+  Future<void> promptAndRejectPermission(
+      BuildContext context, int permissionId) async {
+    showDialog(
+      context: context,
+      builder: (context) => FormPermissionRejection(onSubmit: (reason) {
+        // call reject API with provided reason
+        rejectPermission(context, permissionId, reason);
+      }),
+    );
   }
 
   @override

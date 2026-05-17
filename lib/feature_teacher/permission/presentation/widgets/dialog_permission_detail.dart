@@ -2,6 +2,7 @@ import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/core/helper/date_helper.dart';
 import 'package:absensi_qr/domain/enum/permission_status_enum.dart';
 import 'package:absensi_qr/domain/enum/permission_type_enum.dart';
 import 'package:absensi_qr/feature_teacher/permission/presentation/widgets/form_permission_rejection.dart';
@@ -48,6 +49,8 @@ class DialogPermissionDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final permission = permissionData.permission;
+    final datePermissionFormatted =
+        DateHelper.formatToDayDateMonthIndonesia(permission.datePermission);
     final student = permissionData.student;
     final status = permission.status;
     final statusColor = _statusColor(status);
@@ -116,6 +119,11 @@ class DialogPermissionDetail extends StatelessWidget {
               SpacingSize.spacingBaseHeight,
 
               // ── Info rows ───────────────────────────────────────────────
+              _InfoRow(
+                label: 'Tanggal Izin',
+                value: datePermissionFormatted,
+              ),
+              SpacingSize.spacingMDHeight,
               _InfoRow(
                 label: 'Jumlah Hari',
                 value: '${permission.dayCount} hari',
@@ -186,12 +194,8 @@ class DialogPermissionDetail extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
-                          // onReject();
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                FormPermissionRejection(onSubmit: onReject),
-                          );
+                          // delegate showing rejection form to caller/controller
+                          onReject();
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColor.errorColor,

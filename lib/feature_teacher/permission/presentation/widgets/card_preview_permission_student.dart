@@ -110,10 +110,10 @@ class CardPreviewPermissionStudent extends StatelessWidget {
                 customTextStyle: AppFontStyle.whiteText
                     .copyWith(fontSize: 14, fontWeight: FontWeight.bold),
                 callback: () {
-                  AppUtil.showPermissionDetailDialog(context,
-                      permissionData: permissionData,
-                      onAccept: onAccept,
-                      onReject: onReject);
+                    AppUtil.showPermissionDetailDialog(context,
+                        permissionData: permissionData,
+                        onAccept: onAccept,
+                        onReject: onReject);
                 }),
           ],
         ));

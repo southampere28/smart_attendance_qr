@@ -145,11 +145,8 @@ class TeacherPermissionPage extends StatelessWidget {
                                   context, permission.permission.id);
                             },
                             onReject: () {
-                              // Fluttertoast.showToast(msg: 'Reject permission is not implemented yet');
-                              controller.rejectPermission(
-                                  context,
-                                  permission.permission.id,
-                                  'testing doang sih ini');
+                              controller.promptAndRejectPermission(
+                                  context, permission.permission.id);
                             },
                           ),
                         );

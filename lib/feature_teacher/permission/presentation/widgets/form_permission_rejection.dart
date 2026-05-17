@@ -1,14 +1,27 @@
-
-
-
+import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/spacing_size.dart';
+import 'package:absensi_qr/features/widgets/button_primary_widget.dart';
 import 'package:flutter/material.dart';
 
-class FormPermissionRejection extends StatelessWidget {
+class FormPermissionRejection extends StatefulWidget {
   const FormPermissionRejection({super.key, required this.onSubmit});
 
-  final VoidCallback onSubmit;
+  final ValueChanged<String> onSubmit;
+
+  @override
+  State<FormPermissionRejection> createState() =>
+      _FormPermissionRejectionState();
+}
+
+class _FormPermissionRejectionState extends State<FormPermissionRejection> {
+  final TextEditingController _reasonController = TextEditingController();
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,44 +30,82 @@ class FormPermissionRejection extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Tolak Perizinan',
-              style: AppFontStyle.titleText,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                SpacingSize.spacingSMWidth,
+                Expanded(
+                  child: Text(
+                    'Form Penolakan',
+                    style: AppFontStyle.primaryText.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SpacingSize.spacingSMWidth,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Icon(Icons.close, size: 20, color: Colors.black54),
+                ),
+              ],
             ),
             SpacingSize.spacingBaseHeight,
             Text(
-              'Apakah Anda yakin ingin menolak perizinan ini?',
-              style: AppFontStyle.primaryText,
-              textAlign: TextAlign.center,
+              'Alasan Penolakan',
+              style: AppFontStyle.primaryText
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            SpacingSize.spacingBaseHeight,
+            TextField(
+              controller: _reasonController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: 'Alasan penolakan...',
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
             ),
             SpacingSize.spacingBaseHeight,
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300],
-                    foregroundColor: Colors.black,
+                Expanded(
+                  child: ButtonPrimaryWidget(
+                    title: 'Batal',
+                    isOutlineButton: true,
+                    customColor: AppColor.colorAlpha,
+                    callback: () => Navigator.of(context).pop(),
                   ),
-                  child: const Text('Batal'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    onSubmit();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                SpacingSize.spacingSMWidth,
+                Expanded(
+                  child: ButtonPrimaryWidget(
+                    title: 'Tolak',
+                    customColor: AppColor.errorColor,
+                    callback: () {
+                      final reason = _reasonController.text.trim();
+                      Navigator.of(context).pop();
+                      widget.onSubmit(reason);
+                    },
                   ),
-                  child: const Text('Tolak'),
                 ),
               ],
-            )]))
-            
+            )
+          ],
+        ),
+      ),
     );
   }
 }

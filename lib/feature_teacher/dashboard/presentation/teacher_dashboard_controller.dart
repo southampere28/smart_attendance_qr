@@ -35,7 +35,8 @@ class TeacherDashboardController extends GetxController {
   final RxList<ScheduleStudentAttendanceReport> attendanceHistoryResult =
       <ScheduleStudentAttendanceReport>[].obs;
   final Rx<BigInt> selectedClassId = BigInt.from(-1).obs;
-  final Rx<DateTime> selectedDate = DateTime.now().obs;
+  final DateTime selectedDate = DateTime.now();
+  // final DateTime selectedDate = DateTime(2026, 5, 9, 11, 30, 00);
 
   final Rx<ScheduleStudentAttendanceReport?> statiscticAttendanceToday =
       Rx<ScheduleStudentAttendanceReport?>(null);
@@ -64,12 +65,14 @@ class TeacherDashboardController extends GetxController {
   /// data geolocation END
 
   DateTime dateNow = DateTime.now();
+  // DateTime dateNow = DateTime(2026, 5, 9, 11, 30, 00); // testing only
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   @override
   void onInit() async {
     // TODO: implement onInit
     super.onInit();
+    // selectedDate.value = dateNow;
     _setProfileData();
     ever(mainController.triggerUpdateProfile, (_) {
       _setProfileData();
@@ -130,7 +133,7 @@ class TeacherDashboardController extends GetxController {
   }
 
   Future<void> fetchAttendanceHistory() async {
-    final now = DateTime.now();
+    // final now = DateTime.now();
 
     isLoadingAttendanceHistory.value = true;
 
@@ -154,8 +157,8 @@ class TeacherDashboardController extends GetxController {
         item.schedule.endTime.minute,
       );
 
-      return normalizedStartTime.isBefore(now) &&
-          normalizedEndTime.isAfter(now);
+      return normalizedStartTime.isBefore(dateNow) &&
+          normalizedEndTime.isAfter(dateNow);
     }).toList();
 
     if (filteredSchedule.isNotEmpty) {
@@ -175,7 +178,7 @@ class TeacherDashboardController extends GetxController {
           item.schedule.startTime.minute,
         );
 
-        return normalizedStartTime.isAfter(now);
+        return normalizedStartTime.isAfter(dateNow);
       }).toList();
 
       if (upcomingSchedule.isNotEmpty) {
@@ -205,7 +208,7 @@ class TeacherDashboardController extends GetxController {
 
     final result = await _httpService.teacherClassesAttendance(
       classId: selectedClassId.value.toString(),
-      date: selectedDate.value,
+      date: selectedDate,
     );
 
     isLoadingAttendanceHistory.value = false;
@@ -217,7 +220,7 @@ class TeacherDashboardController extends GetxController {
             .map((item) => ScheduleStudentAttendanceReport.fromMap(item))
             .toList();
         attendanceHistoryResult.value = attendanceList;
-        log('Loaded attendance history for class $selectedClassId on date ${selectedDate.value.toIso8601String()}');
+        log('Loaded attendance history for class $selectedClassId on date ${selectedDate.toIso8601String()}');
         // jangan lupa tambahkan filter schedule hasilnya berdasarkan range waktu upcoming / ongoing schedule. dan tampilkan di dashboard statistik.
 
         /// filter logic here...
@@ -239,7 +242,7 @@ class TeacherDashboardController extends GetxController {
   void filterClassAttendanceBySchedule() {
     isLoadingStatistic.value = true;
 
-    final now = DateTime.now();
+    // final now = DateTime.now();
 
     final filteredSchedule = attendanceHistoryResult.where((item) {
       final normalizedStartTime = DateTime(
@@ -259,8 +262,8 @@ class TeacherDashboardController extends GetxController {
       );
 
       isLoadingStatistic.value = false;
-      return normalizedStartTime.isBefore(now) &&
-          normalizedEndTime.isAfter(now);
+      return normalizedStartTime.isBefore(dateNow) &&
+          normalizedEndTime.isAfter(dateNow);
     }).toList();
 
     isLoadingStatistic.value = false;
@@ -280,7 +283,7 @@ class TeacherDashboardController extends GetxController {
           item.schedule.startTime.minute,
         );
 
-        return normalizedStartTime.isAfter(now);
+        return normalizedStartTime.isAfter(dateNow);
       }).toList();
 
       if (upcomingSchedule.isNotEmpty) {
