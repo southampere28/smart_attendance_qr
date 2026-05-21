@@ -77,9 +77,13 @@ class Schedule {
         : null,
       idTeacher: BigInt.parse(map['id_teacher'].toString()),
       idSubject: BigInt.parse(map['id_subject'].toString()),
-      dayOfWeek: map['day_of_week'] as String,
-      periodStart: map['period_start'] as int,
-      periodEnd: map['period_end'] as int,
+        dayOfWeek: map['day_of_week'] as String,
+        periodStart: map['period_start'] is int
+          ? map['period_start'] as int
+          : int.tryParse(map['period_start']?.toString() ?? '0') ?? 0,
+        periodEnd: map['period_end'] is int
+          ? map['period_end'] as int
+          : int.tryParse(map['period_end']?.toString() ?? '0') ?? 0,
       periodStartString: map['period_start_string'] as String?,
       periodEndString: map['period_end_string'] as String?,
       subject: map['subject'] != null

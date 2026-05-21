@@ -124,7 +124,8 @@ extension EndpointServiceAttendanceX on EndpointService {
   }
 
   // attendancec by schedule class and date (for all student in a class attendance report).
-  Future<ApiResult<List<Map<String, dynamic>>>> attendanceReportByScheduleClass({
+  Future<ApiResult<List<Map<String, dynamic>>>>
+      attendanceReportByScheduleClass({
     required String idClass,
     required String date, // format: YYYY-MM-DD
   }) async {
@@ -344,7 +345,8 @@ extension EndpointServiceAttendanceX on EndpointService {
           '${date.day.toString().padLeft(2, '0')}';
 
       final response = await http.get(
-        Uri.parse('${ApiConstant.baseURL}/attendance-daily/report?date=$dateStr'),
+        Uri.parse(
+            '${ApiConstant.baseURL}/attendance-daily/report?date=$dateStr'),
         headers: {
           "Accept": "application/json",
           "Authorization": "$tokenType $accessToken"
@@ -384,11 +386,13 @@ extension EndpointServiceAttendanceX on EndpointService {
   }
 
   // get notification for student side
-  Future<ApiResult<List<Map<String, dynamic>>>> getStudentNotifications(String startDate, String endDate) async {
+  Future<ApiResult<List<Map<String, dynamic>>>> getStudentNotifications(
+      String startDate, String endDate) async {
     try {
       // /api/student/notification?start_date=2026-04-10&end_date=2026-04-17
       final response = await http.get(
-        Uri.parse('${ApiConstant.baseURL}/student/notifications?start_date=$startDate&end_date=$endDate'),
+        Uri.parse(
+            '${ApiConstant.baseURL}/student/notifications?start_date=$startDate&end_date=$endDate'),
         headers: {
           "Accept": "application/json",
           "Authorization": "$tokenType $accessToken"
@@ -426,6 +430,4 @@ extension EndpointServiceAttendanceX on EndpointService {
       );
     }
   }
-
-
 }

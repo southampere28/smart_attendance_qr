@@ -47,9 +47,9 @@ class NotificationModel {
       body: map['body'] as String,
       type: map['type'] != null ? NotificationTypeEnum.fromString(map['type'] as String) : NotificationTypeEnum.none,
       sendTo: map['send_to'] != null ? map['send_to'] as String : null,
-      senderId: map['sender_id'] != null ? map['sender_id'] as int : null,
-      receiverId: map['receiver_id'] != null ? map['receiver_id'] as int : null,
-      classId: map['class_id'] != null ? map['class_id'] as int : null,
+      senderId: map['sender_id'] != null ? int.tryParse(map['sender_id'].toString()) : null,
+      receiverId: map['receiver_id'] != null ? int.tryParse(map['receiver_id'].toString()) : null,
+      classId: map['class_id'] != null ? int.tryParse(map['class_id'].toString()) : null,
       createdAt: map['created_at'] != null ? DateHelper.parseToLocal(map['created_at'].toString()) : DateTime.now(),
       updatedAt: map['updated_at'] != null ? DateHelper.parseToLocal(map['updated_at'].toString()) : null,
     );

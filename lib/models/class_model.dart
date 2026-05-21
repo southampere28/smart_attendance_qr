@@ -39,7 +39,7 @@ class ClassModel {
       id: BigInt.parse(map['id'].toString()),
       name: map['name'] as String,
       major: map['major'] as String,
-      grade: map['grade'] as int,
+      grade: int.parse(map['grade'].toString()),
       code: map['code'] as String,
       createdAt: map['created_at'] != null ? DateTime.parse(map['created_at'].toString()) : null,
       updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'].toString()) : null,
