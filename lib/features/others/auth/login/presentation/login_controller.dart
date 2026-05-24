@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -149,13 +150,12 @@ class LoginController extends GetxController {
   }
 
   Future<void> _loadActiveAcademicPeriodIfEmpty() async {
-    if (mainController.activeAcademicPeriod.value.isNotEmpty) return;
+    if (mainController.activeAcademicPeriod.value != null) return;
 
     try {
       final activePeriod = await endpointService.getActiveAcademicPeriod();
       if (activePeriod.success && activePeriod.data != null) {
-        mainController.activeAcademicPeriod.value =
-            activePeriod.data!['name'] ?? '';
+        mainController.activeAcademicPeriod.value = AcademicPeriodModel.fromJson(activePeriod.data!);
         log('Academic period loaded on login: ${mainController.activeAcademicPeriod.value}');
       }
     } catch (e) {

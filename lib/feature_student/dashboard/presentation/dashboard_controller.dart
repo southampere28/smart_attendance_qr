@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/feature_student/navigation/presentation/navigation_controller.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/attendance_history.dart';
 import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
@@ -119,6 +120,11 @@ class DashboardController extends GetxController {
       _setProfileData();
       // Load data asynchronously without blocking controller initialization
       _loadDashboardData();
+
+      // check active academic period if not loaded yet, just fetch it once
+      if (mainController.activeAcademicPeriod.value == null) {
+        _loadActiveAcademicPeriod();
+      }
     }
 
     ever(mainController.refreshHomeStudent, (_) {
@@ -144,6 +150,25 @@ class DashboardController extends GetxController {
   }
 
   // service zone
+  Future<void> _loadActiveAcademicPeriod() async {
+    try {
+      final activePeriod = await _httpService.getActiveAcademicPeriod(timeout: const Duration(seconds: 5));
+
+      if (activePeriod.success && activePeriod.data != null) {
+        mainController.activeAcademicPeriod.value =
+            AcademicPeriodModel.fromJson(activePeriod.data!);
+        
+        log('Active academic period: ${mainController.activeAcademicPeriod.value}');
+
+      } else {
+        mainController.activeAcademicPeriod.value = null;
+      }
+    } catch (e) {
+      // log error tapi tetap lanjut ke halaman berikutnya
+      Fluttertoast.showToast(msg: 'Gagal memuat periode aktif, coba lagi nanti');
+    }
+  }
+
   _setProfileData() {
     final String? emailService = _httpService.userData != null
         ? (_httpService.userData!['email'] as String?)

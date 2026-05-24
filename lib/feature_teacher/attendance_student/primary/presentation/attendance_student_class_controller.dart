@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/class_model.dart';
 import 'package:absensi_qr/models/model_merging/attendance_daily_student.dart';
@@ -23,7 +24,7 @@ class AttendanceStudentClassController extends GetxController {
   final RxBool isLoadingAttendanceDaily = false.obs;
 
   // using real academic period from main controller
-  RxString get activeAcademicPeriod => mainController.activeAcademicPeriod;
+  Rx<AcademicPeriodModel?> get activeAcademicPeriod => mainController.activeAcademicPeriod;
 
   // date selected for filter attendance data.
   final selectedDate = DateTime.now().obs;

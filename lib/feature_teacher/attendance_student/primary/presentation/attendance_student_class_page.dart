@@ -38,7 +38,7 @@ class AttendanceStudentClassPage extends StatelessWidget {
               Text('Riwayat Absensi',
                   style: AppFontStyle.titleText.copyWith(fontSize: 18)),
               Obx(() => Text(
-                  'Semester ${controller.activeAcademicPeriod.value}',
+                  'Semester ${controller.activeAcademicPeriod.value?.name ?? ''}',
                   style: AppFontStyle.subTitleText)),
               SpacingSize.spacingBaseHeight,
               Obx(() => DropdownInputWidget(

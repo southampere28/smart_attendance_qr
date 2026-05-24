@@ -32,7 +32,7 @@ class AttendancePage extends StatelessWidget {
                 Text('Riwayat Absensi',
                     style: AppFontStyle.titleText.copyWith(fontSize: 18)),
                 Obx(() => Text(
-                    'Semester ${controller.activeAcademicPeriod.value}',
+                    'Semester ${controller.activeAcademicPeriod.value?.name ?? ''}',
                     style: AppFontStyle.subTitleText)),
                 SpacingSize.spacingBaseHeight,
                 // this will shown as calendar widget.
@@ -52,8 +52,18 @@ class AttendancePage extends StatelessWidget {
                   ),
                   child: CalendarDatePicker(
                     initialDate: controller.selectedDate.value,
-                    firstDate: DateTime(2025),
-                    lastDate: DateTime(2030),
+                    firstDate:
+                        controller.mainController.activeAcademicPeriod.value !=
+                                null
+                            ? controller.mainController.activeAcademicPeriod
+                                .value!.startDate
+                            : DateTime(2025),
+                    lastDate:
+                        controller.mainController.activeAcademicPeriod.value !=
+                                null
+                            ? controller.mainController.activeAcademicPeriod
+                                .value!.endDate
+                            : DateTime(2030),
                     onDateChanged: (DateTime date) {
                       controller.selectedDate.value = date;
                       controller.getHistoryAttendance();
@@ -122,7 +132,7 @@ class AttendancePage extends StatelessWidget {
                                           ]),
                                     )),
                               ),
-        
+
                               /// data history attendance by subject with schedule info.
                               SingleChildScrollView(
                                 child: Obx(() => Padding(
@@ -132,7 +142,8 @@ class AttendancePage extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            controller.isLoadingAttendanceHistory
+                                            controller
+                                                    .isLoadingAttendanceHistory
                                                     .value
                                                 ? ShimmerLoadCard(
                                                     shimmerItemCount: 3,
@@ -153,7 +164,8 @@ class AttendancePage extends StatelessWidget {
                                                                         .attendance
                                                                         ?.status !=
                                                                     null
-                                                                ? item.attendance!
+                                                                ? item
+                                                                    .attendance!
                                                                     .status
                                                                 : AttendanceStatusEnum
                                                                     .alpha,

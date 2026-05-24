@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/models/user/student.dart';
 import 'package:absensi_qr/models/user/teacher.dart';
 import 'package:absensi_qr/models/user/user.dart';
@@ -18,7 +19,7 @@ class MainController extends GetxController {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   // academic periods active period
-  final RxString activeAcademicPeriod = ''.obs;
+  final Rx<AcademicPeriodModel?> activeAcademicPeriod = Rx<AcademicPeriodModel?>(null);
 
   // data user and profile.
   final Rx<User?> userData = Rx<User?>(null);

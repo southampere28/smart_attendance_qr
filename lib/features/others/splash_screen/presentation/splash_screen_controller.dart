@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -24,7 +25,6 @@ class SplashScreenController extends GetxController {
   Future<void> _startSplash() async {
     messageLoading.value = '⚙️ Menyiapkan aplikasi untukmu...';
     // todo some initialization work here
-    // await Future.delayed(Duration(seconds: 2));
     await _loadActiveAcademicPeriod();
 
     if (_restoreSavedSession()) {
@@ -36,7 +36,7 @@ class SplashScreenController extends GetxController {
 
     messageLoading.value = '✅ Selesai, menuju halaman login...';
     await Future.delayed(Duration(seconds: 1));
-    Get.offNamed(AppRoutes.chooserRoleUser);
+    Get.offNamed(AppRoutes.login);
     // Get.offAllNamed(AppRoutes.navigation);
   }
 
@@ -75,12 +75,12 @@ class SplashScreenController extends GetxController {
 
       if (activePeriod.success && activePeriod.data != null) {
         mainController.activeAcademicPeriod.value =
-            activePeriod.data!['name'] ?? '';
+            AcademicPeriodModel.fromJson(activePeriod.data!);
         
         log('Active academic period: ${mainController.activeAcademicPeriod.value}');
 
       } else {
-        mainController.activeAcademicPeriod.value = '';
+        mainController.activeAcademicPeriod.value = null;
       }
     } catch (e) {
       // log error tapi tetap lanjut ke halaman berikutnya

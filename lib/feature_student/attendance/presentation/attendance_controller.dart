@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/academic_period_model.dart';
 import 'package:absensi_qr/models/attendance_daily.dart';
 import 'package:absensi_qr/models/model_merging/attendance_report_item.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
@@ -24,7 +25,7 @@ class AttendanceController extends GetxController
 
   final Rx<AttendanceDaily?> attendanceDailyResult = Rx<AttendanceDaily?>(null);
 
-  RxString get activeAcademicPeriod => mainController.activeAcademicPeriod;
+  Rx<AcademicPeriodModel?> get activeAcademicPeriod => mainController.activeAcademicPeriod;
 
   @override
   void onInit() {
