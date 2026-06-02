@@ -140,8 +140,8 @@ class CardScheduleWeeklyClassTeacher extends StatelessWidget {
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: _buildSceduleCard(
-                            classTitle, subjectName, scheduleInfo, item.schedule.code),
+                        child: _buildSceduleCard(classTitle, subjectName,
+                            scheduleInfo, item.schedule.code, item.schedule.id),
                       );
                     },
                   );
@@ -154,8 +154,8 @@ class CardScheduleWeeklyClassTeacher extends StatelessWidget {
     });
   }
 
-  Widget _buildSceduleCard(
-      String classTitle, String subjectName, String scheduleInfo, String codeQR) {
+  Widget _buildSceduleCard(String classTitle, String subjectName,
+      String scheduleInfo, String codeQR, BigInt idSchedule) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -214,7 +214,8 @@ class CardScheduleWeeklyClassTeacher extends StatelessWidget {
               Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
                 'codeQR': codeQR,
                 'subjectName': subjectName,
-                'dateSchedule': controller.getDateOfSelectedSchedule()
+                'dateSchedule': controller.getDateOfSelectedSchedule(),
+                'idSchedule': idSchedule,
               });
             },
             child: SvgPicture.asset(

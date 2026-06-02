@@ -603,4 +603,64 @@ extension EndpointServiceTeacherX on EndpointService {
       );
     }
   }
+
+  // generate qr code public for teacher
+  // teacher/attendance/qr/generate/{schedule_id}
+//   {
+//     "success": true,
+//     "message": "QR link generated",
+//     "data": {
+//         "url": "http://presensiku.site/public/attendance/qr/ltZcKoHd7yN2DbL6ijkYlBpt7j1zxtsDTmKNAl6xq9cD9mK7IFRi7YGndUoPpmm9",
+//         "token": "ltZcKoHd7yN2DbL6ijkYlBpt7j1zxtsDTmKNAl6xq9cD9mK7IFRi7YGndUoPpmm9",
+//         "schedule_id": "1",
+//         "expired_in_seconds": 600,
+//         "expired_in_minutes": 10
+//     }
+// }
+
+  Future<ApiResult<Map<String, dynamic>>> generateScheduleQrCode(
+      String scheduleId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConstant.scheduleQrURL}/$scheduleId'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "$tokenType $accessToken",
+        },
+      );
+
+      final status = response.statusCode;
+      final data = jsonDecode(response.body);
+
+      if (status == 200 || status == 201) {
+        final qrData = (data["data"] as Map<String, dynamic>)
+            .map((key, value) => MapEntry(key, value));
+
+        log("Message: ${data["message"]}");
+        log("QR Data: $qrData");
+
+        return ApiResult(
+          success: data["success"] ?? true,
+          data: qrData,
+          message: data["message"],
+          statusCode: status,
+        );
+      } else {
+        log("Failed to generate schedule QR code: ${response.body}");
+        return ApiResult(
+          success: data["success"] ?? false,
+          message: data["message"] ?? "Failed to generate schedule QR code",
+          statusCode: status,
+          errors: data['errors'] ?? "Failed to generate schedule QR code",
+        );
+      }
+    } catch (e) {
+      log("Exception while generating schedule QR code: $e");
+      return ApiResult(
+        success: false,
+        message: "Exception: $e",
+        statusCode: null,
+      );
+    }
+  }
 }

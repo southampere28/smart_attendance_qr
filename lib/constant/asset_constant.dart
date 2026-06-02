@@ -5,7 +5,9 @@ class AssetConstant {
 
   // icon core general
   static const String iconApp = '$baseIconPath/icon_app.png';
+  static const String iconAppBlue = '$baseIconPath/ic_app_blue.png';
   static const String iconAppSVG = '$baseIconPath/icon_app.svg';
+  static const String iconAppBlueSVG = '$baseIconPath/ic_app_blue.svg';
   static const String iconDailyAttendance = '$baseIconPath/ic-attendance-daily.svg';
 
   /// icon per feature here...

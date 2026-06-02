@@ -114,6 +114,7 @@ class TeacherDashboardPage extends StatelessWidget {
                               subjectName: item.subject?.name ?? '-',
                               scheduleInfo: scheduleInfo,
                               codeQR: item.schedule.code,
+                              idSchedule: item.schedule.id,
                             ),
                             (controller.dataSchedule.length - 1) == index
                                 ? SizedBox.shrink()

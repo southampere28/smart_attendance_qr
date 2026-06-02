@@ -141,7 +141,7 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: _buildSceduleCard(classTitle, subjectName,
-                            scheduleInfo, item.schedule.code),
+                            scheduleInfo, item.schedule.code, item.schedule.id),
                       );
                     },
                   );
@@ -155,7 +155,7 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
   }
 
   Widget _buildSceduleCard(String classTitle, String subjectName,
-      String scheduleInfo, String codeQR) {
+      String scheduleInfo, String codeQR, BigInt idSchedule) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -215,7 +215,8 @@ class CardScheduleWeeklyTeacher extends StatelessWidget {
                 'codeQR': codeQR,
                 'subjectName': subjectName,
                 // hari schedule teacher pada week ini
-                'dateSchedule': controller.getDateOfSelectedSchedule()
+                'dateSchedule': controller.getDateOfSelectedSchedule(),
+                'idSchedule': idSchedule,
               });
             },
             child: Column(

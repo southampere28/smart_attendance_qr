@@ -14,12 +14,14 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
     required this.subjectName,
     required this.scheduleInfo,
     required this.codeQR,
+    required this.idSchedule,
   });
 
   final String classTitle;
   final String subjectName;
   final String scheduleInfo; // e.g "08:00 - 09:00"
   final String codeQR;
+  final BigInt idSchedule;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +80,7 @@ class TeacherSchedulePreviewCard extends StatelessWidget {
                 Get.toNamed(AppRoutes.scheduleQRTeacher, arguments: {
                   'codeQR': codeQR,
                   'subjectName': subjectName,
+                  'idSchedule': idSchedule,
                 });
               },
               child: Column(
