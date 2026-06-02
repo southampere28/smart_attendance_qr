@@ -37,32 +37,38 @@ class NotificationStudentPage extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // each day, show the description like (hari ini, kemarin, 2 hari yang lalu, dst)
-              Obx(() => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: controller.isLoading.value
-                        ? [
-                            SpacingSize.spacingHugeHeight,
-                            Container(
-                              width: double.infinity,
-                              height: 300,
-                              alignment: Alignment.center,
-                              child: CircularProgressIndicator(),
-                            )
-                          ]
-                        : _buildNotificationSections(
-                            context, controller.dataNotifications),
-                  )),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.fetchNotifications();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // each day, show the description like (hari ini, kemarin, 2 hari yang lalu, dst)
+                Obx(() => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: controller.isLoading.value
+                          ? [
+                              SpacingSize.spacingHugeHeight,
+                              Container(
+                                width: double.infinity,
+                                height: 300,
+                                alignment: Alignment.center,
+                                child: CircularProgressIndicator(),
+                              )
+                            ]
+                          : _buildNotificationSections(
+                              context, controller.dataNotifications),
+                    )),
 
-              SpacingSize.spacingHugeHeight,
-            ],
+                SpacingSize.spacingHugeHeight,
+              ],
+            ),
           ),
         ),
       ),

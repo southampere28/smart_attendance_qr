@@ -1,3 +1,4 @@
+import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,6 @@ class ScheduleQrTeacherController extends GetxController {
       print('Received arguments:');
       print('Subject Name: $subjectName');
       print('Code QR: $codeQR');
-
     } else {
       print('No arguments received.');
     }
@@ -36,7 +36,10 @@ class ScheduleQrTeacherController extends GetxController {
 
   void copyCodeQRToClipboard() {
     if (codeQR != null) {
-      Clipboard.setData(ClipboardData(text: codeQR!));
+      // url website static, next time change for dynamic using endpoint API
+      var scheduleQrLink = "${ApiConstant.scheduleQrURL}/$codeQR";
+
+      Clipboard.setData(ClipboardData(text: scheduleQrLink));
       Get.snackbar('Sukses', 'Kode QR berhasil disalin ke clipboard');
     }
   }

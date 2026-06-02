@@ -35,7 +35,9 @@ class SplashScreenController extends GetxController {
     }
 
     messageLoading.value = '✅ Selesai, menuju halaman login...';
-    await Future.delayed(Duration(seconds: 1));
+    
+    
+    await Future.delayed(const Duration(seconds: 1));
     Get.offNamed(AppRoutes.login);
     // Get.offAllNamed(AppRoutes.navigation);
   }

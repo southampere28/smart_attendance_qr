@@ -9,6 +9,7 @@ import 'package:absensi_qr/features/widgets/textfield_with_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
@@ -40,8 +41,14 @@ class LoginPage extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          AssetConstant.iconApp,
+                        // Image.asset(
+                        //   AssetConstant.iconApp,
+                        //   width: 105,
+                        //   height: 105,
+                        //   fit: BoxFit.contain,
+                        // ),
+                        SvgPicture.asset(
+                          AssetConstant.iconAppSVG,
                           width: 105,
                           height: 105,
                           fit: BoxFit.contain,

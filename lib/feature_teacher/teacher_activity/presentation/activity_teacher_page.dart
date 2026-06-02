@@ -27,43 +27,56 @@ class ActivityTeacherPage extends StatelessWidget {
             style: AppFontStyle.titleText,
           ),
         ),
-        body: Column(
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Obx(() => Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      controller.filterItems.length,
-                      (index) => _buttonFilter(
-                        controller.filterItems[index].label,
-                        controller.filterItems[index].icon,
-                        () => controller.selectFilter(index),
-                        controller.selectedFilterIndex.value == index,
-                      ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await controller.fetchTeacherActivity();
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Obx(() => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          controller.filterItems.length,
+                          (index) => _buttonFilter(
+                            controller.filterItems[index].label,
+                            controller.filterItems[index].icon,
+                            () => controller.selectFilter(index),
+                            controller.selectedFilterIndex.value == index,
+                          ),
+                        ),
+                      )),
+                ),
+              ),
+              SliverToBoxAdapter(child: SpacingSize.spacingBaseHeight),
+              SliverToBoxAdapter(
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final notifications = controller.filteredNotifications;
+                  if (notifications.isEmpty) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Center(child: Text('Tidak ada Aktivitas')),
+                      ],
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildGroupedNotifications(notifications),
                     ),
-                  )),
-            ),
-            SpacingSize.spacingBaseHeight,
-            Expanded(child: SingleChildScrollView(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final notifications = controller.filteredNotifications;
-                if (notifications.isEmpty) {
-                  return const Center(child: Text('Tidak ada notifikasi'));
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildGroupedNotifications(notifications),
-                  ),
-                );
-              }),
-            )),
-          ],
+                  );
+                }),
+              ),
+            ],
+          ),
         ));
   }
 
