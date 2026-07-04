@@ -2,8 +2,9 @@ import 'package:absensi_qr/constant/app_color.dart';
 import 'package:absensi_qr/constant/app_font_style.dart';
 import 'package:absensi_qr/constant/asset_constant.dart';
 import 'package:absensi_qr/features/others/main_controller.dart';
+import 'package:absensi_qr/models/response/api_result.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
-import 'package:absensi_qr/utils/app_util.dart';
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:absensi_qr/domain/enum/permission_type_enum.dart';
 import 'package:flutter/material.dart';
@@ -100,19 +101,19 @@ class PermissionFormController extends GetxController {
     // validate form
     if (typeSelected.value.isEmpty ||
         typeSelected.value == '(Pilih Jenis Perizinan)') {
-      Get.snackbar('Error', 'Silahkan pilih jenis perizinan');
+      AppSnackbar.showError('Error', 'Silahkan pilih jenis perizinan');
       return;
     }
     if (infoPermitController.text.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi alasan perizinan');
+      AppSnackbar.showError('Error', 'Silahkan isi alasan perizinan');
       return;
     }
     if (datePickController.text.isEmpty) {
-      Get.snackbar('Error', 'Silahkan pilih tanggal perizinan');
+      AppSnackbar.showError('Error', 'Silahkan pilih tanggal perizinan');
       return;
     }
     if (dayCountController.text.isEmpty) {
-      Get.snackbar('Error', 'Jumlah hari izin minimal 1 hari');
+      AppSnackbar.showError('Error', 'Jumlah hari izin minimal 1 hari');
       return;
     }
 
@@ -142,23 +143,20 @@ class PermissionFormController extends GetxController {
     // guard: ensure typeSelected is valid
     if (typeSelected.value.isEmpty ||
         typeSelected.value == '(Pilih Jenis Perizinan)') {
-      AppUtil.showGetSnackBar('Error', 'Silahkan pilih jenis perizinan',
-          isError: true);
+      AppSnackbar.showError('Error', 'Silahkan pilih jenis perizinan');
       isloadingSubmit.value = false;
       return;
     }
 
-    if (pickedImagePath == null || pickedImagePath!.isEmpty) {
-      AppUtil.showGetSnackBar('Error', 'Silahkan upload bukti surat izin',
-          isError: true);
+    if (pickedImagePath == null || pickedImagePath!.isEmpty || pickedImage.value == null) {
+      AppSnackbar.showError('Error', 'Silahkan upload bukti surat izin');
       isloadingSubmit.value = false;
       return;
     }
 
     // guard: ensure date is picked and valid
     if (datePickController.text.isEmpty) {
-      AppUtil.showGetSnackBar('Error', 'Silahkan pilih tanggal perizinan',
-          isError: true);
+      AppSnackbar.showError('Error', 'Silahkan pilih tanggal perizinan');
       isloadingSubmit.value = false;
       return;
     }
@@ -167,8 +165,7 @@ class PermissionFormController extends GetxController {
     if (dayCountController.text.isEmpty ||
         int.tryParse(dayCountController.text) == null ||
         int.parse(dayCountController.text) <= 0) {
-      AppUtil.showGetSnackBar('Error', 'Jumlah hari izin minimal 1 hari',
-          isError: true);
+      AppSnackbar.showError('Error', 'Jumlah hari izin minimal 1 hari');
       isloadingSubmit.value = false;
       return;
     }
@@ -177,7 +174,7 @@ class PermissionFormController extends GetxController {
     // Convert DD/MM/YYYY -> YYYY-MM-DD
     final dateParts = pickedDate.split('/');
     if (dateParts.length != 3) {
-      Get.snackbar('Error', 'Format tanggal tidak valid');
+      AppSnackbar.showError('Error', 'Format tanggal tidak valid');
       isloadingSubmit.value = false;
       return;
     }
@@ -195,8 +192,16 @@ class PermissionFormController extends GetxController {
       imagePath: pickedImagePath!,
     );
 
+    // testing only, add delay and result as success
+    // await Future.delayed(const Duration(seconds: 2));
+    // final ApiResult<Map<String, dynamic>> result = ApiResult(
+    //   success: true,
+    //   message: 'Perizinan berhasil diajukan',
+    //   data: {},
+    // );
+
     if (result.success) {
-      Get.snackbar('Success', 'Perizinan berhasil diajukan');
+      AppSnackbar.showSuccess('Sukses', 'Perizinan berhasil diajukan');
       // clear form
       typeSelected.value = '';
       infoPermitController.clear();
@@ -206,12 +211,16 @@ class PermissionFormController extends GetxController {
 
       // trigger refresh permission list page
       mainController.refreshPermission.value++;
-
+      
+      // Set loading false terlebih dahulu
+      isloadingSubmit.value = false;
+      
+      // Delay sebelum pop page
+      await Future.delayed(const Duration(milliseconds: 800));
+      Get.back();
     } else {
-      Get.snackbar('Error', 'Gagal mengajukan perizinan');
+      AppSnackbar.showError('Error', result.message ?? 'Gagal mengajukan perizinan');
+      isloadingSubmit.value = false;
     }
-
-    // finish loading state
-    isloadingSubmit.value = false;
   }
 }

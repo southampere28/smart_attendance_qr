@@ -1,3 +1,5 @@
+import 'package:absensi_qr/models/response/api_result.dart';
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'dart:developer';
 import 'package:absensi_qr/domain/enum/attendance_status_enum.dart';
 import 'package:absensi_qr/domain/enum/disrepancy_type_enum.dart';
@@ -73,33 +75,54 @@ class DetailAttendanceStudentClassController extends GetxController {
       String idAttendanceHistory,
       DisrepancyTypeEnum disrepancyType,
       String reason) async {
-    // loading dialog
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      AppUtil.showLoadingDialog(context,
-          message: 'Loading attendance history...');
-    });
-
-    // call service to report discrepancy
-    final result = await _httpService.submitDiscrepancyReport(
-      attendanceHistoryId: idAttendanceHistory,
-      disrepancyType: disrepancyType.name,
-      reason: reason,
-    );
-
-    // hide loading dialog
-    if (context.mounted) {
-      AppUtil.hideLoadingDialog(context);
+    // Check context validity
+    if (!context.mounted) {
+      log('Context not mounted, cannot submit discrepancy report');
+      return;
     }
 
-    if (result.success) {
-      log('Successfully reported attendance discrepancy for attendance history $idAttendanceHistory with type $disrepancyType and reason $reason');
-      Get.snackbar('Success', 'Berhasil melaporkan ketidaksesuaian absensi!');
-      // Optionally, refresh the attendance history after reporting
-      // fetchAttendanceHistory();
-    } else {
-      log('Failed to report attendance discrepancy: ${result.message}');
-      Get.snackbar(
-          'Error', result.message ?? 'Failed to report attendance discrepancy');
+    // Show loading dialog
+    AppUtil.showLoadingDialog(context,
+        message: 'Melaporkan ketidaksesuaian absensi...');
+
+    try {
+      // call service to report discrepancy
+      final result = await _httpService.submitDiscrepancyReport(
+        attendanceHistoryId: idAttendanceHistory,
+        disrepancyType: disrepancyType.name,
+        reason: reason,
+      );
+
+      // testing only, add delay and result as success
+      // await Future.delayed(const Duration(seconds: 2));
+      // final ApiResult<Map<String, dynamic>> result = ApiResult(
+      //   success: true,
+      //   message: 'Berhasil melaporkan ketidaksesuaian absensi',
+      //   data: {},
+      // );
+
+      // Hide loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
+      if (result.success) {
+        log('Successfully reported attendance discrepancy for attendance history $idAttendanceHistory with type $disrepancyType and reason $reason');
+        AppSnackbar.showSuccess('Sukses', 'Berhasil melaporkan ketidaksesuaian absensi!');
+        
+        // Delay sebelum pop dialog
+        await Future.delayed(const Duration(milliseconds: 800));
+        Get.back();
+      } else {
+        log('Failed to report attendance discrepancy: ${result.message}');
+        AppSnackbar.showError('Error', result.message ?? 'Gagal melaporkan ketidaksesuaian absensi');
+      }
+    } catch (e) {
+      log('Exception while submitting discrepancy report: $e');
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+      AppSnackbar.showError('Error', 'Terjadi kesalahan: $e');
     }
   }
 

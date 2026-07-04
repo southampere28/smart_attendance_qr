@@ -1,3 +1,4 @@
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +37,9 @@ class _DebugConfigPageState extends State<DebugConfigPage> {
       _saving = false;
     });
 
-    Get.snackbar(
+    AppSnackbar.snackbar(
       'Base URL disimpan',
       ApiConstant.baseURL,
-      snackPosition: SnackPosition.BOTTOM,
     );
   }
 
@@ -52,10 +52,9 @@ class _DebugConfigPageState extends State<DebugConfigPage> {
       _controller.text = ApiConstant.baseURL;
     });
 
-    Get.snackbar(
+    AppSnackbar.snackbar(
       'Base URL direset',
       ApiConstant.baseURL,
-      snackPosition: SnackPosition.BOTTOM,
     );
   }
 
@@ -73,10 +72,9 @@ class _DebugConfigPageState extends State<DebugConfigPage> {
       _testing = false;
     });
 
-    Get.snackbar(
+    AppSnackbar.snackbar(
       'Tes koneksi',
       ok ? 'Berhasil terhubung' : 'Gagal terhubung',
-      snackPosition: SnackPosition.BOTTOM,
     );
   }
 

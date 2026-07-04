@@ -168,7 +168,7 @@ class LoginPage extends StatelessWidget {
                             Center(
                               child: TextButton(
                                 onPressed: () =>
-                                    Get.toNamed(AppRoutes.debugConfig),
+                                    Get.offAllNamed(AppRoutes.debugConfig),
                                 child: const Text('Atur Base URL (Debug)'),
                               ),
                             ),

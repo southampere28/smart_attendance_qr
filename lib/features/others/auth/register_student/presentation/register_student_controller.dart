@@ -1,3 +1,4 @@
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'dart:developer';
 
 import 'package:absensi_qr/app_routes.dart';
@@ -122,31 +123,31 @@ class RegisterStudentController extends GetxController {
       int entryYear) {
     // validate form
     if (name.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi nama lengkap');
+      AppSnackbar.snackbar('Error', 'Silahkan isi nama lengkap');
       return;
     }
     if (email.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi email');
+      AppSnackbar.snackbar('Error', 'Silahkan isi email');
       return;
     }
     if (password.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi kata sandi');
+      AppSnackbar.snackbar('Error', 'Silahkan isi kata sandi');
       return;
     }
     if (confirmPassController.text.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi konfirmasi kata sandi');
+      AppSnackbar.snackbar('Error', 'Silahkan isi konfirmasi kata sandi');
       return;
     }
     if (nisn.isEmpty) {
-      Get.snackbar('Error', 'Silahkan isi NISN');
+      AppSnackbar.snackbar('Error', 'Silahkan isi NISN');
       return;
     }
     if (idClass == -1) {
-      Get.snackbar('Error', 'Silahkan pilih kelas');
+      AppSnackbar.snackbar('Error', 'Silahkan pilih kelas');
       return;
     }
     if (entryYear <= 0) {
-      Get.snackbar('Error', 'Silahkan isi tahun masuk yang valid');
+      AppSnackbar.snackbar('Error', 'Silahkan isi tahun masuk yang valid');
       return;
     }
 
@@ -155,17 +156,17 @@ class RegisterStudentController extends GetxController {
     final passwordError = AppUtil.validatePassword(password);
 
     if (emailError != null) {
-      Get.snackbar('Error', emailError);
+      AppSnackbar.snackbar('Error', emailError);
       return;
     }
 
     if (passwordError != null) {
-      Get.snackbar('Error', passwordError);
+      AppSnackbar.snackbar('Error', passwordError);
       return;
     }
 
     if (password != confirmPassController.text) {
-      Get.snackbar('Error', 'Kata sandi dan konfirmasi kata sandi tidak cocok');
+      AppSnackbar.snackbar('Error', 'Kata sandi dan konfirmasi kata sandi tidak cocok');
       return;
     }
 

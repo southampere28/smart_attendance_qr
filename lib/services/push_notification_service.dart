@@ -1,3 +1,4 @@
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
@@ -85,10 +86,9 @@ class PushNotificationService extends GetxService {
     if (!_localNotificationsReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.overlayContext == null && Get.context == null) return;
-        Get.snackbar(
+        AppSnackbar.snackbar(
           title,
           body,
-          snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 4),
         );
       });

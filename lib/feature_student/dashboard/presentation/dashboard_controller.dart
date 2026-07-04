@@ -1,3 +1,4 @@
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'dart:developer';
 
 import 'package:absensi_qr/configs/api_constant.dart';
@@ -77,7 +78,7 @@ class DashboardController extends GetxController {
     } catch (e) {
       log("Gagal menunggu GPS aktif: $e");
       if (Get.isSnackbarOpen == false) {
-        Get.snackbar(
+        AppSnackbar.snackbar(
           'GPS Tidak Aktif',
           'Mohon nyalakan GPS untuk menggunakan aplikasi',
           duration: const Duration(seconds: 3),

@@ -1,3 +1,4 @@
+import 'package:absensi_qr/utils/app_snackbar.dart';
 import 'package:absensi_qr/configs/api_constant.dart';
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
@@ -59,9 +60,9 @@ class ScheduleQrTeacherController extends GetxController {
       if (apiResult.success && apiResult.data != null) {
         final scheduleQrLink = apiResult.data!['url'] as String;
         Clipboard.setData(ClipboardData(text: scheduleQrLink));
-        Get.snackbar('Sukses', 'Kode QR berhasil disalin ke clipboard');
+        AppSnackbar.snackbar('Sukses', 'Kode QR berhasil disalin ke clipboard');
       } else {
-        Get.snackbar('Error', 'Gagal mengambil link QR');
+        AppSnackbar.snackbar('Error', 'Gagal mengambil link QR');
       }
     }
   }

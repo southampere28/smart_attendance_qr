@@ -18,30 +18,6 @@ class ProfileTeacherPage extends StatefulWidget {
 
 class _ProfileTeacherPageState extends State<ProfileTeacherPage> {
   final controller = Get.find<ProfileTeacherController>();
-  late final StreamSubscription<bool> _loadingUpdateProfileSub;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadingUpdateProfileSub =
-        controller.isLoadingUpdateProfile.listen((isLoading) {
-      if (!mounted) return;
-      if (isLoading) {
-        AppUtil.showLoadingDialog(context,
-            message: 'Mengunggah foto profil...');
-      } else {
-        try {
-          AppUtil.hideLoadingDialog(context);
-        } catch (_) {}
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _loadingUpdateProfileSub.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
