@@ -6,7 +6,6 @@ import 'package:absensi_qr/models/model_merging/schedule_student_attendance_repo
 import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/services/geolocation_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
-import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
@@ -64,8 +63,8 @@ class TeacherDashboardController extends GetxController {
 
   /// data geolocation END
 
-  // DateTime dateNow = DateTime.now();
-  DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 00); // testing only - Thursday
+  DateTime dateNow = DateTime.now();
+  // DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 00); // testing only - Thursday
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   @override

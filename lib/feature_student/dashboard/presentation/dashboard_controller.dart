@@ -29,12 +29,12 @@ class DashboardController extends GetxController {
   // is weekend check
   bool get isWeekend {
     final int weekday = dateNow.weekday;
-    // return weekday == DateTime.sunday;
-    return false;
+    return weekday == DateTime.sunday;
+    // return true;
   }
 
-  // DateTime dateNow = DateTime(2026, 7, 25, 8, 0, 0);
-  DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 0); // testing only - Thursday (selaras dengan teacher)
+  DateTime dateNow = DateTime.now();
+  // DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 0); // testing only - Thursday (selaras dengan teacher)
 
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
