@@ -32,9 +32,8 @@ class DashboardController extends GetxController {
     return false;
   }
 
-  DateTime dateNow = DateTime(2026, 6, 25, 8, 0, 0);
-
-  // final DateTime dateDummyOnly = DateTime(2026, 2, 16, 8, 0, 0);
+  // DateTime dateNow = DateTime(2026, 7, 25, 8, 0, 0);
+  DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 0); // testing only - Thursday (selaras dengan teacher)
 
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 

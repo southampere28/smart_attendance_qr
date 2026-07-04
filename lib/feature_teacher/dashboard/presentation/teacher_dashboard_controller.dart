@@ -35,8 +35,8 @@ class TeacherDashboardController extends GetxController {
   final RxList<ScheduleStudentAttendanceReport> attendanceHistoryResult =
       <ScheduleStudentAttendanceReport>[].obs;
   final Rx<BigInt> selectedClassId = BigInt.from(-1).obs;
-  final DateTime selectedDate = DateTime.now();
-  // final DateTime selectedDate = DateTime(2026, 5, 9, 11, 30, 00);
+  // final DateTime selectedDate = DateTime.now();
+  final DateTime selectedDate = DateTime(2026, 7, 9); // testing only - Thursday
 
   final Rx<ScheduleStudentAttendanceReport?> statiscticAttendanceToday =
       Rx<ScheduleStudentAttendanceReport?>(null);
@@ -64,8 +64,8 @@ class TeacherDashboardController extends GetxController {
 
   /// data geolocation END
 
-  DateTime dateNow = DateTime.now();
-  // DateTime dateNow = DateTime(2026, 5, 9, 11, 30, 00); // testing only
+  // DateTime dateNow = DateTime.now();
+  DateTime dateNow = DateTime(2026, 7, 9, 9, 20, 00); // testing only - Thursday
   String get dateNowFormatted => AppUtil.formatDateIndonesia(dateNow);
 
   @override
