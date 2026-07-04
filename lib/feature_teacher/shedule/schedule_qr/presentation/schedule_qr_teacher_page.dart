@@ -6,9 +6,43 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 
-class ScheduleQrTeacherPage extends StatelessWidget {
+class ScheduleQrTeacherPage extends StatefulWidget {
   const ScheduleQrTeacherPage({super.key});
+
+  @override
+  State<ScheduleQrTeacherPage> createState() => _ScheduleQrTeacherPageState();
+}
+
+class _ScheduleQrTeacherPageState extends State<ScheduleQrTeacherPage> {
+  @override
+  void initState() {
+    super.initState();
+    _setMaxBrightness();
+  }
+
+  Future<void> _setMaxBrightness() async {
+    try {
+      await ScreenBrightness().setApplicationScreenBrightness(1.0);
+    } catch (e) {
+      debugPrint('Gagal menaikkan brightness: $e');
+    }
+  }
+
+  Future<void> _resetBrightness() async {
+    try {
+      await ScreenBrightness().resetApplicationScreenBrightness();
+    } catch (e) {
+      debugPrint('Gagal reset brightness: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _resetBrightness();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

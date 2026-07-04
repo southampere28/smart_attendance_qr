@@ -36,35 +36,43 @@ class AppUtil {
 
   static void showLoadingDialog(BuildContext context, {String? message}) {
     if (_isLoadingDialogVisible) return;
-    _isLoadingDialogVisible = true;
-    showDialog(
-      context: context,
-      barrierDismissible: false, // tidak bisa ditutup dengan tap di luar
-      useRootNavigator: true,
-      builder: (context) {
-        // capture the dialog's own BuildContext so we can pop using it
-        _loadingDialogContext = context;
-        return Dialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(),
-                const SizedBox(width: 16),
-                Flexible(child: Text(message ?? "Loading...")),
-              ],
+
+    // Defer ke frame berikutnya supaya Overlay/Navigator pasti sudah siap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Pakai overlay context Get jika context bawaan sudah tidak valid.
+      final ctx = _safeOverlayContext(context);
+      if (ctx == null) return;
+      if (_isLoadingDialogVisible) return;
+      _isLoadingDialogVisible = true;
+      showDialog(
+        context: ctx,
+        barrierDismissible: false, // tidak bisa ditutup dengan tap di luar
+        useRootNavigator: true,
+        builder: (context) {
+          // capture the dialog's own BuildContext so we can pop using it
+          _loadingDialogContext = context;
+          return Dialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          ),
-        );
-      },
-    ).then((_) {
-      _isLoadingDialogVisible = false;
-      _loadingDialogContext = null;
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(width: 16),
+                  Flexible(child: Text(message ?? "Loading...")),
+                ],
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        _isLoadingDialogVisible = false;
+        _loadingDialogContext = null;
+      });
     });
   }
 
@@ -105,8 +113,10 @@ class AppUtil {
     required VoidCallback onReject,
     double widthFactor = 0.90,
   }) {
+    final ctx = _safeOverlayContext(context);
+    if (ctx == null) return;
     showDialog(
-      context: context,
+      context: ctx,
       builder: (_) => DialogPermissionDetail(
         permissionData: permissionData,
         onAccept: onAccept,
@@ -123,8 +133,10 @@ class AppUtil {
     required VoidCallback onTap,
     double widthFactor = 0.9,
   }) {
+    final ctx = _safeOverlayContext(context);
+    if (ctx == null) return;
     showDialog(
-      context: context,
+      context: ctx,
       builder: (_) => DialogPermissionDetailStudent(
         permissionData: permissionData,
         studentName: studentName,
@@ -162,13 +174,50 @@ class AppUtil {
   // snackbar error
   static void showGetSnackBar(String title, String message,
       {bool isError = false}) {
-    Get.snackbar(
-      title,
-      message,
-      backgroundColor: isError ? Colors.red : Colors.green,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-    );
+    // Defer sampai frame berikutnya supaya widget tree (ScaffoldMessenger) siap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = Get.context;
+      if (ctx == null) return;
+
+      final messenger = ScaffoldMessenger.maybeOf(ctx);
+      if (messenger == null) return;
+
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(
+          backgroundColor: isError ? Colors.red : Colors.green,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                message,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  /// Mengembalikan BuildContext yang dijamin punya Overlay ancestor.
+  /// Berguna saat dipanggil dari controller/service yang context-nya
+  /// belum tentu sudah ter-mount ke widget tree dengan MaterialApp.
+  static BuildContext? _safeOverlayContext(BuildContext context) {
+    if (Overlay.maybeOf(context) != null) return context;
+    final overlayCtx = Get.overlayContext;
+    if (overlayCtx != null) return overlayCtx;
+    return Get.context;
   }
 }

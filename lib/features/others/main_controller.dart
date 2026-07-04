@@ -9,6 +9,7 @@ import 'package:absensi_qr/services/endpoint_service.dart';
 import 'package:absensi_qr/utils/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
@@ -36,8 +37,10 @@ class MainController extends GetxController {
   // connectivity internet status check
   final RxList<ConnectivityResult> _connectionStatus =
       <ConnectivityResult>[ConnectivityResult.none].obs;
+  final RxBool hasInternetConnection = true.obs;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  late StreamSubscription<InternetConnectionStatus> _internetConnectionSubscription;
 
   // service for notification
   // testing button for subscribe and unsubscribe to notifications
@@ -133,11 +136,16 @@ class MainController extends GetxController {
     // listen to connectivity changes
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+
+    // listen to internet connection changes
+    _internetConnectionSubscription =
+        InternetConnectionChecker().onStatusChange.listen(_updateInternetStatus);
   }
 
   @override
   void onClose() {
     _connectivitySubscription.cancel();
+    _internetConnectionSubscription.cancel();
     super.onClose();
   }
 
@@ -156,9 +164,13 @@ class MainController extends GetxController {
 
   Future<void> _updateConnectionStatus(List result) async {
     _connectionStatus.assignAll(result.cast<ConnectivityResult>());
-    // Fluttertoast.showToast(msg: 'Koneksi: ${_connectionStatus.map((e) => e.toString().split('.').last).join(', ')}');
-    // jika status koneksi tidak ada, tampilkan toast error
-    if (_connectionStatus.contains(ConnectivityResult.none)) {
+  }
+
+  // check actual internet connection (real connectivity test)
+  Future<void> _updateInternetStatus(InternetConnectionStatus status) async {
+    hasInternetConnection.value = (status == InternetConnectionStatus.connected);
+
+    if (!hasInternetConnection.value) {
       AppUtil.showGetSnackBar(
         'Koneksi Terputus',
         'Tidak ada koneksi internet. Beberapa fitur mungkin tidak berfungsi.',
@@ -167,7 +179,7 @@ class MainController extends GetxController {
     } else {
       AppUtil.showGetSnackBar(
         'Koneksi Tersambung',
-        'Koneksi internet tersedia: ${_connectionStatus.map((e) => e.toString().split('.').last).join(', ')}',
+        'Koneksi internet tersedia.',
       );
     }
   }

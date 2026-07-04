@@ -180,4 +180,11 @@ class QrController extends GetxController {
     scannerController =
         MobileScannerController(facing: CameraFacing.back, torchEnabled: false);
   }
+
+  @override
+  void onClose() {
+    // Dispose camera controller untuk mencegah resource leak
+    scannerController.dispose();
+    super.onClose();
+  }
 }

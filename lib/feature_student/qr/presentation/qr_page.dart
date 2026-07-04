@@ -33,46 +33,48 @@ class QrPage extends StatelessWidget {
           SizedBox.expand(
             child: MobileScanner(
               fit: BoxFit.cover,
-              allowDuplicates: false,
               controller: controller.scannerController,
-              onDetect: (barcode, args) {
-                if (!controller.isScanCompleted) {
-                  if (barcode.rawValue == null) {
-                    debugPrint('Failed to scan Barcode');
+              onDetect: (capture) {
+                if (controller.isScanCompleted) return;
+
+                final barcode =
+                    capture.barcodes.isNotEmpty ? capture.barcodes.first : null;
+                if (barcode == null || barcode.rawValue == null) {
+                  debugPrint('Failed to scan Barcode');
+                  return;
+                }
+
+                final String code = barcode.rawValue!;
+                debugPrint('Barcode found! $code');
+                controller.isScanCompleted = true; // tandai scan selesai
+
+                if (controller.userData != null) {
+                  if (controller.userData!.student == null) {
+                    Fluttertoast.showToast(msg: 'Anda bukan siswa!');
+                    Get.back();
                   } else {
-                    final String code = barcode.rawValue!;
-                    debugPrint('Barcode found! $code');
-                    controller.isScanCompleted = true; // tandai scan selesai
-
-                    if (controller.userData != null) {
-                      if (controller.userData!.student == null) {
-                        Fluttertoast.showToast(msg: 'Anda bukan siswa!');
-                        Get.back();
-                      } else {
-                        if (controller.userData == null) {
-                          Fluttertoast.showToast(
-                              msg: 'Silahkan Login Terlebih dahulu!');
-                          Get.offNamed(AppRoutes.login);
-                          return;
-                        }
-
-                        var studentId =
-                            controller.userData!.student!.id.toString();
-                        var classId =
-                            controller.userData!.student!.idClass.toString();
-
-                        controller.startScan(
-                            context: context,
-                            idStudent: studentId,
-                            idClass: classId,
-                            qrcode: code);
-                      }
-                    } else {
+                    if (controller.userData == null) {
                       Fluttertoast.showToast(
                           msg: 'Silahkan Login Terlebih dahulu!');
-                      Get.offAllNamed(AppRoutes.login);
+                      Get.offNamed(AppRoutes.login);
+                      return;
                     }
+
+                    var studentId =
+                        controller.userData!.student!.id.toString();
+                    var classId =
+                        controller.userData!.student!.idClass.toString();
+
+                    controller.startScan(
+                        context: context,
+                        idStudent: studentId,
+                        idClass: classId,
+                        qrcode: code);
                   }
+                } else {
+                  Fluttertoast.showToast(
+                      msg: 'Silahkan Login Terlebih dahulu!');
+                  Get.offAllNamed(AppRoutes.login);
                 }
               },
             ),

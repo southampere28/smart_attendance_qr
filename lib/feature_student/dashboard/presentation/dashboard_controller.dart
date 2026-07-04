@@ -28,11 +28,11 @@ class DashboardController extends GetxController {
   // is weekend check
   bool get isWeekend {
     final int weekday = dateNow.weekday;
-    return weekday == DateTime.sunday;
-    // return weekday;
+    // return weekday == DateTime.sunday;
+    return false;
   }
 
-  DateTime dateNow = DateTime.now();
+  DateTime dateNow = DateTime(2026, 6, 25, 8, 0, 0);
 
   // final DateTime dateDummyOnly = DateTime(2026, 2, 16, 8, 0, 0);
 

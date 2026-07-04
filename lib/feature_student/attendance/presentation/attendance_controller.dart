@@ -9,7 +9,6 @@ import 'package:absensi_qr/utils/app_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AttendanceController extends GetxController
     with GetSingleTickerProviderStateMixin {

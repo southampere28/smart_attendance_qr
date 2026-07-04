@@ -30,7 +30,8 @@ class DashboardPage extends StatelessWidget {
       width: double.infinity,
       child: RefreshIndicator(
         onRefresh: () async {
-          controller.dateNow = DateTime.now();
+          // controller.dateNow = DateTime.now();
+          DateTime dateNow = DateTime(2026, 6, 25, 8, 0, 0);
           await Future.wait([
             controller.getHistoryAttendance(),
             controller.getAttendanceHistoryDaily(),

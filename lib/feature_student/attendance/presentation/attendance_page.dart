@@ -50,24 +50,31 @@ class AttendancePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: CalendarDatePicker(
-                    initialDate: controller.selectedDate.value,
-                    firstDate:
-                        controller.mainController.activeAcademicPeriod.value !=
-                                null
-                            ? controller.mainController.activeAcademicPeriod
-                                .value!.startDate
-                            : DateTime(2025),
-                    lastDate:
-                        controller.mainController.activeAcademicPeriod.value !=
-                                null
-                            ? controller.mainController.activeAcademicPeriod
-                                .value!.endDate
-                            : DateTime(2030),
-                    onDateChanged: (DateTime date) {
-                      controller.selectedDate.value = date;
-                      controller.getHistoryAttendance();
-                      controller.getAttendanceHistoryDaily();
+                  child: Builder(
+                    builder: (context) {
+                      final activePeriod = controller
+                          .mainController.activeAcademicPeriod.value;
+                      final DateTime firstDate =
+                          activePeriod?.startDate ?? DateTime(2025);
+                      final DateTime lastDate =
+                          activePeriod?.endDate ?? DateTime(2030);
+                      DateTime initialDate = controller.selectedDate.value;
+                      if (initialDate.isBefore(firstDate)) {
+                        initialDate = firstDate;
+                      }
+                      if (initialDate.isAfter(lastDate)) {
+                        initialDate = lastDate;
+                      }
+                      return CalendarDatePicker(
+                        initialDate: initialDate,
+                        firstDate: firstDate,
+                        lastDate: lastDate,
+                        onDateChanged: (DateTime date) {
+                          controller.selectedDate.value = date;
+                          controller.getHistoryAttendance();
+                          controller.getAttendanceHistoryDaily();
+                        },
+                      );
                     },
                   ),
                 ),

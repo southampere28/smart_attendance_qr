@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -82,12 +83,15 @@ class PushNotificationService extends GetxService {
     }
 
     if (!_localNotificationsReady) {
-      Get.snackbar(
-        title,
-        body,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 4),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.overlayContext == null && Get.context == null) return;
+        Get.snackbar(
+          title,
+          body,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 4),
+        );
+      });
       return;
     }
 
